@@ -50,7 +50,7 @@ jQuery(document).ready(function ($) {
                 }
             }
         }
-        updateDatabase();
+        // updateDatabase();
     }
 
     // Function to check if two elements overlap
@@ -224,6 +224,29 @@ jQuery(document).ready(function ($) {
             }
         });
     }
+
+
+
+    var accordion = new bootstrap.Collapse(document.getElementById('collapseOne'), {
+        toggle: false,
+    });
+
+    var otherAccordion = new bootstrap.Collapse(document.getElementById('collapseTwo'), {
+        toggle: false,
+    });
+
+    // Handle 'hidden.bs.collapse' event for the first accordion
+    $('#collapseOne').on('hidden.bs.collapse', function () {
+        otherAccordion.show();
+    });
+
+    // Handle 'hidden.bs.collapse' event for the second accordion
+    $('#collapseTwo').on('hidden.bs.collapse', function () {
+        accordion.show();
+    })
+
+
+
 
     $(window).on('beforeunload', function () {
         saveSectionState();
