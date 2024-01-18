@@ -1,4 +1,6 @@
-.section {
+
+
+.section2 {
     width: 400px;
     height: 300px;
     border: 1px solid #ccc;
@@ -15,64 +17,3 @@
     cursor: move;
     margin: 5px;
 }
-
-
-select.form-select{
-    border-radius: 0px !important;
-    }
-    
-    .configure-left-inner-div{
-        min-height: 70vh;
-        width: 100%;
-        border: 1px solid black;
-    }
-    
-    .configure-right-div{
-        min-height: 50vh;
-    }
-    .configure-right-div.col-12.col-md-4.p-0{
-        margin-top:25px;
-    
-    }
-    .configure-right-first-div ,.configure-right-second-div{
-        width: 100%;
-        border: 1px solid black;
-        border-radius: 0px;
-        overflow: hidden;
-    }
-    
-    .tab-button-div button{
-    width: 50%;
-    padding: 10px;
-    
-    }
-    
-    .rotate-down {
-        transform: rotate(90deg);
-        /* Optional: Adjust the alignment, if needed */
-        transform-origin: center;
-        display: inline-block;
-        font-weight: 400;
-    }
-    
-    
-    
-    
-    .active-button{
-        background: rgb(120,190,32) !important;
-        color:white !important;
-    }
-    
-    /* input.py-2,input.w-25{
-    border-radius: 10px;
-    border: 2px solid rgba(0,0,0,.1);
-    } */
-    .configure-right-div  input {
-        border-radius: 0px !important;
-    border: 2px solid rgba(0,0,0,.1);
-    
-    }
-
-    .para-Accordion{
-        margin: 0px;
-    }
