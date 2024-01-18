@@ -9,16 +9,16 @@ URL: aliraza.live
 
 // Enqueue the necessary scripts and styles
 function enqueue_drag_and_clone_scripts() {
-    wp_enqueue_style('drag-and-clone-styles', plugin_dir_url(__FILE__) . 'style.css');
+    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css');
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
-    wp_enqueue_script('drag-and-clone-script', plugin_dir_url(__FILE__) . 'script.js', array('jquery', 'jquery-ui'), null, true);
+    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), null, true);
     // add bootstrap css and js
     wp_enqueue_style('bootstrap-css', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array('jquery'), null, true);
 
     // Pass Ajax URL to script.js
-    wp_localize_script('drag-and-clone-script', 'drag_and_clone_vars', array(
+    wp_localize_script('amerison_script', 'amerison_vars', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
     ));
 }
@@ -177,11 +177,7 @@ function drag_and_clone_shortcode() {
 
     <section class="">
         <div class="row">
-            <div class="col-md-6 border border-2 border-dark">
-                <div class="border border-2 w-100">
-                    <div class="section" id="section1"></div>
-                </div>
-            </div>
+            <div class="col-md-6 border border-2 border-dark section" id="section1"></div>
             <div class="col-md-6">
                  <!-- select inpu type -->
                 <div class="form-group">
