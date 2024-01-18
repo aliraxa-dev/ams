@@ -8,7 +8,7 @@ URL: aliraza.live
 */
 
 // Enqueue the necessary scripts and styles
-function enqueue_drag_and_clone_scripts() {
+function enqueue_amerison_scripts() {
     wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css');
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
@@ -116,57 +116,120 @@ function create_configurator_table() {
 
 register_activation_hook( __FILE__, 'create_configurator_table' );
 
-add_action('wp_enqueue_scripts', 'enqueue_drag_and_clone_scripts');
+add_action('wp_enqueue_scripts', 'enqueue_amerison_scripts');
 
 function update_configurator_data() {
-    print_r($_POST);
-    exit;
-    
+   if (isset($_POST['section1Items'])) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'configurator_data';
+
+        $user_id = get_current_user_id();
+        $config_data = sanitize_text_field($_POST['section1Items']);
+        $color = sanitize_text_field($_POST['color']);
+
+        // Check if there's existing data for the user
+        $existing_data = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table_name WHERE user_id = %d",
+            $user_id
+        ));
+
+        if ($existing_data) {
+            // If data exists, update it
+            $wpdb->update(
+                $table_name,
+                array('config_data' => $config_data, 'options' => $color, 'timestamp' => current_time('mysql')),
+                array('user_id' => $user_id),
+                array('%s', '%s'),
+                array('%d')
+            );
+        } else {
+            // If no data exists, insert a new record
+            $wpdb->insert(
+                $table_name,
+                array(
+                    'user_id' => $user_id,
+                    'config_data' => $config_data,
+                    'options' => $color,
+                    'timestamp' => current_time('mysql')
+                ),
+                array('%d', '%s', '%s')
+            );
+        }
+
+        wp_send_json_success('Data updated successfully!');
+    } else {
+        wp_send_json_error('Invalid request!');
+    }
 }
 
 add_action('wp_ajax_update_configurator_data', 'update_configurator_data');
 add_action('wp_ajax_nopriv_update_configurator_data', 'update_configurator_data'); // Allow non-logged in users to use the AJAX endpoint
 
+// Function to get configurator data
+function get_configurator_data() {
+    check_ajax_referer('amerison-nonce', 'security');
+
+    if (is_user_logged_in()) {
+        $user_id = get_current_user_id();
+        $config_data = get_user_meta($user_id, 'configurator_data', true);
+        $options = get_user_meta($user_id, 'configurator_options', true);
+
+        wp_send_json_success(array(
+            'config_data' => $config_data,
+            'options' => $options
+        ));
+    } else {
+        wp_send_json_error('User not logged in.');
+    }
+}
+
+add_action('wp_ajax_get_configurator_data', 'get_configurator_data');
+add_action('wp_ajax_nopriv_get_configurator_data', 'get_configurator_data');
+
 
 // Register shortcode
 function drag_and_clone_shortcode() {
-    $products = get_products();
-    $attributes = get_product_attributes();
-    ob_start();
+    if (is_user_logged_in()) {
+        $products = get_products();
+        $attributes = get_product_attributes();
+        ob_start();
 
-    ?>
+        ?>
 
 
-    <section class="">
-        <div class="row">
-            <div class="col-md-6 border border-2 border-dark section" id="section1"></div>
-            <div class="col-md-6">
-                 <!-- select inpu type -->
-                <div class="form-group">
-                    <label for="sel1">Select list:</label>
-                    <select class="form-control" id="attributes">
-                        <option value="0">Select Product</option>
-                    </select>
-                </div>
-                <div class="section" id="section2">
-                    <!-- <div class="draggable" style="height: 50px;">Item 1</div>
-                    <div class="draggable" style="height: 70px;">Item 2</div>
-                    <div class="draggable" style="height: 40px;">Item 3</div>
-                    <div class="draggable" style="height: 60px;">Item 4</div> -->
+        <section class="">
+            <div class="row">
+                <div class="col-md-6 border border-2 border-dark section" id="section1"></div>
+                <div class="col-md-6">
+                    <!-- select inpu type -->
+                    <div class="form-group">
+                        <label for="sel1">Select list:</label>
+                        <select class="form-control" id="attributes">
+                            <option value="0">Select Product</option>
+                        </select>
+                    </div>
+                    <div class="section" id="section2">
+                        <!-- <div class="draggable" style="height: 50px;">Item 1</div>
+                        <div class="draggable" style="height: 70px;">Item 2</div>
+                        <div class="draggable" style="height: 40px;">Item 3</div>
+                        <div class="draggable" style="height: 60px;">Item 4</div> -->
+                    </div>
                 </div>
             </div>
-        </div>
 
 
 
 
-    <script>
-      var WP_PRODUCTS = <?= json_encode($products) ?>;
-        var WP_ATTRIBUTES = <?= json_encode($attributes) ?>;
-      var CONFIGURATOR_ENG = {};
-    </script>
-    <?php
-    return ob_get_clean();
+        <script>
+        var WP_PRODUCTS = <?= json_encode($products) ?>;
+            var WP_ATTRIBUTES = <?= json_encode($attributes) ?>;
+        var CONFIGURATOR_ENG = {};
+        </script>
+        <?php
+        return ob_get_clean();
+    } else {
+        return '<p>You need to <a href="' . wp_login_url() . '">log in</a> to use this feature.</p>';
+    }
 }
 
 add_shortcode('drag_and_clone', 'drag_and_clone_shortcode');
