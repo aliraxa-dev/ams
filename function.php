@@ -14,8 +14,8 @@ function enqueue_drag_and_clone_scripts() {
     wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
     wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), null, true);
     // add bootstrap css and js
-    wp_enqueue_style('bootstrap-css', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
-    wp_enqueue_script('bootstrap-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array('jquery'), null, true);
+    wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', array('jquery'), null, true);
 
     // Pass Ajax URL to script.js
     wp_localize_script('amerison_script', 'amerison_vars', array(
@@ -119,47 +119,9 @@ register_activation_hook( __FILE__, 'create_configurator_table' );
 add_action('wp_enqueue_scripts', 'enqueue_drag_and_clone_scripts');
 
 function update_configurator_data() {
-    if (isset($_POST['section1Items'])) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'configurator_data';
-
-        $user_id = get_current_user_id();
-        $config_data = sanitize_text_field($_POST['section1Items']);
-        $color = sanitize_text_field($_POST['color']);
-
-        // Check if there's existing data for the user
-        $existing_data = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE user_id = %d",
-            $user_id
-        ));
-
-        if ($existing_data) {
-            // If data exists, update it
-            $wpdb->update(
-                $table_name,
-                array('config_data' => $config_data, 'options' => $color, 'timestamp' => current_time('mysql')),
-                array('user_id' => $user_id),
-                array('%s', '%s'),
-                array('%d')
-            );
-        } else {
-            // If no data exists, insert a new record
-            $wpdb->insert(
-                $table_name,
-                array(
-                    'user_id' => $user_id,
-                    'config_data' => $config_data,
-                    'options' => $color,
-                    'timestamp' => current_time('mysql')
-                ),
-                array('%d', '%s', '%s')
-            );
-        }
-
-        wp_send_json_success('Data updated successfully!');
-    } else {
-        wp_send_json_error('Invalid request!');
-    }
+    print_r($_POST);
+    exit;
+    
 }
 
 add_action('wp_ajax_update_configurator_data', 'update_configurator_data');
