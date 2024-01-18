@@ -6,6 +6,9 @@ jQuery(document).ready(function ($) {
         start: function (event, ui) {
             // Store original position on drag start
             $(this).data("originalPosition", ui.helper.offset());
+        },
+        drag: function (event, ui) {
+            updateDatabase();
         }
     });
 
@@ -47,6 +50,7 @@ jQuery(document).ready(function ($) {
                 }
             }
         }
+        updateDatabase();
     }
 
     // Function to check if two elements overlap
@@ -74,6 +78,7 @@ jQuery(document).ready(function ($) {
     attributesDropdown.change(function () {
         const selectedColor = $(this).val();
         getVariationImage(selectedColor);
+        updateDatabase();
     });
 
     function saveSectionState() {
@@ -150,26 +155,26 @@ jQuery(document).ready(function ($) {
 
     function updateDatabase() {
         const section1Items = localStorage.getItem("section1State");
-        const ajaxurl = WP_AJAX.ajax_url;
         const color = localStorage.getItem("selectedColor");
+        const ajaxurl = 'wp-admin/admin-ajax.php'
         const data = {
-            action: 'update_configurator_data',
-            section1Items: JSON.stringify(section1Items),
+            section1Items: section1Items,
             color: color
         };
+        console.log(data);
         $.ajax({
-            url: ajaxurl, // WordPress AJAX URL
+            url: ajaxurl,
             type: 'POST',
+            action: 'update_configurator_data',
             data: data,
-            success: function(response) {
-                console.log('Data updated successfully:', response);
+            success: function (response) {
+                console.log('Data updated successfully:');
             },
-            error: function(error) {
-                console.error('Error updating data:', error);
+            error: function (error) {
+                console.error('Error updating data:');
             }
         });
     }
-    
 
     $(window).on('beforeunload', function () {
         saveSectionState();
