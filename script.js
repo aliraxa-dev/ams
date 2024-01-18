@@ -29,7 +29,7 @@ jQuery(document).ready(function ($) {
             for (var j = i + 1; j < items.length; j++) {
                 if (isOverlapping($(items[i]), $(items[j]))) {
                     // Handle overlapping items here
-                    console.log("Item " + i + " and Item " + j + " overlap");
+                    // console.log("Item " + i + " and Item " + j + " overlap");
                     // // You can perform actions such as removing one of the overlapping items
                     // $(items[j]).remove();
                     // if overlapped then dropback to original position
@@ -151,4 +151,115 @@ jQuery(document).ready(function ($) {
 
     // Load the section1 state on page load
     loadSectionState();
+
+
+
+
+
+
+
+
+
+
+
+        // board and Tool config
+        const boardConfiguration = document.getElementById('boardconfig');
+        const boardConfigdiv = document.getElementById('boardconfig-div');
+        const toolConfiguration = document.getElementById('toolconfig');
+        const toolConfigdiv = document.getElementById('tool-config-div');
+
+
+
+
+        // Toolbank (tool /Hardware)
+        const toolbank_button = document.getElementById('toolbank-button');
+        const hardwarebank_button = document.getElementById('hardwarebank-button');
+        const toolbank_div = document.getElementById('toolbank-div');
+        const hardwarebank_div = document.getElementById('hardwarebank-div');
+
+
+
+// Color and upload background
+        const colorbutton_config = document.getElementById('colorbutton_config');
+        const filebutton_config = document.getElementById('filebutton_config');
+        const colorInput_config = document.getElementById('colorInput_config');
+        const fileInput_config = document.getElementById('fileInput_config');
+
+
+
+
+
+
+
+
+        // Add a click event listener to boardConfiguration
+        boardConfiguration.addEventListener('click', function () {
+            toolConfigdiv.classList.add('d-none');
+            boardConfigdiv.classList.remove("d-none")
+            boardConfiguration.classList.add('active-button');
+            toolConfiguration.classList.remove('active-button'); 
+        });
+
+
+
+        // Add a click event listener to toolConfiguration
+        toolConfiguration.addEventListener('click', function () {
+            toolConfigdiv.classList.remove('d-none');
+            boardConfigdiv.classList.add("d-none")
+            toolConfiguration.classList.add('active-button');
+            boardConfiguration.classList.remove('active-button');
+
+
+        });
+
+
+         // Add a click event listener to Tool bank
+         toolbank_button.addEventListener('click', function () {
+            hardwarebank_div.classList.add('d-none');
+            toolbank_div.classList.remove("d-none")
+            toolbank_button.classList.add('active-button');
+            hardwarebank_button.classList.remove('active-button');
+        });
+
+
+        // Add a click event listener to Hardware bank
+        hardwarebank_button.addEventListener('click', function () {
+            hardwarebank_div.classList.remove('d-none');
+            toolbank_div.classList.add("d-none")
+            toolbank_button.classList.remove('active-button');
+            hardwarebank_button.classList.add('active-button');
+        });
+
+
+
+
+
+        // Add a click event listener to Solid color Button
+        colorbutton_config.addEventListener('click', function () {
+            fileInput_config.classList.add('d-none');
+            colorInput_config.classList.remove("d-none")
+            colorbutton_config.classList.add('active-button');
+            filebutton_config.classList.remove('active-button');
+        });
+
+
+        // Add a click event listener to Upload Background Button
+        filebutton_config.addEventListener('click', function () {
+            fileInput_config.classList.remove('d-none');
+            colorInput_config.classList.add("d-none")
+            colorbutton_config.classList.remove('active-button');
+            filebutton_config.classList.add('active-button');
+         });
+
+
+
+
+
+    
 });
+
+
+
+
+
+
