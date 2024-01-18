@@ -131,6 +131,56 @@ jQuery(document).ready(function ($) {
         }
     }
 
+    // function loadSectionState() {
+    //     const ajaxurl = amerison_vars.ajaxurl;
+    
+    //     // Make an AJAX request to get the stored configurator data
+    //     $.ajax({
+    //         url: ajaxurl,
+    //         type: 'POST',
+    //         data: {
+    //             action: 'get_configurator_data'
+    //         },
+    //         success: function (response) {
+    //             if (response.success && response.data) {
+    //                 const storedData = response.data;
+    
+    //                 // Parse the stored data and update the UI
+    //                 const section1Items = JSON.parse(storedData.config_data);
+    //                 const selectedColor = storedData.options;
+    
+    //                 // Clear existing items in section1
+    //                 $("#section1").empty();
+    
+    //                 // Populate items in section1
+    //                 for (const item of section1Items) {
+    //                     const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
+    //                     newItem.css({
+    //                         top: item.top + "px",
+    //                         left: item.left + "px",
+    //                         position: "absolute"
+    //                     });
+    //                     $("#section1").append(newItem);
+    //                     newItem.draggable({
+    //                         revert: "invalid",
+    //                         helper: "clone",
+    //                     });
+    //                 }
+    
+    //                 // Set the selected color in the dropdown
+    //                 $('#attributes').val(selectedColor);
+    
+    //                 // Fetch and display variation images based on the selected color
+    //                 getVariationImage(selectedColor);
+    //             }
+    //         },
+    //         error: function (error) {
+    //             console.error('Error fetching configurator data:', error);
+    //         }
+    //     });
+    // }
+    
+
     function getVariationImage(color) {
         section2.empty();
 
@@ -156,16 +206,15 @@ jQuery(document).ready(function ($) {
     function updateDatabase() {
         const section1Items = localStorage.getItem("section1State");
         const color = localStorage.getItem("selectedColor");
-        const ajaxurl = 'wp-admin/admin-ajax.php'
+        const ajaxurl = amerison_vars.ajaxurl;
         const data = {
+            action: 'update_configurator_data',
             section1Items: section1Items,
             color: color
         };
-        console.log(data);
         $.ajax({
             url: ajaxurl,
             type: 'POST',
-            action: 'update_configurator_data',
             data: data,
             success: function (response) {
                 console.log('Data updated successfully:');
