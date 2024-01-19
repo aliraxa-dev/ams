@@ -1,5 +1,15 @@
 jQuery(document).ready(function ($) {
 
+var DB_DATA = {
+    board_title: '',
+    board_dimensions: '',
+    background_color: '',
+    board_style: '',
+    board_material: '',
+    custom_logo: '',
+    quantity_of_boards: '',
+}
+
     $(".draggable").draggable({
         revert: "invalid",
         helper: "clone",
@@ -207,10 +217,19 @@ jQuery(document).ready(function ($) {
         const section1Items = localStorage.getItem("section1State");
         const color = localStorage.getItem("selectedColor");
         const ajaxurl = amerison_vars.ajaxurl;
+        DB_DATA.board_title = $('#board_title').val();
+        DB_DATA.board_dimensions = $('#board_dimensions').val();
+        DB_DATA.background_color = $('#background_color').val();
+        DB_DATA.board_style = $('#board_style').val();
+        DB_DATA.board_material = $('#board_material').val();
+        DB_DATA.custom_logo = $('#custom_logo').val();
+        DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
+        console.log(DB_DATA);
         const data = {
             action: 'update_configurator_data',
             section1Items: section1Items,
-            color: color
+            color: color,
+            data: DB_DATA
         };
         $.ajax({
             url: ajaxurl,
@@ -245,6 +264,11 @@ jQuery(document).ready(function ($) {
         accordion.show();
     })
 
+
+    // anything change in the section 1, update the database
+    $("#section1 #section2").on("change", function () {
+        updateDatabase();
+    });
 
 
 
