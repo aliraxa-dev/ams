@@ -17,7 +17,7 @@ function enqueue_amerison_scripts() {
     wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), null, true);
     // add bootstrap css and js
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
-    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', array('jquery'), null, true);
+    wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
 
     // Pass Ajax URL to script.js
     wp_localize_script(
@@ -110,7 +110,14 @@ function create_configurator_table()
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        user_id mediumint(9) NULL,
+        user_id mediumint(9) NOT NULL,
+        board_title text NOT NULL,
+        board_dimensions text NOT NULL,
+        background_color text NOT NULL,
+        board_style text NOT NULL,
+        board_material text NOT NULL,
+        custom_logo text NOT NULL,
+        quantity_of_boards text NOT NULL,
         config_data text NOT NULL,
         options text NOT NULL,
         timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -136,6 +143,13 @@ function update_configurator_data() {
         $user_id = get_current_user_id();
         $config_data = sanitize_text_field($_POST['section1Items']);
         $color = sanitize_text_field($_POST['color']);
+        $data = $_POST['data'];
+
+        // echo '<pre>';
+        // print_r($data);
+        // echo '</pre>';
+        // exit;
+
 
         // Check if there's existing data for the user
         $existing_data = $wpdb->get_row($wpdb->prepare(
@@ -147,9 +161,20 @@ function update_configurator_data() {
             // If data exists, update it
             $wpdb->update(
                 $table_name,
-                array('config_data' => $config_data, 'options' => $color, 'timestamp' => current_time('mysql')),
+                array(
+                    'board_title' => $data['board_title'],
+                    'board_dimensions' => $data['board_dimensions'],
+                    'background_color' => $data['background_color'],
+                    'board_style' => $data['board_style'],
+                    'board_material' => $data['board_material'],
+                    'custom_logo' => $data['custom_logo'],
+                    'quantity_of_boards' => $data['quantity_of_boards'],
+                    'config_data' => $config_data,
+                    'options' => $color,
+                    'timestamp' => current_time('mysql')
+                ),
                 array('user_id' => $user_id),
-                array('%s', '%s'),
+                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
                 array('%d')
             );
         } else {
@@ -158,11 +183,18 @@ function update_configurator_data() {
                 $table_name,
                 array(
                     'user_id' => $user_id,
+                    'board_title' => $data['board_title'],
+                    'board_dimensions' => $data['board_dimensions'],
+                    'background_color' => $data['background_color'],
+                    'board_style' => $data['board_style'],
+                    'board_material' => $data['board_material'],
+                    'custom_logo' => $data['custom_logo'],
+                    'quantity_of_boards' => $data['quantity_of_boards'],
                     'config_data' => $config_data,
                     'options' => $color,
                     'timestamp' => current_time('mysql')
                 ),
-                array('%d', '%s', '%s')
+                array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
             );
         }
 
@@ -176,373 +208,73 @@ function update_configurator_data() {
 add_action('wp_ajax_update_configurator_data', 'update_configurator_data');
 add_action('wp_ajax_nopriv_update_configurator_data', 'update_configurator_data'); // Allow non-logged in users to use the AJAX endpoint
 
-// Function to get configurator data
-function get_configurator_data() {
-    check_ajax_referer('amerison-nonce', 'security');
+// Function to get configurator data from database table based on user id
+function get_configurator_data_from_db() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
 
-    if (is_user_logged_in()) {
-        $user_id = get_current_user_id();
-        $config_data = get_user_meta($user_id, 'configurator_data', true);
-        $options = get_user_meta($user_id, 'configurator_options', true);
+    $user_id = get_current_user_id();
+    $config_data = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE user_id = %d",
+        $user_id
+    ), ARRAY_A);
 
-        wp_send_json_success(array(
-            'config_data' => $config_data,
-            'options' => $options
-        ));
-    } else {
-        wp_send_json_error('User not logged in.');
-    }
+    return $config_data;
 }
 
-add_action('wp_ajax_get_configurator_data', 'get_configurator_data');
-add_action('wp_ajax_nopriv_get_configurator_data', 'get_configurator_data');
+// Function to get configurator data from database table based on board id
+function get_configurator_data($board_id) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+
+    $config_data = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE id = %d",
+        $board_id
+    ), ARRAY_A);
+
+    return $config_data;
+}
+
+function get_data_by_id($board_id) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $sql = "SELECT * FROM $table_name WHERE id = $board_id";
+    $board = $wpdb->get_row($sql);
+    return $board;
+}
 
 
 // Register shortcode
-
 function drag_and_clone_shortcode() {
     if (is_user_logged_in()) {
         $products = get_products();
+        $configurator = get_configurator_data_from_db();
         $attributes = get_product_attributes();
         ob_start();
+        if( isset($_GET['board']) ) {
+            $board_id = $_GET['board'];
+            $board = get_data_by_id($board_id);
+            include plugin_dir_path(__FILE__) . 'configurator.php';
+        } else {
+            include plugin_dir_path(__FILE__) . 'board-list.php';
+        }
 
         ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <section class="w-100 ">
-
-        <div class="row justify-content-between  m-0">
-            <div class="col-md-6 ">
-
-
-                <div class="border border-2  section" id="section1">
-
-                </div>
-
-            </div>
-
-
-
-            <div class="col-md-6 border border-2 p-0">
-                <!-- select input type -->
-
-
-
-
-
-                <div class="accordion" id="accordionExample">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                aria-expanded="true" aria-controls="collapseOne">
-                Board / Tool Configuration
-            </button>
-        </h2>
-        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                                <div class="tab-content " id="tab-content">
-                                    <div class="tab-pane active" id="justified-tabpanel-0" role="tabpanel"
-                                        aria-labelledby="justified-tab-0">
-
-
-
-                                        <ul class="nav nav-tabs" id="myTabs">
-                                            <li class="nav-item w-50">
-                                                <a class="nav-link active border-bottom" id="tab1" data-bs-toggle="tab"
-                                                    href="#content1">Board Configuration</a>
-                                            </li>
-                                            <li class="nav-item w-50">
-                                                <a class="nav-link border-bottom" id="tab2" data-bs-toggle="tab" href="#content2">Tool Configuration</a>
-                                            </li>
-                                        </ul>
-
-                                        <!-- Tab panes -->
-                                        <div class="tab-content mt-2">
-                                            <div class="tab-pane fade show active" id="content1">
-                                                <!-- Board Config section -->
-                                                <div class="px-1 px-md-3 " id="boardconfig-div">
-
-                                                    <!-- board title -->
-                                                    <div class="board-title d-flex flex-column py-3">
-                                                        <label>
-                                                            Board Title
-                                                        </label>
-
-                                                        <input placeholder="Enter board title" class="py-2" />
-                                                    </div>
-
-
-                                                    <!-- board Dimensions -->
-                                                    <div class="board-Dimensions d-flex flex-column py-3">
-                                                        <label>
-                                                            Board Dimensions
-                                                        </label>
-
-
-                                                        <select class="form-select">
-                                                            <option selected>Select Option</option>
-                                                            <option value="1">24x72</option>
-                                                            <option value="2">36x72</option>
-                                                            <option value="3">48x72</option>
-                                                            <option value="3">Custom</option>
-                                                        </select>
-
-                                                    </div>
-
-
-                                                    <!-- Background color -->
-                                                    <div class="background-color d-flex flex-column py-3">
-
-
-                                                        <div class="btn-group" role="group" aria-label="Basic example">
-
-                                                        <ul class="nav nav-tabs w-100" id="myTabs">
-                                            <li class="nav-item w-50">
-                                                <a class="nav-link active border-bottom" id="tab1" data-bs-toggle="tab"
-                                                    href="#solidcolor">Solid Color</a>
-                                            </li>
-                                            <li class="nav-item w-50">
-                                                <a class="nav-link border-bottom" id="tab2" data-bs-toggle="tab" href="#uploadbackground">Upload Background</a>
-                                            </li>
-                                        </ul>
-                                                          
-                                                        </div>
-                                                        <div class="py-3 ">
-                                                            <input class="tab-pane fade show active" type="color" name="colorInput"
-                                                                value="#ff0000" id="solidcolor">
-
-                                                            <input class="tab-pane fade  " id="uploadbackground"  type="file" />
-
-                                                        </div>
-
-
-
-                                                    </div>
-
-
-
-
-                                                    <!-- board style -->
-                                                    <div class="board-style d-flex flex-column py-3">
-                                                        <label>
-                                                            Board style
-                                                        </label>
-
-
-                                                        <select class="form-select">
-                                                            <option value="1">Wal Mount</option>
-                                                            <option value="2">Mobile</option>
-                                                            <option value="3">Stationary Stand</option>
-                                                            <option value="3">Magnet Mounted</option>
-                                                        </select>
-
-                                                    </div>
-
-
-
-                                                    <!-- board Material -->
-                                                    <div class="board-Material d-flex flex-column py-3">
-                                                        <label>
-                                                            Board Material
-                                                        </label>
-
-
-                                                        <select class="form-select">
-                                                            <option selected>StorSheild</option>
-                                                            <option value="1">StorLam</option>
-                                                            <option value="2">StorClear</option>
-                                                            <option value="3">StorShield+</option>
-                                                            <option value="3">StorLaze</option>
-                                                        </select>
-
-                                                    </div>
-
-
-
-                                                    <!-- Custom Logo -->
-                                                    <div class="custom-Logo d-flex flex-column py-3">
-                                                        <label>
-                                                            Custom Logo
-                                                        </label>
-
-
-                                                        <select class="form-select">
-                                                            <option selected>Select Option</option>
-                                                            <option value="1">Top Left</option>
-                                                            <option value="2">Top Right</option>
-                                                            <option value="3">Center</option>
-                                                        </select>
-
-                                                    </div>
-
-
-                                                    <!-- Quantity of Board(s) -->
-                                                    <div class="custom-Logo d-flex justify-content-between py-2">
-                                                        <label>
-                                                            Quantity of Board(s)
-                                                        </label>
-
-                                                        <input type="number" class="w-25">
-
-                                                    </div>
-
-
-
-
-
-
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="content2">
-                                                <!-- Tool config start -->
-                                    <div class="tab-pane " id="justified-tabpanel-1" role="tabpanel"
-                                        aria-labelledby="justified-tab-1">
-
-                                        <div class="d-flex flex-column py-3">
-                                            <label>
-                                                Tool Type
-                                            </label>
-
-                                            <select class="form-select">
-                                                <option value="1">Outline Shadow</option>
-                                                <option value="2">Solid Shadow of tools</option>
-                                            </select>
-
-                                        </div>
-
-
-                                        <!-- tool shadow color -->
-                                        <div class="d-flex flex-column py-3">
-                                            <label>
-                                                Tool shadow color
-                                            </label>
-
-
-                                            <select class="form-select">
-                                                <option selected>Select Option</option>
-                                                <option value="1">Black</option>
-                                                <option value="2">White</option>
-                                            </select>
-
-                                        </div>
-
-
-                                        <!-- Hooks/Holders -->
-                                        <div class="d-flex flex-column py-3">
-
-
-
-                                            <label>
-                                                Hooks/Holders
-                                            </label>
-
-
-                                            <select class="form-select">
-                                                <option selected>Select Option</option>
-                                                <option value="1">Stainless steel push-thru hook system</option>
-                                                <option value="1">Stainless plastic screw-mounted hook system hook system
-                                                </option>
-                                                <option value="1">Stainless screw-mounted hook system</option>
-                                            </select>
-
-
-
-
-                                        </div>
-
-
-                                    </div>
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-
-
-                                    
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Tool / Hardware Bank
-            </button>
-        </h2>
-        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                                <div class="form-group">
-                                    <label for="sel1">Select list:</label>
-                                    <select class="form-control mb-2" id="attributes">
-                                        <option value="0">Select Product</option>
-                                    </select>
-                                </div>
-
-
-
-
-                                <div class="section" id="section2">
-                                    <!-- <div class="draggable" style="height: 50px;">Item 1</div>
-                    <div class="draggable" style="height: 70px;">Item 2</div>
-                    <div class="draggable" style="height: 40px;">Item 3</div>
-                    <div class="draggable" style="height: 60px;">Item 4</div> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-            <script>
-        var WP_PRODUCTS = <?= json_encode($products) ?>;
+        <script>
+            var WP_PRODUCTS = <?= json_encode($products) ?>;
             var WP_ATTRIBUTES = <?= json_encode($attributes) ?>;
-        var CONFIGURATOR_ENG = {};
+            var WP_CONFIGURATOR = <?= json_encode($configurator) ?>;
+            var CONFIGURATOR_ENG = {};
         </script>
         <?php
+
         return ob_get_clean();
     } else {
         return '<p>You need to <a href="' . wp_login_url() . '">log in</a> to use this feature.</p>';
-    }}
+    }
+}
 
-add_shortcode('drag_and_clone', 'drag_and_clone_shortcode');
+add_shortcode('amerison_configurator', 'drag_and_clone_shortcode');
 
 // Register script for the shortcode
 function drag_and_clone_script()
