@@ -10,6 +10,7 @@ var DB_DATA = {
     quantity_of_boards: '',
 }
 
+
     $(".draggable").draggable({
         revert: "invalid",
         helper: "clone",
@@ -76,6 +77,7 @@ var DB_DATA = {
 
     setInterval(function () {
         checkOverlap(); // Check for overlaps periodically
+        // saveSectionState();
     }, 1000); // Adjust the interval (in milliseconds) according to your needs
 
     const attributesDropdown = $('#attributes');
@@ -107,89 +109,122 @@ var DB_DATA = {
             });
         });
 
+        // set the DB_DATA to the local storage
+        DB_DATA.board_title = $('#board_title').val();
+        DB_DATA.board_dimensions = $('#board_dimensions').val();
+        DB_DATA.background_color = $('#background_color').val();
+        DB_DATA.board_style = $('#board_style').val();
+        DB_DATA.board_material = $('#board_material').val();
+        DB_DATA.custom_logo = $('#custom_logo').val();
+        DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
+        console.log(DB_DATA);
+
+        // set the local storage
+        localStorage.setItem("DB_DATA", JSON.stringify(DB_DATA));
+
         const selectedColor = attributesDropdown.val();
         localStorage.setItem("selectedColor", selectedColor);
 
         localStorage.setItem("section1State", JSON.stringify(section1Items));
     }
 
+    // if url has query ?board_id=new, then load the default board
+    
+    // function loadSectionState() {
+    //     const savedState = localStorage.getItem("section1State");
+    //     const selectedColor = localStorage.getItem("selectedColor");
+    //     var DB_DATA = localStorage.getItem("DB_DATA");
+
+    //     if (savedState) {
+    //         const section1Items = JSON.parse(savedState);
+    //         for (const item of section1Items) {
+    //             const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
+    //             newItem.css({
+    //                 top: item.top + "px",
+    //                 left: item.left + "px",
+    //                 position: "absolute"
+    //             });
+    //             $("#section1").append(newItem);
+    //             newItem.draggable({
+    //                 revert: "invalid",
+    //                 helper: "clone",
+    //             });
+    //         }
+    //     }
+
+    //     attributesDropdown.val(selectedColor);
+
+    //     if (selectedColor) {
+    //         getVariationImage(selectedColor);
+    //     }
+
+    //     DB_DATA = JSON.parse(DB_DATA);
+    //     console.log(DB_DATA);
+    //     $('#board_title').val(DB_DATA.board_title);
+    //     $('#board_dimensions').val(DB_DATA.board_dimensions);
+    //     $('#background_color').val(DB_DATA.background_color);
+    //     $('#board_style').val(DB_DATA.board_style);
+    //     $('#board_material').val(DB_DATA.board_material);
+    //     $('#custom_logo').val(DB_DATA.custom_logo);
+    //     $('#quantity_of_boards').val(DB_DATA.quantity_of_boards);
+    // }
+
     function loadSectionState() {
-        const savedState = localStorage.getItem("section1State");
-        const selectedColor = localStorage.getItem("selectedColor");
+        const board_id = window.location.search.split('=')[1];
+        if (board_id !== 'new') {
+            return;
+        }
+        // get data from database
+        const ajaxurl = amerison_vars.ajaxurl;
+        const data = {
+            action: 'get_configurator_data',
+            board_id: board_id
+        };
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                console.log('Data retrieved successfully:');
+                console.log(response);
+                const section1Items = JSON.parse(response.section1Items);
+                const selectedColor = response.color;
+                const DB_DATA = response.data;
+                console.log(DB_DATA);
+                $('#board_title').val(DB_DATA.board_title);
+                $('#board_dimensions').val(DB_DATA.board_dimensions);
+                $('#background_color').val(DB_DATA.background_color);
+                $('#board_style').val(DB_DATA.board_style);
+                $('#board_material').val(DB_DATA.board_material);
+                $('#custom_logo').val(DB_DATA.custom_logo);
+                $('#quantity_of_boards').val(DB_DATA.quantity_of_boards);
 
-        if (savedState) {
-            const section1Items = JSON.parse(savedState);
-            for (const item of section1Items) {
-                const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
-                newItem.css({
-                    top: item.top + "px",
-                    left: item.left + "px",
-                    position: "absolute"
-                });
-                $("#section1").append(newItem);
-                newItem.draggable({
-                    revert: "invalid",
-                    helper: "clone",
-                });
+                for (const item of section1Items) {
+                    const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
+                    newItem.css({
+                        top: item.top + "px",
+                        left: item.left + "px",
+                        position: "absolute"
+                    });
+                    $("#section1").append(newItem);
+                    newItem.draggable({
+                        revert: "invalid",
+                        helper: "clone",
+                    });
+                }
+
+                attributesDropdown.val(selectedColor);
+
+                if (selectedColor) {
+                    getVariationImage(selectedColor);
+                }
+            },
+            error: function (error) {
+                console.error('Error retrieving data:');
             }
-        }
-
-        attributesDropdown.val(selectedColor);
-
-        if (selectedColor) {
-            getVariationImage(selectedColor);
-        }
+        });
     }
 
-    // function loadSectionState() {
-    //     const ajaxurl = amerison_vars.ajaxurl;
-    
-    //     // Make an AJAX request to get the stored configurator data
-    //     $.ajax({
-    //         url: ajaxurl,
-    //         type: 'POST',
-    //         data: {
-    //             action: 'get_configurator_data'
-    //         },
-    //         success: function (response) {
-    //             if (response.success && response.data) {
-    //                 const storedData = response.data;
-    
-    //                 // Parse the stored data and update the UI
-    //                 const section1Items = JSON.parse(storedData.config_data);
-    //                 const selectedColor = storedData.options;
-    
-    //                 // Clear existing items in section1
-    //                 $("#section1").empty();
-    
-    //                 // Populate items in section1
-    //                 for (const item of section1Items) {
-    //                     const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
-    //                     newItem.css({
-    //                         top: item.top + "px",
-    //                         left: item.left + "px",
-    //                         position: "absolute"
-    //                     });
-    //                     $("#section1").append(newItem);
-    //                     newItem.draggable({
-    //                         revert: "invalid",
-    //                         helper: "clone",
-    //                     });
-    //                 }
-    
-    //                 // Set the selected color in the dropdown
-    //                 $('#attributes').val(selectedColor);
-    
-    //                 // Fetch and display variation images based on the selected color
-    //                 getVariationImage(selectedColor);
-    //             }
-    //         },
-    //         error: function (error) {
-    //             console.error('Error fetching configurator data:', error);
-    //         }
-    //     });
-    // }
-    
 
     function getVariationImage(color) {
         section2.empty();
@@ -276,6 +311,10 @@ var DB_DATA = {
         saveSectionState();
     });
 
-    loadSectionState();
+    if (window.location.search === '?board=new') {
+        // loadSectionState();
+    } else {
+        loadSectionState();
+    }
     allowDrop();
 });
