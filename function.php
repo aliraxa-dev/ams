@@ -366,7 +366,7 @@ function drag_and_clone_shortcode() {
                                             style="width: 25px; height: 25px;"
                                             type="color"
                                             name="colorInput"
-                                            value="#ff0000"
+                                            value="#ffffff"
                                             id="background_color"
                                         />
 
