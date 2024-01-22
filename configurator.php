@@ -1,7 +1,7 @@
 <section class="w-auto border border-2 border-dark">
     <div class="row m-0">
         <div class="col-md-8">
-            <div class="h5 pt-4">Title</div>
+            <div class="h5 pt-4" id="set_board_title"></div>
             <div class="border border-2 border-dark my-2 section" id="section1"></div>
         </div>
         <div class="col-md-4 border border-dark border-top-0 border-right-0 border-bottom-0 p-0">
@@ -72,10 +72,10 @@
 
                                 <select class="form-select" id="board_dimensions">
                                     <option selected>Select Option</option>
-                                    <option value="1">24x72</option>
-                                    <option value="2">36x72</option>
-                                    <option value="3">48x72</option>
-                                    <option value="3">Custom</option>
+                                    <option value="24x72">24x72</option>
+                                    <option value="36x72">36x72</option>
+                                    <option value="48x72">48x72</option>
+                                    <option value="custom">Custom</option>
                                 </select>
                                 </div>
 
