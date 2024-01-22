@@ -144,17 +144,13 @@ function update_configurator_data() {
         $config_data = sanitize_text_field($_POST['section1Items']);
         $color = sanitize_text_field($_POST['color']);
         $data = $_POST['data'];
-
-        // echo '<pre>';
-        // print_r($data);
-        // echo '</pre>';
-        // exit;
+        $id = $_POST['id'];
 
 
-        // Check if there's existing data for the user
+        // Check if there's existing data for the id
         $existing_data = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE user_id = %d",
-            $user_id
+            "SELECT * FROM $table_name WHERE id = %d",
+            $id
         ));
 
         if ($existing_data) {
@@ -173,8 +169,8 @@ function update_configurator_data() {
                     'options' => $color,
                     'timestamp' => current_time('mysql')
                 ),
-                array('user_id' => $user_id),
-                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
+                array('id' => $id),
+                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
                 array('%d')
             );
         } else {
@@ -198,7 +194,9 @@ function update_configurator_data() {
             );
         }
 
-        wp_send_json_success('Data updated successfully!');
+        $new_id = $wpdb->insert_id;
+        echo $new_id;
+        wp_die();
     } else {
         wp_send_json_error('Invalid request!');
     }
@@ -284,7 +282,7 @@ function drag_and_clone_shortcode() {
 
         return ob_get_clean();
     } else {
-        return '<p>You need to <a href="' . wp_login_url() . '">log in</a> to use this feature.</p>';
+        include plugin_dir_path(__FILE__) . 'main.php';
     }
 }
 

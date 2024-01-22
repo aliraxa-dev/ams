@@ -231,11 +231,13 @@ var DB_DATA = {
         DB_DATA.board_material = $('#board_material').val();
         DB_DATA.custom_logo = $('#custom_logo').val();
         DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
+        const id = window.location.search.split('=')[1];
         const data = {
             action: 'update_configurator_data',
             section1Items: section1Items,
             color: color,
-            data: DB_DATA
+            data: DB_DATA,
+            id: id
         };
         console.log(data);
         $.ajax({
@@ -243,6 +245,11 @@ var DB_DATA = {
             type: 'POST',
             data: data,
             success: function (response) {
+                console.log(response);
+                if (window.location.search === '?board=new') {
+                    // then replace the url text new with the id
+                    window.history.replaceState({}, '', '?board=' + response);
+                }
                 console.log('Data updated successfully:');
             },
             error: function (error) {
@@ -250,6 +257,39 @@ var DB_DATA = {
             }
         });
     }
+
+    // function createNewBoard() {
+    //     const ajaxurl = "wp-admin/admin-ajax.php"
+    //     const section1Items = localStorage.getItem("section1State");
+    //     const color = localStorage.getItem("selectedColor");
+    //     DB_DATA.board_title = $('#board_title').val();
+    //     DB_DATA.board_dimensions = $('#board_dimensions').val();
+    //     DB_DATA.background_color = $('#background_color').val();
+    //     DB_DATA.board_style = $('#board_style').val();
+    //     DB_DATA.board_material = $('#board_material').val();
+    //     DB_DATA.custom_logo = $('#custom_logo').val();
+    //     DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
+    //     const data = {
+    //         action: 'create_new_board',
+    //         section1Items: section1Items,
+    //         color: color,
+    //         data: DB_DATA
+    //     };
+
+    //     $.ajax({
+    //         url: ajaxurl,
+    //         type: 'POST',
+    //         data: data,
+    //         success: function (response) {
+    //             console.log('New board created successfully:');
+    //             console.log(response);
+    //             window.location.href = window.location.href + '?board=' + response;
+    //         },
+    //         error: function (error) {
+    //             console.error('Error creating new board:');
+    //         }
+    //     });
+    // }
 
 
 
@@ -284,7 +324,7 @@ var DB_DATA = {
     });
 
     if (window.location.search === '?board=new') {
-        // loadSectionState();
+        // createNewBoard();
     } else {
         getDataFromDb();
     }
