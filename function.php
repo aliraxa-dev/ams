@@ -222,18 +222,32 @@ function get_configurator_data_from_db() {
     return $config_data;
 }
 
-// Function to get configurator data from database table based on board id
-function get_configurator_data($board_id) {
+// WordPress AJAX handler for getting configurator data
+add_action('wp_ajax_get_configurator_data', 'get_configurator_data');
+add_action('wp_ajax_nopriv_get_configurator_data', 'get_configurator_data');
+
+function get_configurator_data() {
     global $wpdb;
+
+    // Get the board ID from the AJAX request
+    $board_id = isset($_POST['board_id']) ? intval($_POST['board_id']) : 0;
+
+    // Your table name
     $table_name = $wpdb->prefix . 'configurator_data';
 
-    $config_data = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM $table_name WHERE id = %d",
-        $board_id
-    ), ARRAY_A);
+    // Query to get configurator data based on board ID
+    $config_data = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE id = %d",
+            $board_id
+        ),
+        ARRAY_A
+    );
 
-    return $config_data;
+    // Send the JSON-encoded response
+    wp_send_json($config_data);
 }
+
 
 function get_data_by_id($board_id) {
     global $wpdb;
