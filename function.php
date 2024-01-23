@@ -63,6 +63,8 @@ function get_products()
                     'attributes' => $variation['attributes'],
                     'price' => $variation['display_price'],
                     'image' => wp_get_attachment_url($variation['image_id']),
+                    'width' => $variation['dimensions']['width'],
+                    'height' => $variation['dimensions']['height'],
                 );
             }
         }

@@ -123,7 +123,7 @@
                                             style="width: 25px; height: 25px;"
                                             type="color"
                                             name="colorInput"
-                                            value="#ffffff"
+                                            value="rgb(255, 255, 255)"
                                             id="background_color"
                                         />
 
@@ -156,10 +156,10 @@
                                 <label> Board style </label>
 
                                 <select class="form-select" id="board_style">
-                                    <option value="1">Wal Mount</option>
-                                    <option value="2">Mobile</option>
-                                    <option value="3">Stationary Stand</option>
-                                    <option value="3">Magnet Mounted</option>
+                                    <option value="Wal Mount">Wal Mount</option>
+                                    <option value="Mobile">Mobile</option>
+                                    <option value="Stationary Stand">Stationary Stand</option>
+                                    <option value="Magnet Mounted">Magnet Mounted</option>
                                 </select>
                                 </div>
 
@@ -169,10 +169,10 @@
 
                                 <select class="form-select" id="board_material">
                                     <option selected>StorSheild</option>
-                                    <option value="1">StorLam</option>
-                                    <option value="2">StorClear</option>
-                                    <option value="3">StorShield+</option>
-                                    <option value="3">StorLaze</option>
+                                    <option value="StorLam">StorLam</option>
+                                    <option value="StorClear">StorClear</option>
+                                    <option value="StorShield+">StorShield+</option>
+                                    <option value="StorLaze">StorLaze</option>
                                 </select>
                                 </div>
 

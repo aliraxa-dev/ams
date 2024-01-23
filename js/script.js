@@ -10,8 +10,30 @@ var DB_DATA = {
     quantity_of_boards: '',
 }
 
+var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-    $(".draggable").draggable({
+function calculateDimensions(screenWidth, screenHeight, widthPercentage, heightPercentage) {
+    var widthInPixels = screenWidth * (widthPercentage / 120);
+    var heightInPixels = screenHeight * (heightPercentage / 120);
+
+    return { width: widthInPixels, height: heightInPixels };
+}
+
+function calculateImageDimensions(widthPercentage, heightPercentage) {
+    var widthInPixels = widthPercentage * (screenWidth / 100);
+    var heightInPixels = heightPercentage * (screenHeight / 100);
+
+    return { width: widthInPixels, height: heightInPixels };
+}
+
+// Example usage:
+
+
+
+
+
+    $(".cloneable-items").draggable({
         revert: "invalid",
         helper: "clone",
         start: function (event, ui) {
@@ -22,20 +44,27 @@ var DB_DATA = {
             updateDatabase();
         }
     });
-
     function allowDrop() {
         $(".section").droppable({
             accept: ".draggable",
             drop: function (event, ui) {
-                if (event.target.id === "section1" && ui.helper.attr("id") !== "item") {
+                var sourceSection = ui.draggable.closest(".section").attr("id");
+    
+                if (event.target.id === "section1" && sourceSection !== "section1") {
+                    console.log("Item dropped in section 1");
                     $(this).append(ui.helper.clone());
-                    $(this).children().last().attr("id", "item");
+                    $(this).children().last().attr("class", "item draggable");
+                } else if (event.target.id === "section1" && sourceSection === "section1") {
+                    console.log("Item dragged within section 1");
+                    $(this).append(ui.draggable);
+                    $(this).children().last().attr("class", "item draggable");
                 }
             }
         });
     }
+    
 
-    $("#section1").on("click", "#item", function () {
+    $("#section1").on("click", ".item", function () {
         checkOverlap();
         $(this).draggable({
             revert: "invalid",
@@ -100,12 +129,15 @@ var DB_DATA = {
             const position = $(this).position();
             const itemId = $(this).attr("id");
             const image = $(this).attr("src");
+            // get the height of the image
+            const height = $(this).height();
 
             section1Items.push({
                 id: itemId,
                 top: position.top,
                 left: position.left,
-                image: image
+                image: image,
+                height: height
             });
         });
 
@@ -118,14 +150,20 @@ var DB_DATA = {
         DB_DATA.custom_logo = $('#custom_logo').val();
         DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
 
+        
+
         const board_dimensions = DB_DATA.board_dimensions.split('x');
-        const board_width = board_dimensions[0];
-        const board_height = board_dimensions[1];
-        $('#section1').css('width', board_width + 'vw');
-        $('#section1').css('height', (board_height - 10) + 'vh');
+        const widthPercentage = board_dimensions[0];
+        const heightPercentage = board_dimensions[1];
+        var dimensions = calculateDimensions(screenWidth, screenHeight, widthPercentage, heightPercentage);
+        $('#section1').css('width', dimensions.width + 'px');
+        $('#section1').css('height',  dimensions.height + 'px');
 
         $('#set_board_title').text(DB_DATA.board_title);
-        $('#section1').css('background-color', DB_DATA.background_color);
+        var section_color = $('#section1').css('background-color', DB_DATA.background_color);
+
+        var color =  getBoardMaterial(DB_DATA.board_material);
+        $('#section1').css('background-color', color);
 
         // set the local storage
         localStorage.setItem("DB_DATA", JSON.stringify(DB_DATA));
@@ -176,12 +214,13 @@ var DB_DATA = {
                         newItem.css({
                             top: item.top + "px",
                             left: item.left + "px",
-                            position: "absolute"
+                            position: "absolute",
+                            height: item.height + "px"
                         });
                         $("#section1").append(newItem);
                         newItem.draggable({
                             revert: "invalid",
-                            helper: "clone",
+                            helper: "original",
                         });
                     }
 
@@ -190,6 +229,7 @@ var DB_DATA = {
                     if (selectedColor) {
                         getVariationImage(selectedColor);
                     }
+                    getBoardMaterial(data.board_material)
                 },
                 error: function (error) {
                     console.error('Error retrieving data:');
@@ -204,8 +244,12 @@ var DB_DATA = {
         for (const product of WP_PRODUCTS) {
             for (const variation of product.variations) {
                 const imageSrc = variation.image;
+                const width = variation.width;
+                const height = variation.height;
+                var dimensions = calculateImageDimensions(parseInt(width) ?? 0, parseInt(height) ?? 0);
+
                 if (color === variation.attributes.attribute_pa_color) {
-                    section2.append('<img src="' + imageSrc + '" alt="' + color + '" class="draggable" />');
+                    section2.append('<img src="' + imageSrc + '" alt="' + color + '" class="draggable cloneable-items" style="height:' + (height * 96) + 'px;" />');
                 }
             }
         }
@@ -218,6 +262,42 @@ var DB_DATA = {
                 $(this).data("left", ui.position.left);
             }
         });
+    }
+    let section1BackgroundColor;
+    // Board Material Dropdown
+    function getBoardMaterial(material) {
+        const board_material = $('#board_material').val();
+        const bg_color = $('#background_color').val();
+        var section_color = $('#section1').css('background-color');
+   
+        console.log(board_material, section_color);
+    
+        // Default background color if the input is not valid hex color
+        const defaultBackgroundColor = 'rgb(255, 255, 255)';
+    
+        if (section_color === 'rgb(255, 255, 255)' || section_color === '#ffffff') {
+            switch (board_material) {
+                case 'StorShield':
+                case 'StorShield+':
+                case 'StorLam':
+                    section1BackgroundColor = defaultBackgroundColor;
+                    break;
+                case 'StorLaze':
+                    // Stainless steel color
+                    section1BackgroundColor = 'rgb(192, 192, 192)';
+                    break;
+                case 'StorClear':
+                    // Transparent color
+                    section1BackgroundColor = 'rgba(0, 0, 0, 0)';
+                    break;
+                default:
+                    section1BackgroundColor = bg_color;
+                    break;
+            }
+        } else {
+            section1BackgroundColor = bg_color;
+        }
+        return section1BackgroundColor;
     }
 
     function updateDatabase() {
@@ -239,7 +319,7 @@ var DB_DATA = {
             data: DB_DATA,
             id: id
         };
-        console.log(data);
+        // console.log(data);
         $.ajax({
             url: ajaxurl,
             type: 'POST',
