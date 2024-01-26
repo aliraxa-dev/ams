@@ -114,6 +114,7 @@ function create_configurator_table()
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         user_id mediumint(9) NOT NULL,
         board_title text NOT NULL,
+        title_position text NOT NULL DEFAULT 'left',
         board_dimensions text NOT NULL,
         background_color text NOT NULL,
         board_style text NOT NULL,
@@ -122,6 +123,9 @@ function create_configurator_table()
         quantity_of_boards text NOT NULL,
         config_data text NOT NULL,
         options text NOT NULL,
+        attachment_id mediumint(9) NULL,
+        logo_url text NULL,
+        background_url text NULL,
         timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
@@ -256,6 +260,244 @@ function get_data_by_id($board_id) {
     $board = $wpdb->get_row($sql);
     return $board;
 }
+
+
+// function handle_logo_upload() {
+//     error_log(print_r($_FILES, true));
+
+//     if (isset($_FILES['logo_images'])) {
+//         $uploaded_logo = $_FILES['logo_images'];
+//         if ($uploaded_logo['error'] == 0) {
+//             $upload_overrides = array('test_form' => false);
+//             $movefile = wp_handle_upload($uploaded_logo, $upload_overrides);
+
+//             if ($movefile && empty($movefile['error'])) {
+//                 // File successfully uploaded, handle the attachment
+//                 $attachment = array(
+//                     'post_title' => sanitize_file_name($uploaded_logo['name']),
+//                     'post_content' => '',
+//                     'post_status' => 'inherit',
+//                     'post_mime_type' => $uploaded_logo['type'],
+//                 );
+
+//                 $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+//                 require_once(ABSPATH . 'wp-admin/includes/image.php');
+//                 $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
+//                 wp_update_attachment_metadata($attach_id, $attach_data);
+
+//                 // Return success response
+//                 echo json_encode(array('success' => true, 'url' => $movefile['url']));
+//             } else {
+//                 // Error handling for wp_handle_upload
+//                 echo json_encode(array('error' => $movefile['error']));
+//             }
+//         } else {
+//             // Error handling for file upload
+//             echo json_encode(array('error' => 'Error uploading file. Error code: ' . $uploaded_logo['error']));
+//         }
+//     }
+// }
+
+// // Hook for both logged in and non-logged in users
+// add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
+// add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+
+function handle_logo_upload() {
+    if (isset($_FILES['logo_images'], $_POST['board_id'])) {
+        $uploaded_logo = $_FILES['logo_images'];
+        $board_id = intval($_POST['board_id']);
+
+        if ($uploaded_logo['error'] == 0 && $board_id > 0) {
+            $upload_overrides = array('test_form' => false);
+            $movefile = wp_handle_upload($uploaded_logo, $upload_overrides);
+
+            if ($movefile && empty($movefile['error'])) {
+                // File successfully uploaded, handle the attachment
+                $attachment = array(
+                    'post_title'     => sanitize_file_name($uploaded_logo['name']),
+                    'post_content'   => '',
+                    'post_status'    => 'inherit',
+                    'post_mime_type' => $uploaded_logo['type'],
+                );
+
+                $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
+                wp_update_attachment_metadata($attach_id, $attach_data);
+
+                // Save information to custom database table
+                save_logo_data_to_database($board_id, $attach_id, $movefile['url']);
+
+                // Return success response
+                echo json_encode(array('success' => true, 'url' => $movefile['url']));
+            } else {
+                // Error handling for wp_handle_upload
+                echo json_encode(array('error' => $movefile['error']));
+            }
+        } else {
+            // Error handling for invalid board_id or file upload error
+            echo json_encode(array('error' => 'Invalid request.'));
+        }
+    } else {
+        // Error handling for missing file or board_id
+        echo json_encode(array('error' => 'Invalid request.'));
+    }
+
+    wp_die();
+}
+
+function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
+    global $wpdb;
+
+    // Your table name
+    $table_name = $wpdb->prefix . 'configurator_data';
+
+    // Check if there's existing data for the id
+    $existing_data = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE id = %d",
+        $board_id
+    ));
+
+    if ($existing_data) {
+        // If data exists, update it
+        $wpdb->update(
+            $table_name,
+            array(
+                'attachment_id' => $attachment_id,
+                'logo_url' => $logo_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('id' => $board_id),
+            array('%d', '%s'),
+            array('%d')
+        );
+    } else {
+        // If no data exists, insert a new record
+        $wpdb->insert(
+            $table_name,
+            array(
+                'id' => $board_id,
+                'attachment_id' => $attachment_id,
+                'logo_url' => $logo_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('%d', '%d', '%s')
+        );
+    }
+
+    // Send the JSON-encoded response with url and attachment_id
+    wp_send_json(array('url' => $logo_url, 'attachment_id' => $attachment_id));
+}
+
+add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
+add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+
+function handle_background_upload() {
+    if (isset($_FILES['background-image-upload'], $_POST['board_id'])) {
+        $uploaded_background = $_FILES['background-image-upload'];
+        $board_id = intval($_POST['board_id']);
+
+        if ($uploaded_background['error'] == 0 && $board_id > 0) {
+            $upload_overrides = array('test_form' => false);
+            $movefile = wp_handle_upload($uploaded_background, $upload_overrides);
+
+            if ($movefile && empty($movefile['error'])) {
+                // File successfully uploaded, handle the attachment
+                $attachment = array(
+                    'post_title'     => sanitize_file_name($uploaded_background['name']),
+                    'post_content'   => '',
+                    'post_status'    => 'inherit',
+                    'post_mime_type' => $uploaded_background['type'],
+                );
+
+                $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
+                wp_update_attachment_metadata($attach_id, $attach_data);
+
+                // Save information to custom database table
+                save_background_data_to_database($board_id, $attach_id, $movefile['url']);
+
+                // Return success response
+                echo json_encode(array('success' => true, 'url' => $movefile['url']));
+            } else {
+                // Error handling for wp_handle_upload
+                echo json_encode(array('error' => $movefile['error']));
+            }
+        } else {
+            // Error handling for invalid board_id or file upload error
+            echo json_encode(array('error' => 'Invalid request.'));
+        }
+    } else {
+        // Error handling for missing file or board_id
+        echo json_encode(array('error' => 'Invalid request.'));
+    }
+
+    wp_die();
+}
+
+function save_background_data_to_database($board_id, $attachment_id, $background_url) {
+    global $wpdb;
+
+    // Your table name
+    $table_name = $wpdb->prefix . 'configurator_data';
+
+    // Check if there's existing data for the id
+    $existing_data = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE id = %d",
+        $board_id
+    ));
+
+    if ($existing_data) {
+        // If data exists, update it
+        $wpdb->update(
+            $table_name,
+            array(
+                'background_url' => $background_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('id' => $board_id),
+            array('%s'),
+            array('%d')
+        );
+    } else {
+        // If no data exists, insert a new record
+        $wpdb->insert(
+            $table_name,
+            array(
+                'id' => $board_id,
+                'background_url' => $background_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('%d', '%s')
+        );
+    }
+
+    // Send the JSON-encoded response with url and attachment_id
+    wp_send_json(array('url' => $background_url, 'attachment_id' => $attachment_id));
+}
+
+add_action('wp_ajax_handle_background_upload', 'handle_background_upload');
+add_action('wp_ajax_nopriv_handle_background_upload', 'handle_background_upload');
+
+
+function clearLinksFromDb() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $value = $_POST['value'];
+    $board_id = $_POST['board_id'];
+    if ($value == 'logo_url') {
+        $sql = "UPDATE $table_name SET attachment_id = NULL, logo_url = NULL WHERE id = '$board_id'";
+        $wpdb->query($sql);
+    } else if ($value == 'background_url') {
+        $sql = "UPDATE $table_name SET background_url = NULL WHERE id = '$board_id'";
+        $wpdb->query($sql);
+    }
+    wp_die();
+}
+
+add_action('wp_ajax_clearLinksFromDb', 'clearLinksFromDb');
+add_action('wp_ajax_nopriv_clearLinksFromDb', 'clearLinksFromDb');
 
 
 // Register shortcode

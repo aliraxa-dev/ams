@@ -24,4 +24,8 @@
     margin: 5px;
 }
 
+.section1_logo {
+    width: 10%;
+    object-fit: cover;
+}
 

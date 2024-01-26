@@ -1,8 +1,10 @@
 <section class="w-auto border border-2 border-dark">
     <div class="row m-0">
         <div class="col-md-8">
-            <div class="h5 pt-4" id="set_board_title"></div>
-            <div class="border border-2 border-dark my-2 section" id="section1"></div>
+            <div class="border border-2 border-dark my-2 section" id="section1">
+                <div class="h5 pt-4 position-absolute" id="set_board_title"></div>
+                <img src="" alt="" class="section1_logo position-absolute" id="section1_logo">
+            </div>
         </div>
         <div class="col-md-4 border border-dark border-top-0 border-right-0 border-bottom-0 p-0">
             <!-- select input type -->
@@ -64,6 +66,17 @@
                                 <div class="form-group">
                                     <label for="bortTitle">Board Title</label>
                                     <input type="text" class="form-control" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
+                                </div>
+
+                                <div class="board-Dimensions d-flex flex-column py-3">
+                                    <label> Title Positions </label>
+
+                                    <select class="form-select" id="title_position">
+                                        <option selected>Select Option</option>
+                                        <option value="left">Top Left</option>
+                                        <option value="right">Top Right</option>
+                                        <option value="center">Center</option>
+                                    </select>
                                 </div>
 
                                 <!-- board Dimensions -->
@@ -135,17 +148,26 @@
                                         role="tabpanel"
                                         aria-labelledby="profile-tab"
                                     >
-                                        <div class="d-flex flex-column">
-                                        <label> Upload Background </label>
-
-                                            <input
-                                                type="file"
-                                                class="form-control"
-                                                id="upload_background"
-                                                aria-describedby="bortTitleHelp"
-                                                placeholder="Enter Board Title"
-                                            />
+                                    <div class="d-flex flex-column">
+                                    <label for="background-image-upload">Background Image</label>
+                                        <div class="d-flex gap-2">
+                                            <form id="background-image-upload-form" action="#" method="post" enctype="multipart/form-data">
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    id="background-image-upload"
+                                                    name="background-image-upload"
+                                                    aria-describedby="bortTitleHelp"
+                                                    placeholder="Upload Logo"
+                                                />
+                                            </form>
+                                            <div class="">
+                                                <button class="btn btn-danger" id="clear-background-image">Clear</button>
+                                            </div>
                                         </div>
+                                        <!-- Clear button to remove background image -->
+                                        
+                                    </div>
                                     </div>
                                     </div>
                                 </div>
@@ -181,11 +203,30 @@
                                 <label> Custom Logo </label>
 
                                 <select class="form-select" id="custom_logo">
-                                    <option selected>Select Option</option>
-                                    <option value="1">Top Left</option>
-                                    <option value="2">Top Right</option>
-                                    <option value="3">Center</option>
+                                    <option value="null">Select Option</option>
+                                    <option selected value="left">Top Left</option>
+                                    <option value="right">Top Right</option>
+                                    <option value="center">Center</option>
                                 </select>
+                                </div>
+
+                                <div class="d-flex flex-column">
+                                <label for="logo_images">Logo</label>
+                                    <div class="d-flex gap-2">
+                                        <form id="image-upload-form" action="#" method="post" enctype="multipart/form-data">
+                                            <input
+                                                type="file"
+                                                class="form-control"
+                                                id="logo_images"
+                                                name="logo_images"
+                                                aria-describedby="bortTitleHelp"
+                                                placeholder="Upload Logo"
+                                            />
+                                        </form>
+                                        <div class="">
+                                                <button class="btn btn-danger" id="clear-logo-image">Clear</button>
+                                            </div>
+                                    </div>
                                 </div>
 
                                 <!-- Quantity of Board(s) -->

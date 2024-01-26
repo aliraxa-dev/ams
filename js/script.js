@@ -2,8 +2,10 @@ jQuery(document).ready(function ($) {
 
 var DB_DATA = {
     board_title: '',
+    title_position: '',
     board_dimensions: '',
     background_color: '',
+    background_url: '',
     board_style: '',
     board_material: '',
     custom_logo: '',
@@ -59,6 +61,7 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
                     $(this).append(ui.draggable);
                     $(this).children().last().attr("class", "item draggable");
                 }
+                updateDatabase();
             }
         });
     }
@@ -72,9 +75,11 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
             start: function (event, ui) {
                 // Store original position on drag start
                 $(this).data("originalPosition", ui.helper.offset());
+            },
+            drag: function (event, ui) {
+                updateDatabase();
             }
         });
-        updateDatabase();
     });
 
     function checkOverlap() {
@@ -143,14 +148,13 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
 
         // set the DB_DATA to the local storage
         DB_DATA.board_title = $('#board_title').val();
+        DB_DATA.title_position = $('#title_position').val();
         DB_DATA.board_dimensions = $('#board_dimensions').val();
         DB_DATA.background_color = $('#background_color').val();
         DB_DATA.board_style = $('#board_style').val();
         DB_DATA.board_material = $('#board_material').val();
         DB_DATA.custom_logo = $('#custom_logo').val();
         DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
-
-        
 
         const board_dimensions = DB_DATA.board_dimensions.split('x');
         const widthPercentage = board_dimensions[0];
@@ -165,6 +169,10 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
         var color =  getBoardMaterial(DB_DATA.board_material);
         $('#section1').css('background-color', color);
 
+        updateTitlePosition();
+        updateLogoPosition();
+
+
         // set the local storage
         localStorage.setItem("DB_DATA", JSON.stringify(DB_DATA));
 
@@ -172,7 +180,7 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
         localStorage.setItem("selectedColor", selectedColor);
         localStorage.setItem("section1State", JSON.stringify(section1Items));
     }
-    
+
 
     function getDataFromDb() {
         const board_id = window.location.search.split('=')[1];
@@ -195,6 +203,7 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
 
                     $('#board_title').val(data.board_title);
                     $('#set_board_title').text(data.board_title);
+                    $('#title_position').val(data.title_position);
                     $('#board_dimensions').val(data.board_dimensions);
                     $('#background_color').val(data.background_color);
                     $('#board_style').val(data.board_style);
@@ -230,6 +239,20 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
                         getVariationImage(selectedColor);
                     }
                     getBoardMaterial(data.board_material)
+
+                    // get the logo url from the database
+                    const logo_url = data.logo_url;
+                    if (logo_url) {
+                        $('#section1_logo').attr('src', logo_url);
+                    }
+
+                    // get the background image url from the database
+                    const background_url = data.background_url;
+                    if (background_url) {
+                        $('#section1').css('background-image', 'url(' + background_url + ')');
+                        $('#section1').css('background-size', 'cover');
+                        $('#section1').css('background-repeat', 'no-repeat');
+                    }
                 },
                 error: function (error) {
                     console.error('Error retrieving data:');
@@ -269,8 +292,6 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
         const board_material = $('#board_material').val();
         const bg_color = $('#background_color').val();
         var section_color = $('#section1').css('background-color');
-   
-        console.log(board_material, section_color);
     
         // Default background color if the input is not valid hex color
         const defaultBackgroundColor = 'rgb(255, 255, 255)';
@@ -305,6 +326,7 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
         const color = localStorage.getItem("selectedColor");
         const ajaxurl = amerison_vars.ajaxurl;
         DB_DATA.board_title = $('#board_title').val();
+        DB_DATA.title_position = $('#title_position').val();
         DB_DATA.board_dimensions = $('#board_dimensions').val();
         DB_DATA.background_color = $('#background_color').val();
         DB_DATA.board_style = $('#board_style').val();
@@ -325,9 +347,7 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
             type: 'POST',
             data: data,
             success: function (response) {
-                console.log(response);
                 if (window.location.search === '?board=new') {
-                    // then replace the url text new with the id
                     window.history.replaceState({}, '', '?board=' + response);
                 }
                 console.log('Data updated successfully:');
@@ -371,7 +391,93 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
     //     });
     // }
 
+    $('#logo_images').on('change', function() {
+        var fileInput = this;
+        var file = fileInput.files[0];
+        console.log(file);
 
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var formData = new FormData();
+                formData.append('action', 'handle_logo_upload');
+                formData.append('logo_images', file);
+                formData.append('board_id', window.location.search.split('=')[1]);
+
+                $.ajax({
+                    type: 'POST',
+                    url: amerison_vars.ajaxurl,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                    localStorage.setItem("logo_url", response.url);
+                    $('#section1_logo').attr('src', response.url);
+
+                    // if (response.attachment_id !== 0) {
+                    //     // Display the uploaded image in the specified section
+                    //     var imageContainer = $('#section1');
+
+                    //     // Create an img element
+                    //     var imgElement = $('<img>', {
+                    //         src: response.url,
+                    //         alt: 'Uploaded Logo',
+                    //         class: 'logo__image',
+                    //     });
+
+                    //     // Empty the section and append the img element
+                    //     imageContainer.empty().append(imgElement);
+                    // } else {
+                    //     // Handle error cases
+                    //     console.error(response.error);
+                    // }
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            };
+
+            reader.readAsBinaryString(file);
+        }
+    });
+
+    $('#background-image-upload').on('change', function() {
+        var fileInput = this;
+        var file = fileInput.files[0];
+        console.log(file);
+
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var formData = new FormData();
+                formData.append('action', 'handle_background_upload');
+                formData.append('background-image-upload', file);
+                formData.append('board_id', window.location.search.split('=')[1]);
+
+                $.ajax({
+                    type: 'POST',
+                    url: amerison_vars.ajaxurl,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                    localStorage.setItem("background_upload", response.url);
+                    $('#section1').css('background-image', 'url(' + response.url + ')');
+                    $('#section1').css('background-size', 'cover');
+                    $('#section1').css('background-repeat', 'no-repeat');
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            };
+
+            reader.readAsBinaryString(file);
+        }
+    });
 
     var accordion = new bootstrap.Collapse(document.getElementById('collapseOne'), {
         toggle: false,
@@ -389,19 +495,101 @@ function calculateImageDimensions(widthPercentage, heightPercentage) {
     // Handle 'hidden.bs.collapse' event for the second accordion
     $('#collapseTwo').on('hidden.bs.collapse', function () {
         accordion.show();
-    })
-
-
-    // anything change in the section 1, update the database
-    $("#section1 #section2").on("change", function () {
-        updateDatabase();
     });
-
-
 
     $(window).on('beforeunload', function () {
         saveSectionState();
     });
+
+    $('#board_title, #title_position, #board_dimensions, #background_color, #board_style, #board_material, #custom_logo, #quantity_of_boards').on('change', function() {
+        updateDatabase();
+    });
+
+    $('#title_position').on('change', function() {
+        updateTitlePosition();
+    });
+
+    $('#custom_logo').on('change', function() {
+        updateLogoPosition();
+    });
+
+    function updateLogoPosition() {
+        const dimentions = $('#board_dimensions').val();
+        const board_dimensions = dimentions.split('x');
+        const board_width = board_dimensions[0];
+        const board_height = board_dimensions[1];
+
+        let logoPosition = $('#custom_logo').val();
+        if (logoPosition === 'right') {
+            $('#section1_logo').css('margin-left', 'calc(' + board_width + 'vw - 230px)');
+            $('#section1_logo').css('margin-top', '0px');
+
+        } else if (logoPosition === 'left') {
+            $('#section1_logo').css('float', 'inline-start');
+            $('#section1_logo').css('margin-left', '0px');
+            $('#section1_logo').css('margin-top', '0px');
+        } else if (logoPosition === 'center') {
+            $('#section1_logo').css('float', 'inline-start');
+            $('#section1_logo').css('margin-left', 'calc(' + board_width + 'vw / 2 - 50px)');
+            $('#section1_logo').css('margin-top', 'calc(' + board_height + 'vh / 2 - 50px)');
+        }
+    }
+
+    function updateTitlePosition() {
+        const dimentions = $('#board_dimensions').val();
+        const board_dimensions = dimentions.split('x');
+        const board_width = board_dimensions[0];
+        const board_height = board_dimensions[1];
+
+        let logoPosition = $('#title_position').val();
+        console.log(logoPosition);
+        if (logoPosition === 'right') {
+            $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw - 150px)');
+            $('#set_board_title').css('margin-top', '0px');
+        } else if (logoPosition === 'left') {
+            $('#set_board_title').css('float', 'inline-start');
+            $('#set_board_title').css('margin-left', '0px');
+            $('#set_board_title').css('margin-top', '0px');
+        } else if (logoPosition === 'center') {
+            $('#set_board_title').css('float', 'inline-start');
+            $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw / 2 - 50px)');
+            $('#set_board_title').css('margin-top', '0px');
+        }
+    }
+
+    // when user click on the clear button then remove the background image from the section1 clear the local storage
+    $('#clear-background-image').on('click', function() {
+        localStorage.removeItem("background_upload");
+        $('#section1').css('background-image', 'none');
+        clearlinksFromDb('background_url');
+    });
+    $('#clear-logo-image').on('click', function() {
+        localStorage.removeItem("logo_url");
+        $('#section1_logo').attr('src', '');
+        clearlinksFromDb('logo_url');
+    });
+
+    function clearlinksFromDb(value) {
+        const board_id = window.location.search.split('=')[1];
+        const data = {
+            action: 'clearLinksFromDb',
+            value: value,
+            board_id: board_id
+        };
+        $.ajax({
+            url: amerison_vars.ajaxurl,
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                console.log('Data retrieved successfully:');
+                console.log(response);
+            },
+            error: function (error) {
+                console.error('Error retrieving data:');
+            }
+        });
+    }
+
 
     if (window.location.search === '?board=new') {
         // createNewBoard();
