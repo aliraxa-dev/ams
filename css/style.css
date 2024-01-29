@@ -29,3 +29,20 @@
     object-fit: cover;
 }
 
+.close{
+    float: right;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    font-size: x-large;
+}
+
+.custom_board_dimensions {
+    display: none;
+}
+
+.close-button {
+    cursor: pointer;
+    display: block; /* Initially hide the close button */
+}

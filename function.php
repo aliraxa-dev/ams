@@ -114,6 +114,7 @@ function create_configurator_table()
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         user_id mediumint(9) NOT NULL,
         board_title text NOT NULL,
+        title_bg_color text NOT NULL,
         title_position text NOT NULL DEFAULT 'left',
         board_dimensions text NOT NULL,
         background_color text NOT NULL,
@@ -165,6 +166,8 @@ function update_configurator_data() {
                 $table_name,
                 array(
                     'board_title' => $data['board_title'],
+                    'title_position' => $data['title_position'],
+                    'title_bg_color' => $data['title_bg_color'],
                     'board_dimensions' => $data['board_dimensions'],
                     'background_color' => $data['background_color'],
                     'board_style' => $data['board_style'],
@@ -176,7 +179,7 @@ function update_configurator_data() {
                     'timestamp' => current_time('mysql')
                 ),
                 array('id' => $id),
-                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
+                array('%s', '%s', '%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
                 array('%d')
             );
         } else {
@@ -186,6 +189,8 @@ function update_configurator_data() {
                 array(
                     'user_id' => $user_id,
                     'board_title' => $data['board_title'],
+                    'title_position' => $data['title_position'],
+                    'title_bg_color' => $data['title_bg_color'],
                     'board_dimensions' => $data['board_dimensions'],
                     'background_color' => $data['background_color'],
                     'board_style' => $data['board_style'],
@@ -196,7 +201,7 @@ function update_configurator_data() {
                     'options' => $color,
                     'timestamp' => current_time('mysql')
                 ),
-                array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+                array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
             );
         }
 
@@ -498,6 +503,53 @@ function clearLinksFromDb() {
 
 add_action('wp_ajax_clearLinksFromDb', 'clearLinksFromDb');
 add_action('wp_ajax_nopriv_clearLinksFromDb', 'clearLinksFromDb');
+
+function deleteBoard() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $board_id = $_POST['board_id'];
+    $sql = "DELETE FROM $table_name WHERE id = '$board_id'";
+    $wpdb->query($sql);
+    wp_die();
+}
+
+add_action('wp_ajax_deleteBoard', 'deleteBoard');
+add_action('wp_ajax_nopriv_deleteBoard', 'deleteBoard');
+
+function resetBoard() {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $board_id = $_POST['board_id'];
+
+    $data = [
+        'board_title' => '',
+        'title_position' => 'left',
+        'board_dimensions' => '24x72',
+        'title_bg_color' => '#ffffff',
+        'background_color' => '#ffffff',
+        'board_style' => null,
+        'board_material' => null,
+        'custom_logo' => 'left',
+        'quantity_of_boards' => 0,
+        'config_data' => null,
+        'options' => null,
+        'attachment_id' => null,
+        'logo_url' => null,
+        'background_url' => null,
+        'timestamp' => current_time('mysql')
+    ];
+
+    $wpdb->update(
+        $table_name,
+        $data,
+        ['id' => $board_id],
+        ['%s', '%s', '%s','%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'],
+        ['%d']
+    );
+
+    wp_die();
+}
 
 
 // Register shortcode

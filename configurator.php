@@ -1,9 +1,56 @@
+<!-- Bootstrap Modal HTML -->
+<div class="modal" id="confirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="close closeModel" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to reset the board?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeModel" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" id="confirmReset">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="dimentionConfirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="close closeModel" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        There should be additional charges for custom dimensions. Do you want to continue?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeModel" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" id="dimentionConfirm">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <section class="w-auto border border-2 border-dark">
     <div class="row m-0">
         <div class="col-md-8">
             <div class="border border-2 border-dark my-2 section" id="section1">
+                <div class="w-100" style="height: 50px" id="title_background_color">
                 <div class="h5 pt-4 position-absolute" id="set_board_title"></div>
+                </div>
                 <img src="" alt="" class="section1_logo position-absolute" id="section1_logo">
+            </div>
+            <div>
+                <button type="button" class="btn btn-danger float-end" id="reset_board">Reset Board</button>
             </div>
         </div>
         <div class="col-md-4 border border-dark border-top-0 border-right-0 border-bottom-0 p-0">
@@ -63,9 +110,22 @@
                             <!-- Board Config section -->
                             <div class="" id="boardconfig-div">
                                 <!-- board title -->
-                                <div class="form-group">
+                                <div class="d-flex gap-3">
+                                <div class="form-group col-md-10">
                                     <label for="bortTitle">Board Title</label>
                                     <input type="text" class="form-control" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
+                                </div>
+
+                                <div class="form-geoup pt-4">
+                                <input
+                                            class="tab-pane fade show active p-0"
+                                            style="width: 25px; height: 25px;"
+                                            type="color"
+                                            name="colorInput"
+                                            value="#ffffff"
+                                            id="title_bg_color"
+                                        />
+                                </div>
                                 </div>
 
                                 <div class="board-Dimensions d-flex flex-column py-3">
@@ -84,12 +144,21 @@
                                 <label> Board Dimensions </label>
 
                                 <select class="form-select" id="board_dimensions">
-                                    <option selected>Select Option</option>
-                                    <option value="24x72">24x72</option>
+                                    <option selected value="24x72">24x72</option>
                                     <option value="36x72">36x72</option>
                                     <option value="48x72">48x72</option>
                                     <option value="custom">Custom</option>
                                 </select>
+                                </div>
+
+                                <!-- Custom board Dimensions -->
+                                <div class="custom_board_dimensions  flex-column py-3" id="custom_board_dimensions">
+                                <label> Custom Board Dimensions </label>
+                                <div class="d-flex gap-4">
+                                <input type="text" class="form-control custom_values" id="custom_width" aria-describedby="bortTitleHelp" placeholder="width">
+                                <span class="pt-2 fw-bolder" >X</span>
+                                <input type="text" class="form-control custom_values" id="custom_height" aria-describedby="bortTitleHelp" placeholder="height">
+                                </div>
                                 </div>
 
                                 <!-- Background color -->
@@ -166,7 +235,6 @@
                                             </div>
                                         </div>
                                         <!-- Clear button to remove background image -->
-                                        
                                     </div>
                                     </div>
                                     </div>
@@ -178,6 +246,7 @@
                                 <label> Board style </label>
 
                                 <select class="form-select" id="board_style">
+                                    <option selected>Standard</option>
                                     <option value="Wal Mount">Wal Mount</option>
                                     <option value="Mobile">Mobile</option>
                                     <option value="Stationary Stand">Stationary Stand</option>
@@ -313,7 +382,7 @@
                     <div class="form-group">
                         <label for="sel1">Select list:</label>
                         <select class="form-control mb-2" id="attributes">
-                        <option value="0">Select Product</option>
+                        <option selected value="null">Select Product</option>
                         </select>
                     </div>
 
