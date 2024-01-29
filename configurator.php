@@ -45,7 +45,7 @@
         <div class="col-md-8">
             <div class="border border-2 border-dark my-2 section" id="section1">
                 <div class="w-100" style="height: 50px" id="title_background_color">
-                <div class="h5 pt-4 position-absolute" id="set_board_title"></div>
+                    <div class="h5 pt-4 position-absolute" id="set_board_title"></div>
                 </div>
                 <img src="" alt="" class="section1_logo position-absolute" id="section1_logo">
             </div>

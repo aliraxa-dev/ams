@@ -102,7 +102,6 @@ function get_product_attributes()
     }
     return $attributes;
 }
-
 function create_configurator_table()
 {
     global $wpdb;
@@ -132,10 +131,18 @@ function create_configurator_table()
     ) $charset_collate;";
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    $resp = dbDelta($sql);
-    // echo '<pre>';
 
+    $resp = dbDelta($sql);
+
+    if (is_wp_error($resp)) {
+        print_r($resp);
+        error_log('Error creating database table: ' . $resp->get_error_message());
+    } else {
+        print_r($resp);
+        error_log('Database table created successfully!');
+    }
 }
+
 
 register_activation_hook(__FILE__, 'create_configurator_table');
 
