@@ -10,11 +10,11 @@ URL: aliraza.live
 // Enqueue the necessary scripts and styles
 
 function enqueue_amerison_scripts() {
-
-    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css');
+    $timestamp = time();
+    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
-    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), null, true);
+    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), $timestamp, true);
     // add bootstrap css and js
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');

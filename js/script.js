@@ -860,7 +860,7 @@ $('.custom_values').on('change', function() {
 function showPreloader() {
     const preloader = $('#preloader');
     preloader.append('<div class="spinner"></div>');
-    preloader.css('display', 'block');
+    preloader.css('display', 'flex');
 
 }
 
