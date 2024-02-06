@@ -13,7 +13,7 @@
                             <h3><?= $config['board_title'] == '' ? "Shadow Box " . $config['id'] : $config['board_title'] ?></h3>
                         </a>
                         <!-- delete icon -->
-                        <a href="#" class="delete-board" data-board-id="<?= $config['id'] ?>" data-board-title="<?= $config['board_title'] ?>" data-toggle="modal" data-target="#confirmDeleteModal">
+                        <a href="#" class="delete-board" data-board-id="<?= $config['id'] ?>" data-board-title="<?= $config['board_title'] == '' ? "Shadow Box " . $config['id'] : $config['board_title'] ?>" data-toggle="modal" data-target="#confirmDeleteModal">
                             <img src="<?= plugin_dir_url(__DIR__) . 'amerison_configurator/images/trash.svg' ?>" alt="delete" width="20" height="20">
                         </a>
                     </div>

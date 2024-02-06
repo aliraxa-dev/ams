@@ -158,9 +158,9 @@
                                 <div class="custom_board_dimensions  flex-column py-3" id="custom_board_dimensions">
                                 <label> Custom Board Dimensions </label>
                                 <div class="d-flex gap-4">
-                                <input type="text" class="form-control custom_values" id="custom_width" aria-describedby="bortTitleHelp" placeholder="width">
+                                <input type="text" class="form-control custom_values set-radius-input" id="custom_width" aria-describedby="bortTitleHelp" placeholder="width">
                                 <span class="pt-2 fw-bolder" >X</span>
-                                <input type="text" class="form-control custom_values" id="custom_height" aria-describedby="bortTitleHelp" placeholder="height">
+                                <input type="text" class="form-control custom_values set-radius-input" id="custom_height" aria-describedby="bortTitleHelp" placeholder="height">
                                 </div>
                                 </div>
 
@@ -305,7 +305,7 @@
                                 <!-- Quantity of Board(s) -->
                                 <div class="quantity-of-Board d-flex flex-column py-3">
                                     <label> Quantity of Board(s) </label>
-                                    <input type="number" class="form-control set-radius-input" id="quantity_of_boards" aria-describedby="bortTitleHelp" placeholder="Enter Quantity of Board(s)">
+                                    <input type="number" class="form-control set-radius-input text-start px-3" id="quantity_of_boards" aria-describedby="bortTitleHelp" placeholder="Enter Quantity of Board(s)">
                                 </div>
                             </div>
                             </div>

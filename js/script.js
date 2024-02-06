@@ -89,13 +89,17 @@ function allowDrop() {
         drop: function (event, ui) {
             var sourceSection = ui.draggable.closest(".section").attr("id");
 
-            // Create a draggable container
             const draggableContainer = $('<div class="draggable-container ui-draggable ui-draggable-handle" style="position: relative;"></div>');
             $(this).append(draggableContainer);
 
             if (event.target.id === "section1" && sourceSection !== "section1") {
                 console.log("Item dropped in section 1");
                 const $clone = ui.helper.clone();
+                $clone.css({
+                    top: ui.position.top + "px",
+                    left: (ui.position.left + 800) + "px",
+                    position: "absolute",
+                });
                 draggableContainer.append($clone);
                 $clone.attr("class", "item draggable");
 
@@ -106,7 +110,7 @@ function allowDrop() {
                 // Set the position of the close button relative to the cloned item
                 closeButton.css({
                     top: ui.position.top + "px",
-                    left: ui.position.left + "px",
+                    left: (ui.position.left + 800) + "px",
                     position: "absolute",
                     display: "block",
                 });
@@ -634,9 +638,14 @@ $('#background_image_upload').on('change', function() {
 });
 
 // Initialize the Bootstrap collapse instances
-var accordion = new bootstrap.Collapse($('#collapseOne'), { toggle: false });
-var otherAccordion = new bootstrap.Collapse($('#collapseTwo'), { toggle: false });
-
+const collapseOne = $('#collapseOne');
+const collapseTwo = $('#collapseTwo');
+if (collapseOne.length) {
+    var accordion = new bootstrap.Collapse(collapseOne, { toggle: false });
+}
+if (collapseTwo.length) {
+    var otherAccordion = new bootstrap.Collapse(collapseTwo, { toggle: false });
+}
 // Handle 'hidden.bs.collapse' event for the first accordion
 $('#collapseOne').on('hidden.bs.collapse', function () {
     if (!otherAccordion._isTransitioning) {
@@ -741,6 +750,7 @@ $('#clear-background-image').on('click', function() {
     localStorage.removeItem("background_upload");
     $('#section1').css('background-image', 'none');
     $('#background_image_upload').val('');
+    $('#background_name').text('');
     clearlinksFromDb('background_url');
 });
 $('#clear_logo_image').on('click', function() {
@@ -749,6 +759,7 @@ $('#clear_logo_image').on('click', function() {
     localStorage.removeItem("logo_url");
     $('#section1_logo').attr('src', '');
     $('#logo_images').val('');
+    $('#logo_name').text('');
     clearlinksFromDb('logo_url');
 });
 
