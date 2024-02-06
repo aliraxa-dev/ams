@@ -125,7 +125,7 @@
                                             style="width: 25px; height: 25px;"
                                             type="color"
                                             name="colorInput"
-                                            value="#ffffff"
+                                            value="#f5f5f5"
                                             id="title_bg_color"
                                         />
                                 </div>
@@ -150,7 +150,7 @@
                                     <option selected value="24x72">24x72</option>
                                     <option value="36x72">36x72</option>
                                     <option value="48x72">48x72</option>
-                                    <option value="custom">Custom</option>
+                                    <option value="custom">custom</option>
                                 </select>
                                 </div>
 
@@ -166,6 +166,8 @@
 
                                 <!-- Background color -->
                                 <div class="background-color d-flex flex-column py-3">
+                                <label> Background Color/Image </label>
+
                                 <div
                                     class="btn-group"
                                     role="group"
@@ -201,17 +203,14 @@
                                         aria-labelledby="home-tab"
                                     >
                                         <div class="d-flex flex-column">
-                                            <label> Background color </label>
-
                                             <input
                                                 class="tab-pane fade show active p-0"
                                                 style="width: 25px; height: 25px;"
                                                 type="color"
                                                 name="colorInput"
-                                                value="#fafafa"
+                                                value="#f5f5f5"
                                                 id="background_color"
                                             />
-
                                         </div>
                                     </div>
                                     <div
@@ -221,7 +220,7 @@
                                         aria-labelledby="profile-tab"
                                     >
                                     <div class="d-flex flex-column">
-                                    <label for="background_image_upload">Background Image</label>
+                                    <!-- <label for="background_image_upload">Background Image</label> -->
                                         <div class="d-flex gap-2">
                                             <form id="background-image_upload_form" action="#" method="post" enctype="multipart/form-data">
                                                 <input
@@ -237,6 +236,7 @@
                                                 <button class="btn btn-danger" id="clear-background-image">Clear</button>
                                             </div>
                                         </div>
+                                        <h6 class="" id="background_name"></h6>
                                         <!-- Clear button to remove background image -->
                                     </div>
                                     </div>
@@ -296,9 +296,10 @@
                                             />
                                         </form>
                                         <div class="">
-                                                <button class="btn btn-danger" id="clear_logo_image">Clear</button>
-                                            </div>
+                                            <button class="btn btn-danger" id="clear_logo_image">Clear</button>
+                                        </div>
                                     </div>
+                                    <h6 class="" id="logo_name"></h6>
                                 </div>
 
                                 <!-- Quantity of Board(s) -->

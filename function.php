@@ -556,6 +556,48 @@ function resetBoard() {
     wp_die();
 }
 
+add_action('wp_ajax_resetBoard', 'resetBoard');
+add_action('wp_ajax_nopriv_resetBoard', 'resetBoard');
+
+function delete_image_callback() {
+    // Verify nonce for security
+    check_ajax_referer('delete_image_nonce', 'security');
+
+    // Get the image URL from the AJAX request
+    $image_url = isset($_POST['image_url']) ? $_POST['image_url'] : '';
+
+    // Check if image URL is provided
+    if ($image_url) {
+        // Get attachment ID from image URL
+        $attachment_id = attachment_url_to_postid($image_url);
+
+        // Check if attachment ID is valid
+        if ($attachment_id) {
+            // Delete the attachment
+            $deleted = wp_delete_attachment($attachment_id, true);
+
+            if ($deleted) {
+                // Return success response
+                wp_send_json_success('Image deleted successfully.');
+            } else {
+                // Return error response
+                wp_send_json_error('Error deleting image.');
+            }
+        } else {
+            // Return error response if attachment ID is not found
+            wp_send_json_error('Attachment ID not found for the provided image URL.');
+        }
+    } else {
+        // Return error response if image URL is not provided
+        wp_send_json_error('Image URL is missing.');
+    }
+
+    // Make sure to exit after sending the JSON response
+    wp_die();
+}
+
+add_action('wp_ajax_delete_image', 'delete_image_callback');
+
 
 // Register shortcode
 function drag_and_clone_shortcode() {
