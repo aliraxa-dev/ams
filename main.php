@@ -1,9 +1,9 @@
 <div class="float-end">
-    <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="/cubx/wp-login.php" role="button">Create Shadow Box</a>
+    <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="/my-account" role="button">Create Shadow Board</a>
 </div>
 
 <p>
-You need to <a href="/cubx/wp-login.php">Login</a> before you can add any items to it.
+You need to <a href="/my-account">Login</a> before you can add any items to it.
 </p>
 
 

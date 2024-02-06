@@ -484,9 +484,18 @@ function updateDatabase() {
                 window.history.replaceState({}, '', '?board=' + response);
             }
             console.log('Data updated successfully:');
+            $('#dot_alert').css('display', 'block');
+            setTimeout(function () {
+                $('#dot_alert').css('display', 'none');
+            }, 1000);
         },
         error: function (error) {
             console.error('Error updating data:');
+            $('#dot_alert').css('display', 'block');
+            $('#dot_alert').css('background-color', 'red');
+            setTimeout(function () {
+                $('#dot_alert').css('display', 'none');
+            }, 1000);
         }
     });
 }
@@ -528,6 +537,7 @@ $('#logo_images').on('change', function() {
     var fileInput = this;
     var file = fileInput.files[0];
     console.log(file);
+    showPreloader();
 
     if (file) {
         var reader = new FileReader();
@@ -547,6 +557,7 @@ $('#logo_images').on('change', function() {
                 success: function(response) {
                 localStorage.setItem("logo_url", response.url);
                 $('#section1_logo').attr('src', response.url);
+                // hidePreloader();
 
                 // if (response.attachment_id !== 0) {
                 //     // Display the uploaded image in the specified section
@@ -576,10 +587,11 @@ $('#logo_images').on('change', function() {
     }
 });
 
-$('#background-image-upload').on('change', function() {
+$('#background_image_upload').on('change', function() {
     var fileInput = this;
     var file = fileInput.files[0];
     console.log(file);
+    showPreloader();
 
     if (file) {
         var reader = new FileReader();
@@ -587,7 +599,7 @@ $('#background-image-upload').on('change', function() {
         reader.onload = function(e) {
             var formData = new FormData();
             formData.append('action', 'handle_background_upload');
-            formData.append('background-image-upload', file);
+            formData.append('background_image_upload', file);
             formData.append('board_id', window.location.search.split('=')[1]);
 
             $.ajax({
@@ -597,10 +609,11 @@ $('#background-image-upload').on('change', function() {
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                localStorage.setItem("background_upload", response.url);
-                $('#section1').css('background-image', 'url(' + response.url + ')');
-                $('#section1').css('background-size', 'cover');
-                $('#section1').css('background-repeat', 'no-repeat');
+                    localStorage.setItem("background_upload", response.url);
+                    $('#section1').css('background-image', 'url(' + response.url + ')');
+                    $('#section1').css('background-size', 'cover');
+                    $('#section1').css('background-repeat', 'no-repeat');
+                    hidePreloader();
                 },
                 error: function(error) {
                     console.error(error);
@@ -652,19 +665,28 @@ function updateLogoPosition() {
     const board_width = board_dimensions[0];
     const board_height = board_dimensions[1];
 
+    const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
+
     let logoPosition = $('#custom_logo').val();
     if (logoPosition === 'right') {
-        $('#section1_logo').css('margin-left', 'calc(' + board_width + 'vw - 230px)');
-        $('#section1_logo').css('margin-top', '0px');
+        $('#section1_logo').removeAttr('style');
+        $('#section1_logo').css('position', 'absolute');
+        // $('#section1_logo').css('float', 'inline-end');
+        $('#section1_logo').css('top', '' +1+'%');
+        $('#section1_logo').css('left', '' + dimensions.width - 50+'px');
 
     } else if (logoPosition === 'left') {
+        $('#section1_logo').removeAttr('style');
+        $('#section1_logo').css('position', 'absolute');
         $('#section1_logo').css('float', 'inline-start');
-        $('#section1_logo').css('margin-left', '0px');
-        $('#section1_logo').css('margin-top', '0px');
+        $('#section1_logo').css('top', '' + 1 +'%');
+        $('#section1_logo').css('left', '' + 15+'px');
     } else if (logoPosition === 'center') {
+        $('#section1_logo').removeAttr('style');
+        $('#section1_logo').css('position', 'absolute');
         $('#section1_logo').css('float', 'inline-start');
-        $('#section1_logo').css('margin-left', 'calc(' + board_width + 'vw / 2 - 50px)');
-        $('#section1_logo').css('margin-top', 'calc(' + board_height + 'vh / 2 - 50px)');
+        $('#section1_logo').css('top', '' + (dimensions.height/2) +'px');
+        $('#section1_logo').css('left', '' + (dimensions.width/2) - 20 +'px');
     }
 }
 
@@ -674,29 +696,42 @@ function updateTitlePosition() {
     const board_width = board_dimensions[0];
     const board_height = board_dimensions[1];
 
+    // get the width of board title
+    const board_title_width = $('#set_board_title').width();
+
+    const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
+
     let logoPosition = $('#title_position').val();
     if (logoPosition === 'right') {
-        $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw - 150px)');
-        $('#set_board_title').css('margin-top', '0px');
+        $('#set_board_title').removeAttr('style');
+        $('#set_board_title').css('float', 'inline-end');
+        // $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw - 150px)');
+        // $('#set_board_title').css('margin-top', '0px');
     } else if (logoPosition === 'left') {
+        // remove all the inline styles
+        $('#set_board_title').removeAttr('style');
         $('#set_board_title').css('float', 'inline-start');
-        $('#set_board_title').css('margin-left', '0px');
-        $('#set_board_title').css('margin-top', '0px');
     } else if (logoPosition === 'center') {
+        $('#set_board_title').removeAttr('style');
         $('#set_board_title').css('float', 'inline-start');
-        $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw / 2 - 50px)');
-        $('#set_board_title').css('margin-top', '0px');
+        $('#set_board_title').css('position', 'absolute');
+        $('#set_board_title').css('top', '1%');
+        $('#set_board_title').css('left', ''+ ((dimensions.width/2) - (board_title_width/2) )+'px');
+        // $('#set_board_title').css('transform', 'translate('+ -board_width+'%, '+ board_width/2+'%)');
+        $('#set_board_title').css('text-align', 'center');
     }
 }
 
 $('#clear-background-image').on('click', function() {
     localStorage.removeItem("background_upload");
     $('#section1').css('background-image', 'none');
+    $('#background_image_upload').val('');
     clearlinksFromDb('background_url');
 });
-$('#clear-logo-image').on('click', function() {
+$('#clear_logo_image').on('click', function() {
     localStorage.removeItem("logo_url");
     $('#section1_logo').attr('src', '');
+    $('#logo_images').val('');
     clearlinksFromDb('logo_url');
 });
 
@@ -707,11 +742,8 @@ $('#reset_board').on('click', function() {
 
 $("#confirmReset").on('click', function () {
     $('#confirmationModal').modal('hide');
-    // localStorage.clear();
-    console.log('reset board confirmed');
-    // remove items from the section1
     $('#section1').empty();
-    const section1Data = `<div class="w-100" style="height: 50px" id="title_background_color"><div class="h5 pt-4 position-absolute" id="set_board_title"></div></div><img src="" alt="" class="section1_logo position-absolute" id="section1_logo">`;
+    const section1Data = `<div class="w-100" style="height: 50px" id="title_background_color"><div class="h5 pt-3 set_board_title" id="set_board_title"></div></div><img src="" alt="" class="section1_logo position-absolute" id="section1_logo">`;
     $('#section1').append(section1Data);
     clearLocalStorage();
     resetBoard();
@@ -719,7 +751,6 @@ $("#confirmReset").on('click', function () {
 
 $(".closeModel").on('click', function () {
     $('#confirmationModal').modal('hide');
-    console.log('reset board cancelled');
 });
 
 function clearLocalStorage() {
@@ -754,7 +785,7 @@ function resetBoard() {
         board_id: board_id
     };
     $.ajax({
-        url: 'wp-admin/admin-ajax.php',
+        url: amerison_vars.ajaxurl,
         type: 'POST',
         data: data,
         success: function (response) {
@@ -823,6 +854,22 @@ $('.custom_values').on('change', function() {
         updateDatabase();
     }
 });
+
+
+// Function to show preloader
+function showPreloader() {
+    const preloader = $('#preloader');
+    preloader.append('<div class="spinner"></div>');
+    preloader.css('display', 'block');
+
+}
+
+// Function to hide preloader
+function hidePreloader() {
+    const preloader = $('#preloader');
+    preloader.empty();
+    preloader.css('display', 'none');
+}
 
 
 

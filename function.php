@@ -29,7 +29,7 @@ function enqueue_amerison_scripts() {
     );
 }
 
-// get woocommeres products 
+// get woocommeres products
 function get_products()
 {
     $args = array(
@@ -111,23 +111,23 @@ function create_configurator_table()
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        user_id mediumint(9) NOT NULL,
-        board_title text NOT NULL,
-        title_bg_color text NOT NULL,
-        title_position text NOT NULL DEFAULT 'left',
-        board_dimensions text NOT NULL,
-        background_color text NOT NULL,
-        board_style text NOT NULL,
-        board_material text NOT NULL,
-        custom_logo text NOT NULL,
-        quantity_of_boards text NOT NULL,
-        config_data text NOT NULL,
-        options text NOT NULL,
+        user_id mediumint(9) NULL,
+        board_title varchar(14) NULL,
+        title_bg_color varchar(14) NULL,
+        title_position varchar(14) NULL DEFAULT 'left',
+        board_dimensions varchar(14) NULL,
+        background_color varchar(14) NULL,
+        board_style varchar(14) NULL,
+        board_material varchar(14) NULL,
+        custom_logo varchar(14) NULL,
+        quantity_of_boards varchar(14) NULL,
+        config_data varchar(14) NULL,
+        options varchar(14) NULL,
         attachment_id mediumint(9) NULL,
-        logo_url text NULL,
-        background_url text NULL,
-        timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        PRIMARY KEY  (id)
+        logo_url varchar(14) NULL,
+        background_url varchar(14) NULL,
+        timestamp datetime DEFAULT '0000-00-00 00:00:00' NULL,
+        PRIMARY KEY (id)
     ) $charset_collate;";
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -135,10 +135,8 @@ function create_configurator_table()
     $resp = dbDelta($sql);
 
     if (is_wp_error($resp)) {
-        print_r($resp);
         error_log('Error creating database table: ' . $resp->get_error_message());
     } else {
-        print_r($resp);
         error_log('Database table created successfully!');
     }
 }
@@ -405,8 +403,8 @@ add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
 add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
 
 function handle_background_upload() {
-    if (isset($_FILES['background-image-upload'], $_POST['board_id'])) {
-        $uploaded_background = $_FILES['background-image-upload'];
+    if (isset($_FILES['background_image_upload'], $_POST['board_id'])) {
+        $uploaded_background = $_FILES['background_image_upload'];
         $board_id = intval($_POST['board_id']);
 
         if ($uploaded_background['error'] == 0 && $board_id > 0) {

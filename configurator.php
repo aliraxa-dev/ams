@@ -40,14 +40,17 @@
   </div>
 </div>
 
+<div id="preloader" class="preloader"></div>
+
+<div class="dot_alert" id="dot_alert"></div>
 <section class="w-auto border border-2 border-dark">
     <div class="row m-0">
         <div class="col-md-8">
             <div class="border border-2 border-dark my-2 section" id="section1">
                 <div class="w-100" style="height: 50px" id="title_background_color">
-                    <div class="h5 pt-4 position-absolute" id="set_board_title"></div>
+                    <div class="h5 pt-3 set_board_title" id="set_board_title"></div>
+                    <img src="" alt="" class="section1_logo" id="section1_logo">
                 </div>
-                <img src="" alt="" class="section1_logo position-absolute" id="section1_logo">
             </div>
             <div>
                 <button type="button" class="btn btn-danger float-end" id="reset_board">Reset Board</button>
@@ -198,16 +201,16 @@
                                         aria-labelledby="home-tab"
                                     >
                                         <div class="d-flex flex-column">
-                                        <label> Background color </label>
+                                            <label> Background color </label>
 
-                                        <input
-                                            class="tab-pane fade show active p-0"
-                                            style="width: 25px; height: 25px;"
-                                            type="color"
-                                            name="colorInput"
-                                            value="rgb(255, 255, 255)"
-                                            id="background_color"
-                                        />
+                                            <input
+                                                class="tab-pane fade show active p-0"
+                                                style="width: 25px; height: 25px;"
+                                                type="color"
+                                                name="colorInput"
+                                                value="#fafafa"
+                                                id="background_color"
+                                            />
 
                                         </div>
                                     </div>
@@ -218,14 +221,14 @@
                                         aria-labelledby="profile-tab"
                                     >
                                     <div class="d-flex flex-column">
-                                    <label for="background-image-upload">Background Image</label>
+                                    <label for="background_image_upload">Background Image</label>
                                         <div class="d-flex gap-2">
-                                            <form id="background-image-upload-form" action="#" method="post" enctype="multipart/form-data">
+                                            <form id="background-image_upload_form" action="#" method="post" enctype="multipart/form-data">
                                                 <input
                                                     type="file"
                                                     class="form-control"
-                                                    id="background-image-upload"
-                                                    name="background-image-upload"
+                                                    id="background_image_upload"
+                                                    name="background_image_upload"
                                                     aria-describedby="bortTitleHelp"
                                                     placeholder="Upload Logo"
                                                 />
@@ -282,7 +285,7 @@
                                 <div class="d-flex flex-column">
                                 <label for="logo_images">Logo</label>
                                     <div class="d-flex gap-2">
-                                        <form id="image-upload-form" action="#" method="post" enctype="multipart/form-data">
+                                        <form id="image_upload_form" action="#" method="post" enctype="multipart/form-data">
                                             <input
                                                 type="file"
                                                 class="form-control"
@@ -293,7 +296,7 @@
                                             />
                                         </form>
                                         <div class="">
-                                                <button class="btn btn-danger" id="clear-logo-image">Clear</button>
+                                                <button class="btn btn-danger" id="clear_logo_image">Clear</button>
                                             </div>
                                     </div>
                                 </div>
