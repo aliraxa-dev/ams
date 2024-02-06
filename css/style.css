@@ -74,6 +74,7 @@
     display: none;
     justify-content: center;
     align-items: center;
+    z-index: 999;
   }
 
   .spinner {
@@ -83,7 +84,6 @@
     border-top: 3px solid #3498db; /* Blue border for animation */
     border-radius: 50%;
     animation: spin 1s linear infinite; /* Animation */
-    z-index: 1000;
   }
 
   /* Animation for spinner */
