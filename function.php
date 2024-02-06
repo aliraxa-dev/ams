@@ -10,11 +10,11 @@ URL: aliraza.live
 // Enqueue the necessary scripts and styles
 
 function enqueue_amerison_scripts() {
-
-    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css');
+    $timestamp = time();
+    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
-    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), null, true);
+    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), $timestamp, true);
     // add bootstrap css and js
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
@@ -29,7 +29,7 @@ function enqueue_amerison_scripts() {
     );
 }
 
-// get woocommeres products 
+// get woocommeres products
 function get_products()
 {
     $args = array(
@@ -63,6 +63,8 @@ function get_products()
                     'attributes' => $variation['attributes'],
                     'price' => $variation['display_price'],
                     'image' => wp_get_attachment_url($variation['image_id']),
+                    'width' => $variation['dimensions']['width'],
+                    'height' => $variation['dimensions']['height'],
                 );
             }
         }
@@ -100,7 +102,6 @@ function get_product_attributes()
     }
     return $attributes;
 }
-
 function create_configurator_table()
 {
     global $wpdb;
@@ -110,25 +111,36 @@ function create_configurator_table()
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        user_id mediumint(9) NOT NULL,
-        board_title text NOT NULL,
-        board_dimensions text NOT NULL,
-        background_color text NOT NULL,
-        board_style text NOT NULL,
-        board_material text NOT NULL,
-        custom_logo text NOT NULL,
-        quantity_of_boards text NOT NULL,
-        config_data text NOT NULL,
-        options text NOT NULL,
-        timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        PRIMARY KEY  (id)
+        user_id mediumint(9) NULL,
+        board_title varchar(14) NULL,
+        title_bg_color varchar(14) NULL,
+        title_position varchar(14) NULL DEFAULT 'left',
+        board_dimensions varchar(14) NULL,
+        background_color varchar(14) NULL,
+        board_style varchar(14) NULL,
+        board_material varchar(14) NULL,
+        custom_logo varchar(14) NULL,
+        quantity_of_boards varchar(14) NULL,
+        config_data varchar(14) NULL,
+        options varchar(14) NULL,
+        attachment_id mediumint(9) NULL,
+        logo_url varchar(14) NULL,
+        background_url varchar(14) NULL,
+        timestamp datetime DEFAULT '0000-00-00 00:00:00' NULL,
+        PRIMARY KEY (id)
     ) $charset_collate;";
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    $resp = dbDelta($sql);
-    // echo '<pre>';
 
+    $resp = dbDelta($sql);
+
+    if (is_wp_error($resp)) {
+        error_log('Error creating database table: ' . $resp->get_error_message());
+    } else {
+        error_log('Database table created successfully!');
+    }
 }
+
 
 register_activation_hook(__FILE__, 'create_configurator_table');
 
@@ -144,17 +156,13 @@ function update_configurator_data() {
         $config_data = sanitize_text_field($_POST['section1Items']);
         $color = sanitize_text_field($_POST['color']);
         $data = $_POST['data'];
-
-        // echo '<pre>';
-        // print_r($data);
-        // echo '</pre>';
-        // exit;
+        $id = $_POST['id'];
 
 
-        // Check if there's existing data for the user
+        // Check if there's existing data for the id
         $existing_data = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE user_id = %d",
-            $user_id
+            "SELECT * FROM $table_name WHERE id = %d",
+            $id
         ));
 
         if ($existing_data) {
@@ -163,6 +171,8 @@ function update_configurator_data() {
                 $table_name,
                 array(
                     'board_title' => $data['board_title'],
+                    'title_position' => $data['title_position'],
+                    'title_bg_color' => $data['title_bg_color'],
                     'board_dimensions' => $data['board_dimensions'],
                     'background_color' => $data['background_color'],
                     'board_style' => $data['board_style'],
@@ -173,8 +183,8 @@ function update_configurator_data() {
                     'options' => $color,
                     'timestamp' => current_time('mysql')
                 ),
-                array('user_id' => $user_id),
-                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
+                array('id' => $id),
+                array('%s', '%s', '%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
                 array('%d')
             );
         } else {
@@ -184,6 +194,8 @@ function update_configurator_data() {
                 array(
                     'user_id' => $user_id,
                     'board_title' => $data['board_title'],
+                    'title_position' => $data['title_position'],
+                    'title_bg_color' => $data['title_bg_color'],
                     'board_dimensions' => $data['board_dimensions'],
                     'background_color' => $data['background_color'],
                     'board_style' => $data['board_style'],
@@ -194,11 +206,13 @@ function update_configurator_data() {
                     'options' => $color,
                     'timestamp' => current_time('mysql')
                 ),
-                array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+                array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
             );
         }
 
-        wp_send_json_success('Data updated successfully!');
+        $new_id = $wpdb->insert_id;
+        echo $new_id;
+        wp_die();
     } else {
         wp_send_json_error('Invalid request!');
     }
@@ -258,6 +272,291 @@ function get_data_by_id($board_id) {
 }
 
 
+// function handle_logo_upload() {
+//     error_log(print_r($_FILES, true));
+
+//     if (isset($_FILES['logo_images'])) {
+//         $uploaded_logo = $_FILES['logo_images'];
+//         if ($uploaded_logo['error'] == 0) {
+//             $upload_overrides = array('test_form' => false);
+//             $movefile = wp_handle_upload($uploaded_logo, $upload_overrides);
+
+//             if ($movefile && empty($movefile['error'])) {
+//                 // File successfully uploaded, handle the attachment
+//                 $attachment = array(
+//                     'post_title' => sanitize_file_name($uploaded_logo['name']),
+//                     'post_content' => '',
+//                     'post_status' => 'inherit',
+//                     'post_mime_type' => $uploaded_logo['type'],
+//                 );
+
+//                 $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+//                 require_once(ABSPATH . 'wp-admin/includes/image.php');
+//                 $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
+//                 wp_update_attachment_metadata($attach_id, $attach_data);
+
+//                 // Return success response
+//                 echo json_encode(array('success' => true, 'url' => $movefile['url']));
+//             } else {
+//                 // Error handling for wp_handle_upload
+//                 echo json_encode(array('error' => $movefile['error']));
+//             }
+//         } else {
+//             // Error handling for file upload
+//             echo json_encode(array('error' => 'Error uploading file. Error code: ' . $uploaded_logo['error']));
+//         }
+//     }
+// }
+
+// // Hook for both logged in and non-logged in users
+// add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
+// add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+
+function handle_logo_upload() {
+    if (isset($_FILES['logo_images'], $_POST['board_id'])) {
+        $uploaded_logo = $_FILES['logo_images'];
+        $board_id = intval($_POST['board_id']);
+
+        if ($uploaded_logo['error'] == 0 && $board_id > 0) {
+            $upload_overrides = array('test_form' => false);
+            $movefile = wp_handle_upload($uploaded_logo, $upload_overrides);
+
+            if ($movefile && empty($movefile['error'])) {
+                // File successfully uploaded, handle the attachment
+                $attachment = array(
+                    'post_title'     => sanitize_file_name($uploaded_logo['name']),
+                    'post_content'   => '',
+                    'post_status'    => 'inherit',
+                    'post_mime_type' => $uploaded_logo['type'],
+                );
+
+                $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
+                wp_update_attachment_metadata($attach_id, $attach_data);
+
+                // Save information to custom database table
+                save_logo_data_to_database($board_id, $attach_id, $movefile['url']);
+
+                // Return success response
+                echo json_encode(array('success' => true, 'url' => $movefile['url']));
+            } else {
+                // Error handling for wp_handle_upload
+                echo json_encode(array('error' => $movefile['error']));
+            }
+        } else {
+            // Error handling for invalid board_id or file upload error
+            echo json_encode(array('error' => 'Invalid request.'));
+        }
+    } else {
+        // Error handling for missing file or board_id
+        echo json_encode(array('error' => 'Invalid request.'));
+    }
+
+    wp_die();
+}
+
+function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
+    global $wpdb;
+
+    // Your table name
+    $table_name = $wpdb->prefix . 'configurator_data';
+
+    // Check if there's existing data for the id
+    $existing_data = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE id = %d",
+        $board_id
+    ));
+
+    if ($existing_data) {
+        // If data exists, update it
+        $wpdb->update(
+            $table_name,
+            array(
+                'attachment_id' => $attachment_id,
+                'logo_url' => $logo_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('id' => $board_id),
+            array('%d', '%s'),
+            array('%d')
+        );
+    } else {
+        // If no data exists, insert a new record
+        $wpdb->insert(
+            $table_name,
+            array(
+                'id' => $board_id,
+                'attachment_id' => $attachment_id,
+                'logo_url' => $logo_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('%d', '%d', '%s')
+        );
+    }
+
+    // Send the JSON-encoded response with url and attachment_id
+    wp_send_json(array('url' => $logo_url, 'attachment_id' => $attachment_id));
+}
+
+add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
+add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+
+function handle_background_upload() {
+    if (isset($_FILES['background_image_upload'], $_POST['board_id'])) {
+        $uploaded_background = $_FILES['background_image_upload'];
+        $board_id = intval($_POST['board_id']);
+
+        if ($uploaded_background['error'] == 0 && $board_id > 0) {
+            $upload_overrides = array('test_form' => false);
+            $movefile = wp_handle_upload($uploaded_background, $upload_overrides);
+
+            if ($movefile && empty($movefile['error'])) {
+                // File successfully uploaded, handle the attachment
+                $attachment = array(
+                    'post_title'     => sanitize_file_name($uploaded_background['name']),
+                    'post_content'   => '',
+                    'post_status'    => 'inherit',
+                    'post_mime_type' => $uploaded_background['type'],
+                );
+
+                $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
+                wp_update_attachment_metadata($attach_id, $attach_data);
+
+                // Save information to custom database table
+                save_background_data_to_database($board_id, $attach_id, $movefile['url']);
+
+                // Return success response
+                echo json_encode(array('success' => true, 'url' => $movefile['url']));
+            } else {
+                // Error handling for wp_handle_upload
+                echo json_encode(array('error' => $movefile['error']));
+            }
+        } else {
+            // Error handling for invalid board_id or file upload error
+            echo json_encode(array('error' => 'Invalid request.'));
+        }
+    } else {
+        // Error handling for missing file or board_id
+        echo json_encode(array('error' => 'Invalid request.'));
+    }
+
+    wp_die();
+}
+
+function save_background_data_to_database($board_id, $attachment_id, $background_url) {
+    global $wpdb;
+
+    // Your table name
+    $table_name = $wpdb->prefix . 'configurator_data';
+
+    // Check if there's existing data for the id
+    $existing_data = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE id = %d",
+        $board_id
+    ));
+
+    if ($existing_data) {
+        // If data exists, update it
+        $wpdb->update(
+            $table_name,
+            array(
+                'background_url' => $background_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('id' => $board_id),
+            array('%s'),
+            array('%d')
+        );
+    } else {
+        // If no data exists, insert a new record
+        $wpdb->insert(
+            $table_name,
+            array(
+                'id' => $board_id,
+                'background_url' => $background_url,
+                'timestamp' => current_time('mysql')
+            ),
+            array('%d', '%s')
+        );
+    }
+
+    // Send the JSON-encoded response with url and attachment_id
+    wp_send_json(array('url' => $background_url, 'attachment_id' => $attachment_id));
+}
+
+add_action('wp_ajax_handle_background_upload', 'handle_background_upload');
+add_action('wp_ajax_nopriv_handle_background_upload', 'handle_background_upload');
+
+
+function clearLinksFromDb() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $value = $_POST['value'];
+    $board_id = $_POST['board_id'];
+    if ($value == 'logo_url') {
+        $sql = "UPDATE $table_name SET attachment_id = NULL, logo_url = NULL WHERE id = '$board_id'";
+        $wpdb->query($sql);
+    } else if ($value == 'background_url') {
+        $sql = "UPDATE $table_name SET background_url = NULL WHERE id = '$board_id'";
+        $wpdb->query($sql);
+    }
+    wp_die();
+}
+
+add_action('wp_ajax_clearLinksFromDb', 'clearLinksFromDb');
+add_action('wp_ajax_nopriv_clearLinksFromDb', 'clearLinksFromDb');
+
+function deleteBoard() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $board_id = $_POST['board_id'];
+    $sql = "DELETE FROM $table_name WHERE id = '$board_id'";
+    $wpdb->query($sql);
+    wp_die();
+}
+
+add_action('wp_ajax_deleteBoard', 'deleteBoard');
+add_action('wp_ajax_nopriv_deleteBoard', 'deleteBoard');
+
+function resetBoard() {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $board_id = $_POST['board_id'];
+
+    $data = [
+        'board_title' => '',
+        'title_position' => 'left',
+        'board_dimensions' => '24x72',
+        'title_bg_color' => '#ffffff',
+        'background_color' => '#ffffff',
+        'board_style' => null,
+        'board_material' => null,
+        'custom_logo' => 'left',
+        'quantity_of_boards' => 0,
+        'config_data' => null,
+        'options' => null,
+        'attachment_id' => null,
+        'logo_url' => null,
+        'background_url' => null,
+        'timestamp' => current_time('mysql')
+    ];
+
+    $wpdb->update(
+        $table_name,
+        $data,
+        ['id' => $board_id],
+        ['%s', '%s', '%s','%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'],
+        ['%d']
+    );
+
+    wp_die();
+}
+
+
 // Register shortcode
 function drag_and_clone_shortcode() {
     if (is_user_logged_in()) {
@@ -284,7 +583,7 @@ function drag_and_clone_shortcode() {
 
         return ob_get_clean();
     } else {
-        return '<p>You need to <a href="' . wp_login_url() . '">log in</a> to use this feature.</p>';
+        include plugin_dir_path(__FILE__) . 'main.php';
     }
 }
 

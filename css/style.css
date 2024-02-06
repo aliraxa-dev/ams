@@ -15,8 +15,8 @@
 }
 
 .draggable {
-    width: 50px;
-    background-color: #5cb85c;
+    /* width: 40px; */
+    /* background-color: #5cb85c; */
     color: #fff;
     text-align: center;
     line-height: 50px;
@@ -24,4 +24,72 @@
     margin: 5px;
 }
 
+.section1_logo {
+    width: 10%;
+    object-fit: cover;
+    max-width: 50px !important;
+}
 
+.close{
+    float: right;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    font-size: x-large;
+}
+
+.custom_board_dimensions {
+    display: none;
+}
+
+.close-button {
+    cursor: pointer;
+    display: block; /* Initially hide the close button */
+}
+
+.set_board_title {
+    z-index: 9;
+}
+
+.dot_alert {
+    border: 5px solid green;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 20px;
+    display: none;
+}
+
+
+/* Preloader Start */
+
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #f3f3f3; /* Light grey border */
+    border-top: 3px solid #3498db; /* Blue border for animation */
+    border-radius: 50%;
+    animation: spin 1s linear infinite; /* Animation */
+  }
+
+  /* Animation for spinner */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+/* Preloader End */

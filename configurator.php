@@ -1,8 +1,60 @@
+<!-- Bootstrap Modal HTML -->
+<div class="modal" id="confirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="close closeModel" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to reset the board?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeModel" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" id="confirmReset">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="dimentionConfirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="close closeModel" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        There should be additional charges for custom dimensions. Do you want to continue?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeModel" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" id="dimentionConfirm">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="preloader" class="preloader"></div>
+
+<div class="dot_alert" id="dot_alert"></div>
 <section class="w-auto border border-2 border-dark">
     <div class="row m-0">
         <div class="col-md-8">
-            <div class="h5 pt-4" id="set_board_title"></div>
-            <div class="border border-2 border-dark my-2 section" id="section1"></div>
+            <div class="border border-2 border-dark my-2 section" id="section1">
+                <div class="w-100" style="height: 50px" id="title_background_color">
+                    <div class="h5 pt-3 set_board_title" id="set_board_title"></div>
+                    <img src="" alt="" class="section1_logo" id="section1_logo">
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-danger float-end" id="reset_board">Reset Board</button>
+            </div>
         </div>
         <div class="col-md-4 border border-dark border-top-0 border-right-0 border-bottom-0 p-0">
             <!-- select input type -->
@@ -61,9 +113,33 @@
                             <!-- Board Config section -->
                             <div class="" id="boardconfig-div">
                                 <!-- board title -->
-                                <div class="form-group">
+                                <div class="d-flex gap-3">
+                                <div class="form-group col-md-10">
                                     <label for="bortTitle">Board Title</label>
                                     <input type="text" class="form-control" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
+                                </div>
+
+                                <div class="form-geoup pt-4">
+                                <input
+                                            class="tab-pane fade show active p-0"
+                                            style="width: 25px; height: 25px;"
+                                            type="color"
+                                            name="colorInput"
+                                            value="#ffffff"
+                                            id="title_bg_color"
+                                        />
+                                </div>
+                                </div>
+
+                                <div class="board-Dimensions d-flex flex-column py-3">
+                                    <label> Title Positions </label>
+
+                                    <select class="form-select" id="title_position">
+                                        <option selected>Select Option</option>
+                                        <option value="left">Top Left</option>
+                                        <option value="right">Top Right</option>
+                                        <option value="center">Center</option>
+                                    </select>
                                 </div>
 
                                 <!-- board Dimensions -->
@@ -71,12 +147,21 @@
                                 <label> Board Dimensions </label>
 
                                 <select class="form-select" id="board_dimensions">
-                                    <option selected>Select Option</option>
-                                    <option value="24x72">24x72</option>
+                                    <option selected value="24x72">24x72</option>
                                     <option value="36x72">36x72</option>
                                     <option value="48x72">48x72</option>
                                     <option value="custom">Custom</option>
                                 </select>
+                                </div>
+
+                                <!-- Custom board Dimensions -->
+                                <div class="custom_board_dimensions  flex-column py-3" id="custom_board_dimensions">
+                                <label> Custom Board Dimensions </label>
+                                <div class="d-flex gap-4">
+                                <input type="text" class="form-control custom_values" id="custom_width" aria-describedby="bortTitleHelp" placeholder="width">
+                                <span class="pt-2 fw-bolder" >X</span>
+                                <input type="text" class="form-control custom_values" id="custom_height" aria-describedby="bortTitleHelp" placeholder="height">
+                                </div>
                                 </div>
 
                                 <!-- Background color -->
@@ -116,16 +201,16 @@
                                         aria-labelledby="home-tab"
                                     >
                                         <div class="d-flex flex-column">
-                                        <label> Background color </label>
+                                            <label> Background color </label>
 
-                                        <input
-                                            class="tab-pane fade show active p-0"
-                                            style="width: 25px; height: 25px;"
-                                            type="color"
-                                            name="colorInput"
-                                            value="#ffffff"
-                                            id="background_color"
-                                        />
+                                            <input
+                                                class="tab-pane fade show active p-0"
+                                                style="width: 25px; height: 25px;"
+                                                type="color"
+                                                name="colorInput"
+                                                value="#fafafa"
+                                                id="background_color"
+                                            />
 
                                         </div>
                                     </div>
@@ -135,17 +220,25 @@
                                         role="tabpanel"
                                         aria-labelledby="profile-tab"
                                     >
-                                        <div class="d-flex flex-column">
-                                        <label> Upload Background </label>
-
-                                            <input
-                                                type="file"
-                                                class="form-control"
-                                                id="upload_background"
-                                                aria-describedby="bortTitleHelp"
-                                                placeholder="Enter Board Title"
-                                            />
+                                    <div class="d-flex flex-column">
+                                    <label for="background_image_upload">Background Image</label>
+                                        <div class="d-flex gap-2">
+                                            <form id="background-image_upload_form" action="#" method="post" enctype="multipart/form-data">
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    id="background_image_upload"
+                                                    name="background_image_upload"
+                                                    aria-describedby="bortTitleHelp"
+                                                    placeholder="Upload Logo"
+                                                />
+                                            </form>
+                                            <div class="">
+                                                <button class="btn btn-danger" id="clear-background-image">Clear</button>
+                                            </div>
                                         </div>
+                                        <!-- Clear button to remove background image -->
+                                    </div>
                                     </div>
                                     </div>
                                 </div>
@@ -156,10 +249,11 @@
                                 <label> Board style </label>
 
                                 <select class="form-select" id="board_style">
-                                    <option value="1">Wal Mount</option>
-                                    <option value="2">Mobile</option>
-                                    <option value="3">Stationary Stand</option>
-                                    <option value="3">Magnet Mounted</option>
+                                    <option selected>Standard</option>
+                                    <option value="Wal Mount">Wal Mount</option>
+                                    <option value="Mobile">Mobile</option>
+                                    <option value="Stationary Stand">Stationary Stand</option>
+                                    <option value="Magnet Mounted">Magnet Mounted</option>
                                 </select>
                                 </div>
 
@@ -169,10 +263,10 @@
 
                                 <select class="form-select" id="board_material">
                                     <option selected>StorSheild</option>
-                                    <option value="1">StorLam</option>
-                                    <option value="2">StorClear</option>
-                                    <option value="3">StorShield+</option>
-                                    <option value="3">StorLaze</option>
+                                    <option value="StorLam">StorLam</option>
+                                    <option value="StorClear">StorClear</option>
+                                    <option value="StorShield+">StorShield+</option>
+                                    <option value="StorLaze">StorLaze</option>
                                 </select>
                                 </div>
 
@@ -181,11 +275,30 @@
                                 <label> Custom Logo </label>
 
                                 <select class="form-select" id="custom_logo">
-                                    <option selected>Select Option</option>
-                                    <option value="1">Top Left</option>
-                                    <option value="2">Top Right</option>
-                                    <option value="3">Center</option>
+                                    <option value="null">Select Option</option>
+                                    <option selected value="left">Top Left</option>
+                                    <option value="right">Top Right</option>
+                                    <option value="center">Center</option>
                                 </select>
+                                </div>
+
+                                <div class="d-flex flex-column">
+                                <label for="logo_images">Logo</label>
+                                    <div class="d-flex gap-2">
+                                        <form id="image_upload_form" action="#" method="post" enctype="multipart/form-data">
+                                            <input
+                                                type="file"
+                                                class="form-control"
+                                                id="logo_images"
+                                                name="logo_images"
+                                                aria-describedby="bortTitleHelp"
+                                                placeholder="Upload Logo"
+                                            />
+                                        </form>
+                                        <div class="">
+                                                <button class="btn btn-danger" id="clear_logo_image">Clear</button>
+                                            </div>
+                                    </div>
                                 </div>
 
                                 <!-- Quantity of Board(s) -->
@@ -272,7 +385,7 @@
                     <div class="form-group">
                         <label for="sel1">Select list:</label>
                         <select class="form-control mb-2" id="attributes">
-                        <option value="0">Select Product</option>
+                        <option selected value="null">Select Product</option>
                         </select>
                     </div>
 

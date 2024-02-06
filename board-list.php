@@ -1,5 +1,5 @@
 <div class="float-end">
-    <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="<?php echo esc_url(get_permalink()); ?>?board=new" role="button">Create Shadow Box</a>
+    <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="<?php echo esc_url(get_permalink()); ?>?board=new" role="button">Create Shadow Board</a>
 </div>
 
 <div id="product-list">
