@@ -114,9 +114,9 @@
                             <div class="" id="boardconfig-div">
                                 <!-- board title -->
                                 <div class="d-flex gap-3">
-                                <div class="form-group col-md-10">
+                                <div class="form-group col-md-10 px-0">
                                     <label for="bortTitle">Board Title</label>
-                                    <input type="text" class="form-control" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
+                                    <input type="text" class="form-control set-radius-input" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
                                 </div>
 
                                 <div class="form-geoup pt-4">
@@ -304,7 +304,7 @@
                                 <!-- Quantity of Board(s) -->
                                 <div class="quantity-of-Board d-flex flex-column py-3">
                                     <label> Quantity of Board(s) </label>
-                                    <input type="number" class="form-control" id="quantity_of_boards" aria-describedby="bortTitleHelp" placeholder="Enter Quantity of Board(s)">
+                                    <input type="number" class="form-control set-radius-input" id="quantity_of_boards" aria-describedby="bortTitleHelp" placeholder="Enter Quantity of Board(s)">
                                 </div>
                             </div>
                             </div>
