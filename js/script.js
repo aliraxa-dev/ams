@@ -381,7 +381,7 @@ function getDataFromDb() {
 
                     for (const option of board_dimensions_options) {
                         const option_value = option.value;
-                        console.log(option_value, data.board_dimensions);
+                        // console.log(option_value, data.board_dimensions);
                         if (option_value === data.board_dimensions && option_value !== 'custom') {
                             $('#board_dimensions').val(data.board_dimensions);
                         } else if (option_value === 'custom' && data.board_dimensions !== '24x72' && data.board_dimensions !== '36x72' && data.board_dimensions !== '48x72' ) {
@@ -633,15 +633,24 @@ $('#background_image_upload').on('change', function() {
     }
 });
 
-const accordionOne = $('#collapseOne');
-if (accordionOne.hasClass('show')) {
-    $('#collapseTwo').removeClass('show');
-}
+// Initialize the Bootstrap collapse instances
+var accordion = new bootstrap.Collapse($('#collapseOne'), { toggle: false });
+var otherAccordion = new bootstrap.Collapse($('#collapseTwo'), { toggle: false });
 
-const accordionTwo = $('#collapseTwo');
-if (accordionTwo.hasClass('show')) {
-    $('#collapseOne').removeClass('show');
-}
+// Handle 'hidden.bs.collapse' event for the first accordion
+$('#collapseOne').on('hidden.bs.collapse', function () {
+    if (!otherAccordion._isTransitioning) {
+        otherAccordion.show();
+    }
+});
+
+// Handle 'hidden.bs.collapse' event for the second accordion
+$('#collapseTwo').on('hidden.bs.collapse', function () {
+    if (!accordion._isTransitioning) {
+        accordion.show();
+    }
+});
+
 
 $(window).on('beforeunload', function () {
     saveSectionState();

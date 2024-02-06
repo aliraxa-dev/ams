@@ -86,18 +86,6 @@
     animation: spin 1s linear infinite; /* Animation */
   }
 
-  #collapseOne{
-    max-height: 37rem;
-    overflow-y: scroll;
-    overflow-x: hidden;
-      }
-  a.nav-link.border-bottom{
-    padding: 0.5rem 0.7rem !important;
-  }
-  .set-radius-input{
-    border-radius: 0.25rem !important;
-  }
-
   /* Animation for spinner */
   @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -105,3 +93,15 @@
   }
 
 /* Preloader End */
+
+#collapseOne{
+    max-height: 37rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+a.nav-link.border-bottom{
+    padding: 0.5rem 0.7rem !important;
+}
+.set-radius-input{
+    border-radius: 0.25rem !important;
+}
