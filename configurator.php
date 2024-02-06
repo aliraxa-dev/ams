@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div>
-                <button type="button" class="btn btn-danger float-end" id="reset_board">Reset Board</button>
+                <button type="button" class="btn btn-danger float-end my-3" id="reset_board">Reset Board</button>
             </div>
         </div>
         <div class="col-md-4 border border-dark border-top-0 border-right-0 border-bottom-0 p-0">
