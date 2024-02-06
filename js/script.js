@@ -231,7 +231,7 @@ function saveSectionState() {
     DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
 
     const board_dimensions_value = $('#board_dimensions').val();
-    if (board_dimensions_value !== 'custom') {
+    if (board_dimensions_value !== 'custom' && DB_DATA.board_dimensions != undefined) {
         const board_dimensions = DB_DATA.board_dimensions.split('x');
         const widthPercentage = board_dimensions[0];
         const heightPercentage = board_dimensions[1];
@@ -279,111 +279,120 @@ function getDataFromDb() {
             success: function (response) {
                 console.log('Data retrieved successfully:');
                 const data = response[0];
-                const section1Items = JSON.parse(data.config_data.replace(/\\/g, ''));
-                const selectedColor = data.options;
+                if (data != undefined) {
+                    const section1Items = JSON.parse(data.config_data.replace(/\\/g, ''));
+                    const selectedColor = data.options;
 
-                $('#board_title').val(data.board_title);
-                $('#set_board_title').text(data.board_title);
-                $('#title_position').val(data.title_position);
-                $('#background_color').val(data.background_color);
-                $('#board_style').val(data.board_style);
-                $('#board_material').val(data.board_material);
-                $('#custom_logo').val(data.custom_logo);
-                $('#quantity_of_boards').val(data.quantity_of_boards);
+                    $('#board_title').val(data.board_title);
+                    $('#set_board_title').text(data.board_title);
+                    $('#title_position').val(data.title_position);
+                    $('#background_color').val(data.background_color);
+                    $('#board_style').val(data.board_style);
+                    $('#board_material').val(data.board_material);
+                    $('#custom_logo').val(data.custom_logo);
+                    $('#quantity_of_boards').val(data.quantity_of_boards);
 
-                // set the section1 witha and height based on the board dimensions
-                const board_dimensions = data.board_dimensions.split('x');
-                const board_width = board_dimensions[0];
-                const board_height = board_dimensions[1];
-                $('#section1').css('width', board_width + 'vw');
-                $('#section1').css('height', board_height + 'vh');
+                    // set the section1 witha and height based on the board dimensions
+                    const board_dimensions = data.board_dimensions.split('x');
+                    const board_width = board_dimensions[0];
+                    const board_height = board_dimensions[1];
+                    $('#section1').css('width', board_width + 'vw');
+                    $('#section1').css('height', board_height + 'vh');
 
-                // for (const item of section1Items) {
-                //     const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
-                //     newItem.css({
-                //         top: item.top + "px",
-                //         left: item.left + "px",
-                //         position: "absolute",
-                //         height: item.height + "px"
-                //     });
-                //     $("#section1").append(newItem);
-                //     newItem.draggable({
-                //         revert: "invalid",
-                //         helper: "original",
-                //     });
-                // }
+                    // for (const item of section1Items) {
+                    //     const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
+                    //     newItem.css({
+                    //         top: item.top + "px",
+                    //         left: item.left + "px",
+                    //         position: "absolute",
+                    //         height: item.height + "px"
+                    //     });
+                    //     $("#section1").append(newItem);
+                    //     newItem.draggable({
+                    //         revert: "invalid",
+                    //         helper: "original",
+                    //     });
+                    // }
 
-                for (const item of section1Items) {
-                    const newItem = $('<div class="draggable-container"></div>');
-                    const newImage = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
-                    const closeButton = $('<span class="close-button">X</span>');
-                
-                    // Append the image and close button to the container
-                    newItem.append(newImage, closeButton);
-                
-                    newImage.css({
-                        top: item.top + "px",
-                        left: item.left + "px",
-                        position: "absolute",
-                        height: item.height + "px",
-                    });
+                    for (const item of section1Items) {
+                        const newItem = $('<div class="draggable-container"></div>');
+                        const newImage = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
+                        const closeButton = $('<span class="close-button">X</span>');
+                    
+                        // Append the image and close button to the container
+                        newItem.append(newImage, closeButton);
+                    
+                        newImage.css({
+                            top: item.top + "px",
+                            left: item.left + "px",
+                            position: "absolute",
+                            height: item.height + "px",
+                        });
 
-                    closeButton.css({
-                        top: item.top + "px",
-                        left: item.left + "px",
-                        position: "absolute",
-                        display: "block",
-                    });
-                
-                    $("#section1").append(newItem);
-                
-                    // Make the container draggable
-                    newItem.draggable({
-                        revert: "invalid",
-                        helper: "original",
-                    });
-                
-                    // Make the close button clickable
-                    closeButton.click(function() {
-                        newItem.remove();
-                    });
-                }
-
-                $('#attributes').val(selectedColor);
-
-                if (selectedColor) {
-                    getVariationImage(selectedColor);
-                }
-                getBoardMaterial(data.board_material)
-
-                // get the logo url from the database
-                const logo_url = data.logo_url;
-                if (logo_url) {
-                    $('#section1_logo').attr('src', logo_url);
-                }
-
-                // get the background image url from the database
-                const background_url = data.background_url;
-                if (background_url) {
-                    $('#section1').css('background-image', 'url(' + background_url + ')');
-                    $('#section1').css('background-size', 'cover');
-                    $('#section1').css('background-repeat', 'no-repeat');
-                }
-
-                const board_dimensions_options = $('#board_dimensions').children();
-
-                for (const option of board_dimensions_options) {
-                    const option_value = option.value;
-                    if (option_value === data.board_dimensions && option_value !== 'custom') {
-                        $('#board_dimensions').val(data.board_dimensions);
-                    } else if (option_value === 'custom') {
-                        $('#board_dimensions').append('<option value="' + data.board_dimensions + '">' + data.board_dimensions + '</option>');
-                        $('#board_dimensions').val(data.board_dimensions);
+                        closeButton.css({
+                            top: item.top + "px",
+                            left: item.left + "px",
+                            position: "absolute",
+                            display: "block",
+                        });
+                    
+                        $("#section1").append(newItem);
+                    
+                        // Make the container draggable
+                        newItem.draggable({
+                            revert: "invalid",
+                            helper: "original",
+                        });
+                    
+                        // Make the close button clickable
+                        closeButton.click(function() {
+                            newItem.remove();
+                        });
                     }
-                }
 
-                const title_bg_color = data.title_bg_color;
-                $('#title_bg_color').val(title_bg_color);
+                    $('#attributes').val(selectedColor);
+
+                    if (selectedColor) {
+                        getVariationImage(selectedColor);
+                    }
+                    getBoardMaterial(data.board_material)
+
+                    // get the logo url from the database
+                    const logo_url = data.logo_url;
+                    if (logo_url) {
+                        $('#section1_logo').attr('src', logo_url);
+                        const parts = logo_url.split('/');
+                        const imageName = parts[parts.length - 1];
+                        $('#logo_name').text(imageName);
+                    }
+
+                    // get the background image url from the database
+                    const background_url = data.background_url;
+                    if (background_url) {
+                        $('#section1').css('background-image', 'url(' + background_url + ')');
+                        $('#section1').css('background-size', 'cover');
+                        $('#section1').css('background-repeat', 'no-repeat');
+                        const parts = background_url.split('/');
+                        const imageName = parts[parts.length - 1];
+                        $('#background_name').text(imageName);
+                    }
+
+                    const board_dimensions_options = $('#board_dimensions').children();
+
+                    for (const option of board_dimensions_options) {
+                        const option_value = option.value;
+                        console.log(option_value, data.board_dimensions);
+                        if (option_value === data.board_dimensions && option_value !== 'custom') {
+                            $('#board_dimensions').val(data.board_dimensions);
+                        } else if (option_value === 'custom' && data.board_dimensions !== '24x72' && data.board_dimensions !== '36x72' && data.board_dimensions !== '48x72' ) {
+                            $('#board_dimensions').append('<option value="' + data.board_dimensions + '">' + data.board_dimensions + '</option>');
+                            $('#board_dimensions').val(data.board_dimensions);
+                        }
+                    }
+
+                    const title_bg_color = data.title_bg_color;
+                    $('#title_bg_color').val(title_bg_color);
+                }
 
             },
             error: function (error) {
@@ -424,6 +433,7 @@ function getBoardMaterial(material) {
     const board_material = $('#board_material').val();
     const bg_color = $('#background_color').val();
     var section_color = $('#section1').css('background-color');
+
 
     // Default background color if the input is not valid hex color
     const defaultBackgroundColor = 'rgb(255, 255, 255)';
@@ -536,7 +546,6 @@ function updateDatabase() {
 $('#logo_images').on('change', function() {
     var fileInput = this;
     var file = fileInput.files[0];
-    console.log(file);
     showPreloader();
 
     if (file) {
@@ -557,7 +566,7 @@ $('#logo_images').on('change', function() {
                 success: function(response) {
                 localStorage.setItem("logo_url", response.url);
                 $('#section1_logo').attr('src', response.url);
-                // hidePreloader();
+                hidePreloader();
 
                 // if (response.attachment_id !== 0) {
                 //     // Display the uploaded image in the specified section
@@ -590,7 +599,6 @@ $('#logo_images').on('change', function() {
 $('#background_image_upload').on('change', function() {
     var fileInput = this;
     var file = fileInput.files[0];
-    console.log(file);
     showPreloader();
 
     if (file) {
@@ -625,23 +633,15 @@ $('#background_image_upload').on('change', function() {
     }
 });
 
-var accordion = new bootstrap.Collapse(document.getElementById('collapseOne'), {
-    toggle: false,
-});
+const accordionOne = $('#collapseOne');
+if (accordionOne.hasClass('show')) {
+    $('#collapseTwo').removeClass('show');
+}
 
-var otherAccordion = new bootstrap.Collapse(document.getElementById('collapseTwo'), {
-    toggle: false,
-});
-
-// Handle 'hidden.bs.collapse' event for the first accordion
-$('#collapseOne').on('hidden.bs.collapse', function () {
-    otherAccordion.show();
-});
-
-// Handle 'hidden.bs.collapse' event for the second accordion
-$('#collapseTwo').on('hidden.bs.collapse', function () {
-    accordion.show();
-});
+const accordionTwo = $('#collapseTwo');
+if (accordionTwo.hasClass('show')) {
+    $('#collapseOne').removeClass('show');
+}
 
 $(window).on('beforeunload', function () {
     saveSectionState();
@@ -661,74 +661,82 @@ $('#custom_logo').on('change', function() {
 
 function updateLogoPosition() {
     const dimentions = $('#board_dimensions').val();
-    const board_dimensions = dimentions.split('x');
-    const board_width = board_dimensions[0];
-    const board_height = board_dimensions[1];
+    if (dimentions != undefined) {
+        const board_dimensions = dimentions.split('x');
+        const board_width = board_dimensions[0];
+        const board_height = board_dimensions[1];
 
-    const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
+        const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
 
-    let logoPosition = $('#custom_logo').val();
-    if (logoPosition === 'right') {
-        $('#section1_logo').removeAttr('style');
-        $('#section1_logo').css('position', 'absolute');
-        // $('#section1_logo').css('float', 'inline-end');
-        $('#section1_logo').css('top', '' +1+'%');
-        $('#section1_logo').css('left', '' + dimensions.width - 50+'px');
+        let logoPosition = $('#custom_logo').val();
+        if (logoPosition === 'right') {
+            $('#section1_logo').removeAttr('style');
+            $('#section1_logo').css('position', 'absolute');
+            // $('#section1_logo').css('float', 'inline-end');
+            $('#section1_logo').css('top', '' +1+'%');
+            $('#section1_logo').css('left', '' + dimensions.width - 50+'px');
 
-    } else if (logoPosition === 'left') {
-        $('#section1_logo').removeAttr('style');
-        $('#section1_logo').css('position', 'absolute');
-        $('#section1_logo').css('float', 'inline-start');
-        $('#section1_logo').css('top', '' + 1 +'%');
-        $('#section1_logo').css('left', '' + 15+'px');
-    } else if (logoPosition === 'center') {
-        $('#section1_logo').removeAttr('style');
-        $('#section1_logo').css('position', 'absolute');
-        $('#section1_logo').css('float', 'inline-start');
-        $('#section1_logo').css('top', '' + (dimensions.height/2) +'px');
-        $('#section1_logo').css('left', '' + (dimensions.width/2) - 20 +'px');
+        } else if (logoPosition === 'left') {
+            $('#section1_logo').removeAttr('style');
+            $('#section1_logo').css('position', 'absolute');
+            $('#section1_logo').css('float', 'inline-start');
+            $('#section1_logo').css('top', '' + 1 +'%');
+            $('#section1_logo').css('left', '' + 15+'px');
+        } else if (logoPosition === 'center') {
+            $('#section1_logo').removeAttr('style');
+            $('#section1_logo').css('position', 'absolute');
+            $('#section1_logo').css('float', 'inline-start');
+            $('#section1_logo').css('top', '' + (dimensions.height/2) +'px');
+            $('#section1_logo').css('left', '' + (dimensions.width/2) - 20 +'px');
+        }
     }
 }
 
 function updateTitlePosition() {
     const dimentions = $('#board_dimensions').val();
-    const board_dimensions = dimentions.split('x');
-    const board_width = board_dimensions[0];
-    const board_height = board_dimensions[1];
-
-    // get the width of board title
-    const board_title_width = $('#set_board_title').width();
-
-    const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
-
-    let logoPosition = $('#title_position').val();
-    if (logoPosition === 'right') {
-        $('#set_board_title').removeAttr('style');
-        $('#set_board_title').css('float', 'inline-end');
-        // $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw - 150px)');
-        // $('#set_board_title').css('margin-top', '0px');
-    } else if (logoPosition === 'left') {
-        // remove all the inline styles
-        $('#set_board_title').removeAttr('style');
-        $('#set_board_title').css('float', 'inline-start');
-    } else if (logoPosition === 'center') {
-        $('#set_board_title').removeAttr('style');
-        $('#set_board_title').css('float', 'inline-start');
-        $('#set_board_title').css('position', 'absolute');
-        $('#set_board_title').css('top', '1%');
-        $('#set_board_title').css('left', ''+ ((dimensions.width/2) - (board_title_width/2) )+'px');
-        // $('#set_board_title').css('transform', 'translate('+ -board_width+'%, '+ board_width/2+'%)');
-        $('#set_board_title').css('text-align', 'center');
+    if (dimentions != undefined) {
+        const board_dimensions = dimentions.split('x');
+        const board_width = board_dimensions[0];
+        const board_height = board_dimensions[1];
+    
+        // get the width of board title
+        const board_title_width = $('#set_board_title').width();
+    
+        const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
+    
+        let logoPosition = $('#title_position').val();
+        if (logoPosition === 'right') {
+            $('#set_board_title').removeAttr('style');
+            $('#set_board_title').css('float', 'inline-end');
+            // $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw - 150px)');
+            // $('#set_board_title').css('margin-top', '0px');
+        } else if (logoPosition === 'left') {
+            // remove all the inline styles
+            $('#set_board_title').removeAttr('style');
+            $('#set_board_title').css('float', 'inline-start');
+        } else if (logoPosition === 'center') {
+            $('#set_board_title').removeAttr('style');
+            $('#set_board_title').css('float', 'inline-start');
+            $('#set_board_title').css('position', 'absolute');
+            $('#set_board_title').css('top', '1%');
+            $('#set_board_title').css('left', ''+ ((dimensions.width/2) - (board_title_width/2) )+'px');
+            // $('#set_board_title').css('transform', 'translate('+ -board_width+'%, '+ board_width/2+'%)');
+            $('#set_board_title').css('text-align', 'center');
+        }
     }
 }
 
 $('#clear-background-image').on('click', function() {
+    const image_url = localStorage.getItem("background_upload");
+    // deleteImage(image_url);
     localStorage.removeItem("background_upload");
     $('#section1').css('background-image', 'none');
     $('#background_image_upload').val('');
     clearlinksFromDb('background_url');
 });
 $('#clear_logo_image').on('click', function() {
+    const image_url = localStorage.getItem("logo_url");
+    // deleteImage(image_url);
     localStorage.removeItem("logo_url");
     $('#section1_logo').attr('src', '');
     $('#logo_images').val('');
@@ -737,7 +745,6 @@ $('#clear_logo_image').on('click', function() {
 
 $('#reset_board').on('click', function() {
     $('#confirmationModal').modal('show');
-    console.log('reset board clicked');
 });
 
 $("#confirmReset").on('click', function () {
@@ -751,15 +758,17 @@ $("#confirmReset").on('click', function () {
 
 $(".closeModel").on('click', function () {
     $('#confirmationModal').modal('hide');
+    $('#confirmDeleteModal').modal('hide');
+    $('#dimentionConfirmationModal').modal('hide');
 });
 
 function clearLocalStorage() {
     $('#board_title').val('');
     $('#set_board_title').text('');
-    $('#title_bg_color').val('#ffffff');
+    $('#title_bg_color').val('#f5f5f5');
     $('#title_position').val('left');
     $('#board_dimensions').val('24x72');
-    $('#background_color').val('#ffffff');
+    $('#background_color').val('#f5f5f5');
     $('#board_style').val("null");
     $('#board_material').val("null");
     $('#custom_logo').val('left');
@@ -797,6 +806,33 @@ function resetBoard() {
         }
     });
 }
+
+function deleteImage(imageUrl) {
+    // Confirm deletion
+    if (confirm('Are you sure you want to delete this image?')) {
+        const delete_image_nonce = amerison_vars.delete_image_nonce;
+        // Create a nonce for security
+        var data = {
+            action: 'delete_image',
+            security: delete_image_nonce, // This is the nonce value generated in your HTML
+            image_url: imageUrl
+        };
+
+        // Send the request
+        $.ajax({
+            type: 'POST',
+            url: amerison_vars.ajaxurl,
+            data: data,
+            success: function(response) {
+                console.log('Image deleted successfully');
+            },
+            error: function(error) {
+                console.error('Error deleting image');
+            }
+        });
+    }
+}
+
 
 
 
@@ -871,6 +907,38 @@ function hidePreloader() {
     preloader.css('display', 'none');
 }
 
+
+// Function delete board
+$('.delete-board').on('click', function() {
+    var deleteBoard = $(this)[0];
+    var id = deleteBoard.dataset.boardId;
+    var title = deleteBoard.dataset.boardTitle;
+    console.log(id, title);
+    $('#confirmDeleteModal').modal('show');
+    $('#delete_board').text(title);
+    $('#confirmDeleteModal').find('#delete_board_id').val(id);
+});
+
+$('#confirmDeleteBtn').on('click', function() {
+    var id = $('#confirmDeleteModal').find('#delete_board_id').val();
+    console.log('Deleting board with id: ', id);
+    var data = {
+        action: 'deleteBoard',
+        board_id: id
+    };
+    $.ajax({
+        url: amerison_vars.ajaxurl,
+        type: 'POST',
+        data: data,
+        success: function (response) {
+            console.log('Board deleted successfully');
+            window.location.reload();
+        },
+        error: function (error) {
+            console.error('Error deleting board');
+        }
+    });
+});
 
 
 
