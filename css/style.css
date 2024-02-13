@@ -1,10 +1,12 @@
 .section {
     /* margin: 10px; */
+    overflow: hidden;
 }
 
 #section1 {
     height: 50vh;
     border: 2px solid #ccc;
+    touch-action: none;
     /* margin: 10px; */
 }
 
@@ -45,7 +47,12 @@
 
 .close-button {
     cursor: pointer;
-    display: block; /* Initially hide the close button */
+    display: none; /* Initially hide the close button */
+    background: white;
+    padding: 3px 9px;
+    border-radius: 20px;
+    color: red;
+    font-weight: 900;
 }
 
 .set_board_title {
@@ -104,4 +111,32 @@ a.nav-link.border-bottom{
 }
 .set-radius-input{
     border-radius: 0.25rem !important;
+}
+
+#left_section {
+    width: 66.6%;
+    height: 80vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Apply zoom effect to elements within section1 */
+#section1 {
+    width: auto; /* Set width to auto to allow content to determine width */
+    height: auto; /* Set height to auto to allow content to determine height */
+    /* overflow: hidden; Hide overflow content to prevent it from affecting layout */
+    /* position: absolute;
+    top: 60px;
+    left: 0px; */
+}
+
+#section1.zoom-effect {
+    transform: scale(0.5); /* Adjust the scale factor as needed */
+    transform-origin: top left; /* Set the origin of the transformation */
+    transition: transform 0.3s ease; /* Add smooth transition for the zoom effect */
+}
+
+/* hover on item to show close button */
+#section1 div.draggable-container:hover .close-button {
+    display: block !important; /* Show the close button on hover */
 }

@@ -1,6 +1,54 @@
+function touchHandler(event) {
+    var touch = event.changedTouches[0];
+    var simulatedEvent = document.createEvent("MouseEvent");
+    simulatedEvent.initMouseEvent(
+        {
+            touchstart: "mousedown",
+            touchmove: "mousemove",
+            touchend: "mouseup",
+        }[event.type],
+        true,
+        true,
+        window,
+        1,
+        touch.screenX,
+        touch.screenY,
+        touch.clientX,
+        touch.clientY,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
+    );
+    touch.target.dispatchEvent(simulatedEvent);
+    // event.preventDefault();
+}
+
+
+
+
+// Initialize touch event handling
+function init() {
+    document.addEventListener("touchstart", touchHandler, true);
+    document.addEventListener("touchmove", touchHandler, true);
+    document.addEventListener("touchend", touchHandler, true);
+    document.addEventListener("touchcancel", touchHandler, true);
+}
+
+
+
 jQuery(document).ready(function ($) {
 
-var DB_DATA = {
+    init();
+
+   // Disable scrolling during touchmove in section1
+   $(".draggable").on('touchmove', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+var boardProperties = {
     board_title: '',
     title_position: '',
     title_bg_color: '',
@@ -13,18 +61,41 @@ var DB_DATA = {
     quantity_of_boards: '',
 }
 
-var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-
 const attributesDropdown = $('#attributes');
 const section2 = $('#section2');
 
-function calculateDimensions(screenWidth, screenHeight, widthPercentage, heightPercentage) {
+var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+function applyZoomEffect(widthPercentage, heightPercentage) {
     var widthInPixels = screenWidth * (widthPercentage / 120);
     var heightInPixels = screenHeight * (heightPercentage / 120);
 
     return { width: widthInPixels, height: heightInPixels };
 }
+
+function adjustChildSize(w,h) {
+    const parentWidth = $('#left_section')[0].offsetWidth / 96;
+    const parentHeight = $('#left_section')[0].offsetHeight / 96;
+
+    const childWidth = w;
+    const childHeight = h;
+
+    if (childWidth > parentWidth || childHeight > parentHeight) {
+        const scaleFactor = Math.min(parentWidth / childWidth, parentHeight / childHeight);
+
+        var new_w = (childWidth / scaleFactor) / 96;
+        var new_h = (childHeight / scaleFactor) / 96;
+    } else {
+        var new_w = childWidth;
+        var new_h = childHeight;
+    }
+    return { width: new_w, height: new_h };
+}
+
+// Call the adjustChildSize function whenever the dimensions of the child div change
+// window.addEventListener('resize', adjustChildSize);
+
 
 function calculateImageDimensions(widthPercentage, heightPercentage) {
     var widthInPixels = widthPercentage * (screenWidth / 100);
@@ -54,35 +125,6 @@ $(".cloneable-items").draggable({
 
 });
 
-// function allowDrop() {
-//     $(".section").droppable({
-//         accept: ".draggable",
-//         drop: function (event, ui) {
-//             var sourceSection = ui.draggable.closest(".section").attr("id");
-            
-
-//             if (event.target.id === "section1" && sourceSection !== "section1") {
-//                 console.log("Item dropped in section 1");
-//                 $(this).append(ui.helper.clone());
-//                 $(this).children().last().attr("class", "item draggable");
-//                 const closeButton = $('.close-button');
-//                 closeButton.css({
-//                     display: "block",
-//                 });
-//             } else if (event.target.id === "section1" && sourceSection === "section1") {
-//                 console.log("Item dragged within section 1");
-//                 $(this).append(ui.draggable);
-//                 $(this).children().last().attr("class", "item draggable");
-//                 const closeButton = $('.close-button');
-//                 closeButton.css({
-//                     display: "block",
-//                 });
-//             }
-
-//             updateDatabase();
-//         },
-//     });
-// }
 function allowDrop() {
     $(".section").droppable({
         accept: ".draggable",
@@ -109,10 +151,10 @@ function allowDrop() {
 
                 // Set the position of the close button relative to the cloned item
                 closeButton.css({
-                    top: ui.position.top + "px",
-                    left: (ui.position.left + 800) + "px",
+                    top: (ui.position.top - 100) + "px",
+                    left: (ui.position.left + 850) + "px",
                     position: "absolute",
-                    display: "block",
+                    // display: "none",
                 });
 
                 closeButton.click(function () {
@@ -135,7 +177,7 @@ function allowDrop() {
                     top: ui.position.top + "px",
                     left: ui.position.left + "px",
                     position: "absolute",
-                    display: "block",
+                    // display: "none",
                 });
 
                 ui.draggable.attr("class", "item draggable");
@@ -149,7 +191,37 @@ function allowDrop() {
     });
 }
 
+ // Add click event for adding tools in mobile or tab view
+ $("#section2").on("click", ".cloneable-items", function() {
+    console.log("Item clicked");
+    var section1 = $("#section1");
+    // section1 left position
+    var left = section1.offset().left;
+    // section1 top position
+    var top = section1.offset().top;
+    // append the cloneable item to the section1
+    const draggableContainer = $('<div class="draggable-container ui-draggable ui-draggable-handle" style="position: relative;"></div>');
+    section1.append(draggableContainer);
+    const $clone = $(this).clone();
+    draggableContainer.append($clone);
+    $clone.css({
+        top: 0 + "px",
+        left: left + "px",
+        position: "absolute",
+    });
+    $clone.attr("class", "item draggable");
+    // Show the close button
+    const closeButton = $('<span class="close-button">X</span>');
+    draggableContainer.append(closeButton);
+    closeButton.css({
+        top: 0 + "px",
+        left: left + "px",
+        position: "absolute",
+        // display: "none",
+    });
 
+    updateDatabase();
+});
 
 $("#section1").on("click", ".item", function () {
     checkOverlap();
@@ -224,32 +296,34 @@ function saveSectionState() {
         });
     });
 
-    // set the DB_DATA to the local storage
-    DB_DATA.board_title = $('#board_title').val();
-    DB_DATA.title_position = $('#title_position').val();
-    DB_DATA.board_dimensions = $('#board_dimensions').val();
-    DB_DATA.background_color = $('#background_color').val();
-    DB_DATA.board_style = $('#board_style').val();
-    DB_DATA.board_material = $('#board_material').val();
-    DB_DATA.custom_logo = $('#custom_logo').val();
-    DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
+    // set the boardProperties to the local storage
+    boardProperties.board_title = $('#board_title').val();
+    boardProperties.title_position = $('#title_position').val();
+    boardProperties.board_dimensions = $('#board_dimensions').val();
+    boardProperties.background_color = $('#background_color').val();
+    boardProperties.board_style = $('#board_style').val();
+    boardProperties.board_material = $('#board_material').val();
+    boardProperties.custom_logo = $('#custom_logo').val();
+    boardProperties.quantity_of_boards = $('#quantity_of_boards').val();
 
     const board_dimensions_value = $('#board_dimensions').val();
-    if (board_dimensions_value !== 'custom' && DB_DATA.board_dimensions != undefined) {
-        const board_dimensions = DB_DATA.board_dimensions.split('x');
+    if (board_dimensions_value !== 'custom' && boardProperties.board_dimensions != undefined) {
+        const board_dimensions = boardProperties.board_dimensions.split('x');
         const widthPercentage = board_dimensions[0];
         const heightPercentage = board_dimensions[1];
-        var dimensions = calculateDimensions(screenWidth, screenHeight, widthPercentage, heightPercentage);
-        $('#section1').css('width', dimensions.width + 'px');
-        $('#section1').css('height',  dimensions.height + 'px');
+        // var dimensions = applyZoomEffect( widthPercentage, heightPercentage);
+        var dimensions = adjustChildSize( widthPercentage, heightPercentage);
+        // adjustChildSize
+        $('#section1').css('width', dimensions.width + 'in');
+        $('#section1').css('height',  dimensions.height + 'in');
     } else {
         $('#custom_board_dimensions').css('display', 'flex');
     }
 
-    $('#set_board_title').text(DB_DATA.board_title);
-    var section_color = $('#section1').css('background-color', DB_DATA.background_color);
+    $('#set_board_title').text(boardProperties.board_title);
+    var section_color = $('#section1').css('background-color', boardProperties.background_color);
 
-    var color =  getBoardMaterial(DB_DATA.board_material);
+    var color =  getBoardMaterial(boardProperties.board_material);
     $('#section1').css('background-color', color);
 
     const title_bg_color = $('#title_bg_color').val();
@@ -263,7 +337,7 @@ function saveSectionState() {
     const selectedColor = attributesDropdown.val();
     localStorage.setItem("selectedColor", selectedColor);
     localStorage.setItem("section1State", JSON.stringify(section1Items));
-    localStorage.setItem("DB_DATA", JSON.stringify(DB_DATA));
+    localStorage.setItem("boardProperties", JSON.stringify(boardProperties));
 }
 
 
@@ -300,32 +374,18 @@ function getDataFromDb() {
                     const board_dimensions = data.board_dimensions.split('x');
                     const board_width = board_dimensions[0];
                     const board_height = board_dimensions[1];
-                    $('#section1').css('width', board_width + 'vw');
-                    $('#section1').css('height', board_height + 'vh');
+                    var dimensions = adjustChildSize( board_width, board_height);
 
-                    // for (const item of section1Items) {
-                    //     const newItem = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
-                    //     newItem.css({
-                    //         top: item.top + "px",
-                    //         left: item.left + "px",
-                    //         position: "absolute",
-                    //         height: item.height + "px"
-                    //     });
-                    //     $("#section1").append(newItem);
-                    //     newItem.draggable({
-                    //         revert: "invalid",
-                    //         helper: "original",
-                    //     });
-                    // }
-
+                    $('#section1').css('width', dimensions.width + 'in');
+                    $('#section1').css('height', dimensions.height + 'in');
                     for (const item of section1Items) {
                         const newItem = $('<div class="draggable-container"></div>');
                         const newImage = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
                         const closeButton = $('<span class="close-button">X</span>');
-                    
+
                         // Append the image and close button to the container
                         newItem.append(newImage, closeButton);
-                    
+
                         newImage.css({
                             top: item.top + "px",
                             left: item.left + "px",
@@ -337,17 +397,15 @@ function getDataFromDb() {
                             top: item.top + "px",
                             left: item.left + "px",
                             position: "absolute",
-                            display: "block",
+                            // display: "block",
                         });
-                    
                         $("#section1").append(newItem);
-                    
+
                         // Make the container draggable
                         newItem.draggable({
                             revert: "invalid",
                             helper: "original",
                         });
-                    
                         // Make the close button clickable
                         closeButton.click(function() {
                             newItem.remove();
@@ -374,8 +432,8 @@ function getDataFromDb() {
                     const background_url = data.background_url;
                     if (background_url) {
                         $('#section1').css('background-image', 'url(' + background_url + ')');
-                        $('#section1').css('background-size', 'cover');
-                        $('#section1').css('background-repeat', 'no-repeat');
+                        $('#section1').css('background-size', 'contain');
+                        $('#section1').css('background-repeat', 'round');
                         const parts = background_url.split('/');
                         const imageName = parts[parts.length - 1];
                         $('#background_name').text(imageName);
@@ -414,10 +472,10 @@ function getVariationImage(color) {
             const imageSrc = variation.image;
             const width = variation.width;
             const height = variation.height;
-            var dimensions = calculateImageDimensions(parseInt(width) ?? 0, parseInt(height) ?? 0);
+            var dimensions = adjustChildSize(parseInt(width) ?? 0, parseInt(height) ?? 0);
 
             if (color === variation.attributes.attribute_pa_color) {
-                section2.append('<img src="' + imageSrc + '" alt="' + color + '" class="draggable cloneable-items" style="height:' + (height * 96) + 'px;" />');
+                section2.append('<img src="' + imageSrc + '" alt="' + color + '" class="draggable cloneable-items" style="height:' + (dimensions.height) + 'in; width:' + (dimensions.width) + 'in;" />');
             }
         }
     }
@@ -471,24 +529,23 @@ function updateDatabase() {
     const section1Items = localStorage.getItem("section1State");
     const color = localStorage.getItem("selectedColor");
     const ajaxurl = amerison_vars.ajaxurl;
-    DB_DATA.board_title = $('#board_title').val();
-    DB_DATA.title_position = $('#title_position').val();
-    DB_DATA.title_bg_color = $('#title_bg_color').val();
-    DB_DATA.board_dimensions = $('#board_dimensions').val();
-    DB_DATA.background_color = $('#background_color').val();
-    DB_DATA.board_style = $('#board_style').val();
-    DB_DATA.board_material = $('#board_material').val();
-    DB_DATA.custom_logo = $('#custom_logo').val();
-    DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
+    boardProperties.board_title = $('#board_title').val();
+    boardProperties.title_position = $('#title_position').val();
+    boardProperties.title_bg_color = $('#title_bg_color').val();
+    boardProperties.board_dimensions = $('#board_dimensions').val();
+    boardProperties.background_color = $('#background_color').val();
+    boardProperties.board_style = $('#board_style').val();
+    boardProperties.board_material = $('#board_material').val();
+    boardProperties.custom_logo = $('#custom_logo').val();
+    boardProperties.quantity_of_boards = $('#quantity_of_boards').val();
     const id = window.location.search.split('=')[1];
     const data = {
         action: 'update_configurator_data',
         section1Items: section1Items,
         color: color,
-        data: DB_DATA,
+        data: boardProperties,
         id: id
     };
-    // console.log(data);
     $.ajax({
         url: ajaxurl,
         type: 'POST',
@@ -514,39 +571,6 @@ function updateDatabase() {
     });
 }
 
-// function createNewBoard() {
-//     const ajaxurl = "wp-admin/admin-ajax.php"
-//     const section1Items = localStorage.getItem("section1State");
-//     const color = localStorage.getItem("selectedColor");
-//     DB_DATA.board_title = $('#board_title').val();
-//     DB_DATA.board_dimensions = $('#board_dimensions').val();
-//     DB_DATA.background_color = $('#background_color').val();
-//     DB_DATA.board_style = $('#board_style').val();
-//     DB_DATA.board_material = $('#board_material').val();
-//     DB_DATA.custom_logo = $('#custom_logo').val();
-//     DB_DATA.quantity_of_boards = $('#quantity_of_boards').val();
-//     const data = {
-//         action: 'create_new_board',
-//         section1Items: section1Items,
-//         color: color,
-//         data: DB_DATA
-//     };
-
-//     $.ajax({
-//         url: ajaxurl,
-//         type: 'POST',
-//         data: data,
-//         success: function (response) {
-//             console.log('New board created successfully:');
-//             console.log(response);
-//             window.location.href = window.location.href + '?board=' + response;
-//         },
-//         error: function (error) {
-//             console.error('Error creating new board:');
-//         }
-//     });
-// }
-
 $('#logo_images').on('change', function() {
     var fileInput = this;
     var file = fileInput.files[0];
@@ -571,24 +595,6 @@ $('#logo_images').on('change', function() {
                 localStorage.setItem("logo_url", response.url);
                 $('#section1_logo').attr('src', response.url);
                 hidePreloader();
-
-                // if (response.attachment_id !== 0) {
-                //     // Display the uploaded image in the specified section
-                //     var imageContainer = $('#section1');
-
-                //     // Create an img element
-                //     var imgElement = $('<img>', {
-                //         src: response.url,
-                //         alt: 'Uploaded Logo',
-                //         class: 'logo__image',
-                //     });
-
-                //     // Empty the section and append the img element
-                //     imageContainer.empty().append(imgElement);
-                // } else {
-                //     // Handle error cases
-                //     console.error(response.error);
-                // }
                 },
                 error: function(error) {
                     console.error(error);
@@ -684,7 +690,7 @@ function updateLogoPosition() {
         const board_width = board_dimensions[0];
         const board_height = board_dimensions[1];
 
-        const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
+        const dimensions = adjustChildSize(board_width, board_height);
 
         let logoPosition = $('#custom_logo').val();
         if (logoPosition === 'right') {
@@ -692,20 +698,20 @@ function updateLogoPosition() {
             $('#section1_logo').css('position', 'absolute');
             // $('#section1_logo').css('float', 'inline-end');
             $('#section1_logo').css('top', '' +1+'%');
-            $('#section1_logo').css('left', '' + dimensions.width - 50+'px');
+            $('#section1_logo').css('left', '' + (dimensions.width - 0.4) +'in');
 
         } else if (logoPosition === 'left') {
             $('#section1_logo').removeAttr('style');
             $('#section1_logo').css('position', 'absolute');
             $('#section1_logo').css('float', 'inline-start');
             $('#section1_logo').css('top', '' + 1 +'%');
-            $('#section1_logo').css('left', '' + 15+'px');
+            // $('#section1_logo').css('left', '' + 15+'in');
         } else if (logoPosition === 'center') {
             $('#section1_logo').removeAttr('style');
             $('#section1_logo').css('position', 'absolute');
             $('#section1_logo').css('float', 'inline-start');
-            $('#section1_logo').css('top', '' + (dimensions.height/2) +'px');
-            $('#section1_logo').css('left', '' + (dimensions.width/2) - 20 +'px');
+            $('#section1_logo').css('top', '' + (dimensions.height/2) +'in');
+            $('#section1_logo').css('left', '' + (dimensions.width/2) +'in');
         }
     }
 }
@@ -716,12 +722,12 @@ function updateTitlePosition() {
         const board_dimensions = dimentions.split('x');
         const board_width = board_dimensions[0];
         const board_height = board_dimensions[1];
-    
+
         // get the width of board title
         const board_title_width = $('#set_board_title').width();
-    
-        const dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
-    
+
+        const dimensions = adjustChildSize(board_width, board_height);
+
         let logoPosition = $('#title_position').val();
         if (logoPosition === 'right') {
             $('#set_board_title').removeAttr('style');
@@ -737,7 +743,7 @@ function updateTitlePosition() {
             $('#set_board_title').css('float', 'inline-start');
             $('#set_board_title').css('position', 'absolute');
             $('#set_board_title').css('top', '1%');
-            $('#set_board_title').css('left', ''+ ((dimensions.width/2) - (board_title_width/2) )+'px');
+            $('#set_board_title').css('left', ''+ ((dimensions.width/2) - (board_title_width/2) )+'in');
             // $('#set_board_title').css('transform', 'translate('+ -board_width+'%, '+ board_width/2+'%)');
             $('#set_board_title').css('text-align', 'center');
         }
@@ -802,7 +808,7 @@ function clearLocalStorage() {
     localStorage.removeItem("selectedColor");
     localStorage.removeItem("background_upload");
     localStorage.removeItem("logo_url");
-    localStorage.removeItem("DB_DATA");
+    localStorage.removeItem("boardProperties");
     localStorage.removeItem("custom_board_dimensions");
     localStorage.removeItem("title_bg_color");
 }
@@ -900,9 +906,9 @@ $('.custom_values').on('change', function() {
     const board_width = $('#custom_width').val();
     const board_height = $('#custom_height').val();
     if (board_width && board_height) {
-        var dimensions = calculateDimensions(screenWidth, screenHeight, board_width, board_height);
-        $('#section1').css('width', dimensions.width + 'px');
-        $('#section1').css('height',  dimensions.height + 'px');
+        var dimensions = adjustChildSize( board_width, board_height);
+        $('#section1').css('width', dimensions.width + 'in');
+        $('#section1').css('height',  dimensions.height + 'in');
         // append new board dimentions to the board_dimensions dropdown
         $('#board_dimensions').append('<option value="' + board_width + 'x' + board_height + '">' + board_width + 'x' + board_height + '</option>');
         $('#board_dimensions').val(board_width + 'x' + board_height);

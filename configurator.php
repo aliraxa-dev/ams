@@ -45,7 +45,7 @@
 <div class="dot_alert" id="dot_alert"></div>
 <section class="w-auto border border-2 border-dark">
     <div class="row m-0">
-        <div class="col-md-8">
+        <div class="col-md-8" id="left_section">
             <div class="border border-2 border-dark my-2 section" id="section1">
                 <div class="w-100" style="height: 50px" id="title_background_color">
                     <div class="h5 pt-3 set_board_title" id="set_board_title"></div>
@@ -249,8 +249,7 @@
                                 <label> Board style </label>
 
                                 <select class="form-select" id="board_style">
-                                    <option selected>Standard</option>
-                                    <option value="Wal Mount">Wal Mount</option>
+                                    <option selected value="Wal Mount">Wal Mount</option>
                                     <option value="Mobile">Mobile</option>
                                     <option value="Stationary Stand">Stationary Stand</option>
                                     <option value="Magnet Mounted">Magnet Mounted</option>
@@ -259,27 +258,25 @@
 
                                 <!-- board Material -->
                                 <div class="board-Material d-flex flex-column py-3">
-                                <label> Board Material </label>
-
-                                <select class="form-select" id="board_material">
-                                    <option selected>StorSheild</option>
-                                    <option value="StorLam">StorLam</option>
-                                    <option value="StorClear">StorClear</option>
-                                    <option value="StorShield+">StorShield+</option>
-                                    <option value="StorLaze">StorLaze</option>
-                                </select>
+                                    <label> Board Material </label>
+                                    <select class="form-select" id="board_material">
+                                        <option selected>StorSheild</option>
+                                        <option value="StorLam">StorLam</option>
+                                        <option value="StorClear">StorClear</option>
+                                        <option value="StorShield+">StorShield+</option>
+                                        <option value="StorLaze">StorLaze</option>
+                                    </select>
                                 </div>
 
                                 <!-- Custom Logo -->
                                 <div class="custom-Logo d-flex flex-column py-3">
-                                <label> Custom Logo </label>
-
-                                <select class="form-select" id="custom_logo">
-                                    <option value="null">Select Option</option>
-                                    <option selected value="left">Top Left</option>
-                                    <option value="right">Top Right</option>
-                                    <option value="center">Center</option>
-                                </select>
+                                    <label> Custom Logo </label>
+                                    <select class="form-select" id="custom_logo">
+                                        <option value="null">Select Option</option>
+                                        <option selected value="left">Top Left</option>
+                                        <option value="right">Top Right</option>
+                                        <option value="center">Center</option>
+                                    </select>
                                 </div>
 
                                 <div class="d-flex flex-column">

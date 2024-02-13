@@ -18,6 +18,9 @@ function enqueue_amerison_scripts() {
     // add bootstrap css and js
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
+    // jquery touch js
+    // wp_enqueue_script('jquery-touch', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js');
+
 
     // Pass Ajax URL to script.js
     wp_localize_script(
