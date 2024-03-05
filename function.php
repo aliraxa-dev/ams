@@ -18,8 +18,9 @@ function enqueue_amerison_scripts() {
     // add bootstrap css and js
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
-    // jquery touch js
-    // wp_enqueue_script('jquery-touch', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js');
+    wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css', array(), null);
+    wp_enqueue_style('viewerjs-css', 'https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css');
+    wp_enqueue_script('viewerjs', 'https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js', array(), null, true);
 
 
     // Pass Ajax URL to script.js
@@ -31,6 +32,143 @@ function enqueue_amerison_scripts() {
         )
     );
 }
+// function enqueue_viewerjs_css() {
+//     wp_enqueue_style('viewerjs-css', 'https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css');
+// }
+// add_action('wp_enqueue_scripts', 'enqueue_viewerjs_css');
+
+// function enqueue_viewerjs() {
+//     wp_enqueue_script('viewerjs', 'https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js', array(), null, true);
+// }
+// add_action('wp_enqueue_scripts', 'enqueue_viewerjs');
+
+function configurator_page() {
+    $page_title = 'Configurator';
+    $menu_title = 'Configurator';
+    $capability = 'manage_options';
+    $menu_slug = 'amerison-configurator';
+    $function = 'configurator_page_content';
+    $icon_url = 'dashicons-admin-generic';
+    $position = 20;
+
+    add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
+
+    $sub_menu_title = 'Board Style';
+    $sub_menu_slug = 'board-style';
+    $sub_function = 'board_style_page_content';
+    add_submenu_page($menu_slug, $page_title, $sub_menu_title, $capability, $sub_menu_slug, $sub_function);
+}
+
+add_action('admin_menu', 'configurator_page');
+
+
+// Add the page content for the configurator page list all the boards
+function configurator_page_content() {
+    $configurator = get_all_boards();
+    $delete_all = admin_url('admin-ajax.php?action=delete_all');
+
+    ?>
+    <script>
+        jQuery(document).ready(function($) {
+            $('#delete_all_boards').on('click', function() {
+                if (confirm('Are you sure you want to delete all boards?')) {
+                    $.post('<?= $delete_all ?>', {
+                        action: 'delete_all'
+                    }, function(response) {
+                        if (response) {
+                            console.log('All boards deleted successfully!');
+                            location.reload();
+                        }
+                    });
+                }
+            });
+
+            $('.delete-board').on('click', function() {
+                var board_id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this board?')) {
+                    $.post(ajaxurl, {
+                        action: 'delete_all',
+                        board_id: board_id
+                    }, function(response) {
+                        if (response) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <?php
+    // show the list of all the boards here in the table
+    ?>
+    <div class="wrap">
+        <h1 class="wp-heading-inline">Configurator</h1>
+
+    <!-- Delete All Boards -->
+    <button id="delete_all_boards" class="button button-primary" style="margin-left: 20px; float: inline-end; margin-bottom: 20px;">Delete All Boards</button>
+
+    <table class="wp-list-table widefat fixed striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Board Title</th>
+                <th>Board Dimensions</th>
+                <th>Background Color</th>
+                <th>Board Style</th>
+                <th>Board Material</th>
+                <th>Quantity of Boards</th>
+                <th>Attachment ID</th>
+                <th>Logo URL</th>
+                <th>Background URL</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($configurator as $board) : ?>
+                <tr>
+                    <td><?= $board->id ?></td>
+                    <td><?= $board->board_title ?></td>
+                    <td><?= $board->board_dimensions ?></td>
+                    <td><?= $board->background_color ?></td>
+                    <td><?= $board->board_style ?></td>
+                    <td><?= $board->board_material ?></td>
+                    <td><?= $board->quantity_of_boards ?></td>
+                    <td><?= $board->attachment_id ?></td>
+                    <td><?= $board->logo_url ?></td>
+                    <td><?= $board->background_url ?></td>
+                    <td><?= $board->timestamp ?></td>
+                    <td>
+                        <a href="<?= admin_url('admin.php?page=amerison-configurator&board=' . $board->id) ?>">Edit</a>
+                        <a href="#" class="delete-board" data-id="<?= $board->id ?>">Delete</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    </div>
+    <?php
+}
+
+function board_style_page_content() {
+    ?>
+    <div class="wrap">
+        <h1 class="wp-heading-inline">Board Style</h1>
+    </div>
+    <?php
+}
+
+function delete_all() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $sql = "DELETE FROM $table_name";
+    $wpdb->query($sql);
+    wp_die();
+}
+
+add_action('wp_ajax_delete_all', 'delete_all');
+add_action('wp_ajax_nopriv_delete_all', 'delete_all');
+
 
 // get woocommeres products
 function get_products()
@@ -272,6 +410,15 @@ function get_data_by_id($board_id) {
     $sql = "SELECT * FROM $table_name WHERE id = $board_id";
     $board = $wpdb->get_row($sql);
     return $board;
+}
+
+// get all the boards if current user is admin
+function get_all_boards() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'configurator_data';
+    $sql = "SELECT * FROM $table_name";
+    $boards = $wpdb->get_results($sql);
+    return $boards;
 }
 
 

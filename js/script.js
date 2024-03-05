@@ -1,3 +1,16 @@
+var boardProperties = {
+    board_title: '',
+    title_position: '',
+    title_bg_color: '',
+    board_dimensions: '',
+    background_color: '',
+    background_url: '',
+    board_style: '',
+    board_material: '',
+    custom_logo: '',
+    quantity_of_boards: '',
+}
+
 function touchHandler(event) {
     var touch = event.changedTouches[0];
     var simulatedEvent = document.createEvent("MouseEvent");
@@ -26,9 +39,6 @@ function touchHandler(event) {
     // event.preventDefault();
 }
 
-
-
-
 // Initialize touch event handling
 function init() {
     document.addEventListener("touchstart", touchHandler, true);
@@ -41,25 +51,12 @@ function init() {
 
 jQuery(document).ready(function ($) {
 
-    init();
+init();
 
-   // Disable scrolling during touchmove in section1
-   $(".draggable").on('touchmove', function(e) {
-        e.preventDefault();
-    }, { passive: false });
-
-var boardProperties = {
-    board_title: '',
-    title_position: '',
-    title_bg_color: '',
-    board_dimensions: '',
-    background_color: '',
-    background_url: '',
-    board_style: '',
-    board_material: '',
-    custom_logo: '',
-    quantity_of_boards: '',
-}
+// Disable scrolling during touchmove in section1
+$(".draggable").on('touchmove', function(e) {
+    e.preventDefault();
+}, { passive: false });
 
 const attributesDropdown = $('#attributes');
 const section2 = $('#section2');
@@ -67,41 +64,145 @@ const section2 = $('#section2');
 var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-function applyZoomEffect(widthPercentage, heightPercentage) {
-    var widthInPixels = screenWidth * (widthPercentage / 120);
-    var heightInPixels = screenHeight * (heightPercentage / 120);
+function calculatePixels(desiredInches, givenInches, givenPixels) {
+    var desiredPixels = givenPixels * (desiredInches / givenInches);
+    return desiredPixels;
+}
 
-    return { width: widthInPixels, height: heightInPixels };
+function getToolpx(boardInches, boardPixels, toolInches) {
+    var inchesToPixelsRatio = boardPixels / boardInches;
+    var toolPixels = inchesToPixelsRatio * toolInches;
+    return toolPixels;
+}
+
+function adjustToolSize(w,h) {
+    th_inch = h;
+
+    var cb_dim = $('#board_dimensions').val();
+    // check custom_board_dimensions display property is flex or none
+    let pcd = $('#custom_board_dimensions').css('display');
+    let h1 = $('#custom_height').val();
+    let w1 = $('#custom_width').val();
+    if (cb_dim === 'custom') {
+        cb_dim = w1 + 'x' + h1;
+    } else if (h1 != '' && w1 != '' && pcd === 'flex') {
+        cb_dim = $('#custom_width').val() + 'x' + $('#custom_height').val();
+    } else {
+        cb_dim = cb_dim;
+    }
+    console.log(cb_dim, 'cb_dim');
+    // seprate the width and height from the string x
+    cb_dim = cb_dim.split('x');
+    bh_inch = cb_dim[1];
+    bw_inch = cb_dim[0];
+
+    // bh_inch = 300; //$('custom_height').val();
+    bh_px = $('#section1').height() ;
+
+    console.log(bh_inch, bh_px, th_inch);
+    var pixelsForToolHeight = getToolpx(bh_inch, bh_px, th_inch);
+
+    const header_height = $("#title_background_color").height()
+
+
+    // var pixelsForToolHeight = calculatePixels(th_inch, bh_px, bh_inch);
+
+    // console.log(pixelsForToolHeight, "<pixelsForToolHeight")
+
+    return {width: w, height: (pixelsForToolHeight - header_height)};
+    x = false;
+
+    if( x= true ){
+        var viewportWidth = $('#section1').width();
+        // Calculate aspect ratio of the desired dimensions
+        // var aspectRatio = viewportWidth / viewportHeight;
+        var aspectRatio = w / h;
+
+        // Calculate width and height based on aspect ratio
+        var width = w / aspectRatio;
+        var height = (w) / aspectRatio;
+
+        console.log(w, h, aspectRatio, 'w, h, aspectRatio');
+        console.log(viewportHeight, viewportWidth, 'viewportHeight, viewportWidth');
+        console.log($('#custom_width').val(), $('#custom_height').val(), 'custom dimensions');
+        console.log({ width: width, height: height });
+
+        console.log(width, height, 'width, height');
+
+        return { width: width, height: height };
+    }
+
+}
+
+function calculateToolSize(w,h,bw,bh) {
+    // Calculate aspect ratio of the tool
+    var aspectRatio = w / h;
+
+    // Calculate width and height based on aspect ratio and board size
+    var width = bw ;
+    var height = (bw ) / aspectRatio;
+
+    // If the calculated height exceeds the board height, recalculate width and height
+    if (height > bh ) {
+        height = bh ;
+        width = height * aspectRatio;
+    }
+
+    // Return the tool size in pixels
+    return { width: width, height: height };
+}
+
+function calculateToolPxValues(toolWidthInches, toolHeightInches) {
+// Scale tool dimensions to CSS pixels (assuming 96 PPI)
+const toolWidthPx = toolWidthInches * 96;
+const toolHeightPx = toolHeightInches * 96;
+
+// Get viewport dimensions of the board's container
+const viewportWidth = $('#left_section').width();
+const viewportHeight = $('#left_section').height();
+
+// Adjust tool dimensions based on aspect ratio and viewport constraints
+const adjustedSizes = adjustChildSize(toolWidthPx, toolHeightPx);
+
+// Return the final CSS pixel values
+return {
+    width: adjustedSizes.width , // Add 'px' unit for CSS
+    height: adjustedSizes.height
+};
 }
 
 function adjustChildSize(w,h) {
-    const parentWidth = $('#left_section')[0].offsetWidth / 96;
-    const parentHeight = $('#left_section')[0].offsetHeight / 96;
+    var viewportWidth = $('#left_section').width();
+    var viewportHeight = $('#left_section').height();
 
-    const childWidth = w;
-    const childHeight = h;
+    // Calculate aspect ratio of the desired dimensions
+    var aspectRatio = w / h;
 
-    if (childWidth > parentWidth || childHeight > parentHeight) {
-        const scaleFactor = Math.min(parentWidth / childWidth, parentHeight / childHeight);
+    // Calculate width and height based on aspect ratio
+    var width = viewportWidth ;
+    var height = (viewportWidth ) / aspectRatio;
 
-        var new_w = (childWidth / scaleFactor) / 96;
-        var new_h = (childHeight / scaleFactor) / 96;
-    } else {
-        var new_w = childWidth;
-        var new_h = childHeight;
+    // If the calculated height exceeds the available height, recalculate width and height
+    if (height > viewportHeight ) {
+        height = viewportHeight ;
+        width = height * aspectRatio;
     }
-    return { width: new_w, height: new_h };
+    boardWithTool();
+    return { width: width, height: (height -10) };
 }
 
-// Call the adjustChildSize function whenever the dimensions of the child div change
-// window.addEventListener('resize', adjustChildSize);
+function boardWithTool() {
+    let board = $("#section1").width();
+    let tool = $(".draggable-container img");
+    let toolWidth = tool.width();
+    // console.log(board, toolWidth, 'board, tool');
 
-
-function calculateImageDimensions(widthPercentage, heightPercentage) {
-    var widthInPixels = widthPercentage * (screenWidth / 100);
-    var heightInPixels = heightPercentage * (screenHeight / 100);
-
-    return { width: widthInPixels, height: heightInPixels };
+    if (((toolWidth * tool.length) - 80) > board) {
+        // console.log("Tool is larger than board");
+        // $("#boardWithTool").modal('show');
+    } else {
+        // console.log("Tool is smaller than board");
+    }
 }
 
 $(".cloneable-items").draggable({
@@ -119,28 +220,43 @@ $(".cloneable-items").draggable({
 
         ui.position.left = Math.min(Math.max(ui.position.left, containmentLeft), containmentRight);
         ui.position.top = Math.min(Math.max(ui.position.top, containmentTop), containmentBottom);
-
+        $('#section1').droppable('destroy');
+        allowDrop();
         updateDatabase();
+        saveSectionState();
     },
 
 });
 
 function allowDrop() {
-    $(".section").droppable({
+    // $('#section1').droppable('destroy')
+    $("#section1").droppable({
         accept: ".draggable",
         drop: function (event, ui) {
             var sourceSection = ui.draggable.closest(".section").attr("id");
-
             const draggableContainer = $('<div class="draggable-container ui-draggable ui-draggable-handle" style="position: relative;"></div>');
             $(this).append(draggableContainer);
 
             if (event.target.id === "section1" && sourceSection !== "section1") {
                 console.log("Item dropped in section 1");
                 const $clone = ui.helper.clone();
+                // get the width of the image from data-width attribute
+                let width = $clone.data('width');
+                let height = $clone.data('height');
+                let id = $clone.data('id');
+
+                // append the height in the $clone img data-height attribute
+                $clone.data('height', height);
+                $clone.data('width', width);
+                $clone.data('id', id);
+
+
                 $clone.css({
                     top: ui.position.top + "px",
-                    left: (ui.position.left + 800) + "px",
+                    left: (ui.position.left) + "px",
                     position: "absolute",
+                    width: "auto",
+                    height: height + "px",
                 });
                 draggableContainer.append($clone);
                 $clone.attr("class", "item draggable");
@@ -151,8 +267,8 @@ function allowDrop() {
 
                 // Set the position of the close button relative to the cloned item
                 closeButton.css({
-                    top: (ui.position.top - 100) + "px",
-                    left: (ui.position.left + 850) + "px",
+                    top: (ui.position.top) + "px",
+                    left: (ui.position.left) + "px",
                     position: "absolute",
                     // display: "none",
                 });
@@ -161,7 +277,9 @@ function allowDrop() {
                     draggableContainer.remove();
                     updateDatabase();
                 });
+                dragElement();
             } else if (event.target.id === "section1" && sourceSection === "section1") {
+                // dragElement();
                 console.log("Item dragged within section 1");
                 const existingContainer = ui.draggable.closest(".draggable-container");
                 draggableContainer.append(ui.draggable);
@@ -185,7 +303,9 @@ function allowDrop() {
                     draggableContainer.remove();
                     updateDatabase();
                 });
+                dragElement();
             }
+            saveSectionState();
             updateDatabase();
         },
     });
@@ -204,10 +324,19 @@ function allowDrop() {
     section1.append(draggableContainer);
     const $clone = $(this).clone();
     draggableContainer.append($clone);
+    let width = $clone.data('width');
+    let height = $clone.data('height');
+    let id = $clone.data('id');
+    $clone.data('height', height);
+    $clone.data('width', width);
+    $clone.data('id', id);
+
     $clone.css({
         top: 0 + "px",
         left: left + "px",
         position: "absolute",
+        width: "auto",
+        height: height + "px",
     });
     $clone.attr("class", "item draggable");
     // Show the close button
@@ -219,23 +348,44 @@ function allowDrop() {
         position: "absolute",
         // display: "none",
     });
-
-    updateDatabase();
+    saveSectionState();
+    dragElement();
 });
 
-$("#section1").on("click", ".item", function () {
-    checkOverlap();
-    $(this).draggable({
+// $("#section1").on("click", ".item", function () {
+//     checkOverlap();
+//     console.log("Item clicked ?>>>>>>>>>>>>>>");
+//     $(this).draggable({
+//         revert: "invalid",
+//         helper: "original",
+//         start: function (event, ui) {
+//             $(this).data("originalPosition", ui.helper.offset());
+//         },
+//         drag: function (event, ui) {
+//             $('#section1').droppable('destroy');
+//             allowDrop();
+//             saveSectionState();
+//         }
+//     });
+// });
+
+function dragElement() {
+    $("#section1 .item").draggable({
         revert: "invalid",
         helper: "original",
         start: function (event, ui) {
             $(this).data("originalPosition", ui.helper.offset());
         },
         drag: function (event, ui) {
-            updateDatabase();
+            // console.log("Item dragged DragElement");
+            $('#section1').droppable('destroy');
+            allowDrop();
+            saveSectionState();
+            boardWithTool();
         }
     });
-});
+}
+
 
 function checkOverlap() {
     var items = $("#section1").children(".draggable");
@@ -260,10 +410,10 @@ function isOverlapping(element1, element2) {
         rect1.top > rect2.bottom);
 }
 
-setInterval(function () {
-    checkOverlap();
-    saveSectionState();
-}, 1000);
+// setInterval(function () {
+//     checkOverlap();
+//     saveSectionState();
+// }, 1000);
 
 
 
@@ -284,15 +434,32 @@ function saveSectionState() {
         const position = $(this).position();
         const itemId = $(this).attr("id");
         const image = $(this).attr("src");
-        // get the height of the image
-        const height = $(this).height();
+        // let height = $('#section2 img')[0].dataset.height;
+        // let width = $("#section2 img")[0].dataset.width;
+        // let h1 = $('#section2 img')[0].dataset.h1;
+        // let w1 = $("#section2 img")[0].dataset.w1;
+        let id = $(this).data('id');
+        let height = $(this).data('height');
+        let width = $(this).data('width');
+        let h1 = $(this).data('h1');
+        let w1 = $(this).data('w1');
+
+        $(this).data('h1', h1);
+        $(this).data('w1', w1);
+        $(this).data('height', height);
+        $(this).data('width', width);
+        $(this).data('id', id);
 
         section1Items.push({
             id: itemId,
             top: position.top,
             left: position.left,
             image: image,
-            height: height
+            height: height,
+            width: width,
+            h1: h1,
+            w1: w1,
+            id: id
         });
     });
 
@@ -311,11 +478,13 @@ function saveSectionState() {
         const board_dimensions = boardProperties.board_dimensions.split('x');
         const widthPercentage = board_dimensions[0];
         const heightPercentage = board_dimensions[1];
+        // setChildSize(widthPercentage, heightPercentage);
         // var dimensions = applyZoomEffect( widthPercentage, heightPercentage);
         var dimensions = adjustChildSize( widthPercentage, heightPercentage);
+        // console.log(dimensions.width, dimensions.height, 'board_dimensions');
         // adjustChildSize
-        $('#section1').css('width', dimensions.width + 'in');
-        $('#section1').css('height',  dimensions.height + 'in');
+        $('#section1').css('width', dimensions.width + 'px');
+        $('#section1').css('height',  dimensions.height + 'px');
     } else {
         $('#custom_board_dimensions').css('display', 'flex');
     }
@@ -331,6 +500,30 @@ function saveSectionState() {
 
     localStorage.setItem("title_bg_color", title_bg_color);
 
+    // get the logo url from the database
+    const logo_url = localStorage.getItem("logo_url");
+    if (logo_url) {
+        $('#section1_logo').attr('src', logo_url);
+        const parts = logo_url.split('/');
+        const imageName = parts[parts.length - 1];
+        $('#logo_name').text(imageName);
+    }
+
+    var board_material = $('#board_material').val();
+    // console.log(board_material, 'board_material');
+    // get the background image url from the database
+    const background_url = localStorage.getItem("background_upload");
+    if (background_url && board_material !== 'StorLaze') {
+        $('#section1').css('background-image', 'url(' + background_url + ')');
+        $('#section1').css('background-size', 'cover');
+        $('#section1').css('background-repeat', 'no-repeat');
+        const parts = background_url.split('/');
+        const imageName = parts[parts.length - 1];
+        $('#background_name').text(imageName);
+    } else {
+        $('#section1').css('background-image', 'none');
+    }
+
     updateTitlePosition();
     updateLogoPosition();
 
@@ -338,6 +531,7 @@ function saveSectionState() {
     localStorage.setItem("selectedColor", selectedColor);
     localStorage.setItem("section1State", JSON.stringify(section1Items));
     localStorage.setItem("boardProperties", JSON.stringify(boardProperties));
+    // updateDatabase();
 }
 
 
@@ -355,11 +549,12 @@ function getDataFromDb() {
             type: 'POST',
             data: data,
             success: function (response) {
-                console.log('Data retrieved successfully:');
+                // console.log('Data retrieved successfully:');
                 const data = response[0];
                 if (data != undefined) {
                     const section1Items = JSON.parse(data.config_data.replace(/\\/g, ''));
                     const selectedColor = data.options;
+                    console.log(section1Items, 'section1Items');
 
                     $('#board_title').val(data.board_title);
                     $('#set_board_title').text(data.board_title);
@@ -374,13 +569,15 @@ function getDataFromDb() {
                     const board_dimensions = data.board_dimensions.split('x');
                     const board_width = board_dimensions[0];
                     const board_height = board_dimensions[1];
+                    // setChildSize(board_width, board_height);
                     var dimensions = adjustChildSize( board_width, board_height);
+                    // console.log(dimensions.width, dimensions.height);
 
-                    $('#section1').css('width', dimensions.width + 'in');
-                    $('#section1').css('height', dimensions.height + 'in');
+                    $('#section1').css('width', dimensions.width + 'px');
+                    $('#section1').css('height', dimensions.height + 'px');
                     for (const item of section1Items) {
-                        const newItem = $('<div class="draggable-container"></div>');
-                        const newImage = $('<img src="' + item.image + '" alt="' + selectedColor + '" class="draggable" />');
+                        const newItem = $('<div class="item draggable draggable-container ui-draggable ui-draggable-handle" style="position: relative;"></div>');
+                        const newImage = $('<img src="' + item.image + '" alt="' + selectedColor + '" data-id="'+ item.id +'" data-h1="'+ item.h1 +'" data-w1="'+ item.w1 +'" data-height="'+ item.height +'" data-width="'+ item.width +'" class="item draggable" />');
                         const closeButton = $('<span class="close-button">X</span>');
 
                         // Append the image and close button to the container
@@ -390,6 +587,7 @@ function getDataFromDb() {
                             top: item.top + "px",
                             left: item.left + "px",
                             position: "absolute",
+                            width: "auto",
                             height: item.height + "px",
                         });
 
@@ -402,10 +600,10 @@ function getDataFromDb() {
                         $("#section1").append(newItem);
 
                         // Make the container draggable
-                        newItem.draggable({
-                            revert: "invalid",
-                            helper: "original",
-                        });
+                        // newItem.draggable({
+                        //     revert: "invalid",
+                        //     helper: "original",
+                        // });
                         // Make the close button clickable
                         closeButton.click(function() {
                             newItem.remove();
@@ -430,13 +628,15 @@ function getDataFromDb() {
 
                     // get the background image url from the database
                     const background_url = data.background_url;
-                    if (background_url) {
+                    if (background_url && data.board_material !== 'StorLaze') {
                         $('#section1').css('background-image', 'url(' + background_url + ')');
-                        $('#section1').css('background-size', 'contain');
-                        $('#section1').css('background-repeat', 'round');
+                        $('#section1').css('background-size', 'cover');
+                        $('#section1').css('background-repeat', 'no-repeat');
                         const parts = background_url.split('/');
                         const imageName = parts[parts.length - 1];
                         $('#background_name').text(imageName);
+                    } else {
+                        $('#section1').css('background-image', 'none');
                     }
 
                     const board_dimensions_options = $('#board_dimensions').children();
@@ -450,12 +650,16 @@ function getDataFromDb() {
                             $('#board_dimensions').append('<option value="' + data.board_dimensions + '">' + data.board_dimensions + '</option>');
                             $('#board_dimensions').val(data.board_dimensions);
                         }
+                        localStorage.setItem("custom_board_dimensions", data.board_dimensions);
                     }
 
                     const title_bg_color = data.title_bg_color;
                     $('#title_bg_color').val(title_bg_color);
+                    saveSectionState();
+                    dragElement();
+                    updateTitlePosition();
+                    updateLogoPosition();
                 }
-
             },
             error: function (error) {
                 console.error('Error retrieving data:');
@@ -470,12 +674,12 @@ function getVariationImage(color) {
     for (const product of WP_PRODUCTS) {
         for (const variation of product.variations) {
             const imageSrc = variation.image;
-            const width = variation.width;
-            const height = variation.height;
-            var dimensions = adjustChildSize(parseInt(width) ?? 0, parseInt(height) ?? 0);
+            let width = variation.width;
+            let height = variation.height;
+            var dimensions = adjustToolSize(width, height);
 
             if (color === variation.attributes.attribute_pa_color) {
-                section2.append('<img src="' + imageSrc + '" alt="' + color + '" class="draggable cloneable-items" style="height:' + (dimensions.height) + 'in; width:' + (dimensions.width) + 'in;" />');
+                section2.append('<img src="' + imageSrc + '" alt="' + color + '" class="draggable cloneable-items" data-id="'+ variation.id +'" data-width="'+ dimensions.width +'" data-h1="'+ height +'" data-w1="'+ width +'" data-height="'+ dimensions.height +'" style="height: '+ (height * 3) +'px; width: auto;" />');
             }
         }
     }
@@ -495,35 +699,49 @@ function getBoardMaterial(material) {
     const board_material = $('#board_material').val();
     const bg_color = $('#background_color').val();
     var section_color = $('#section1').css('background-color');
+    var section_background_image = $('#section1').css('background-image');
 
-
-    // Default background color if the input is not valid hex color
+    // Default background color if the input is not a valid hex color
     const defaultBackgroundColor = 'rgb(255, 255, 255)';
+    let section1BackgroundColor;
 
-    if (section_color === 'rgb(255, 255, 255)' || section_color === '#ffffff') {
-        switch (board_material) {
-            case 'StorShield':
-            case 'StorShield+':
-            case 'StorLam':
-                section1BackgroundColor = defaultBackgroundColor;
-                break;
-            case 'StorLaze':
-                // Stainless steel color
-                section1BackgroundColor = 'rgb(192, 192, 192)';
-                break;
-            case 'StorClear':
-                // Transparent color
-                section1BackgroundColor = 'rgba(0, 0, 0, 0)';
-                break;
-            default:
-                section1BackgroundColor = bg_color;
-                break;
-        }
+    if (board_material === 'StorLaze') {
+        // If board_material is StorLaze, set section1BackgroundColor to StorLaze color
+        section1BackgroundColor = 'rgb(192, 192, 192)';
+
+        // Remove background image if StorLaze is set
+        $('#section1').css('background-image', 'none');
     } else {
-        section1BackgroundColor = bg_color;
+        if (section_color === 'rgb(255, 255, 255)' || section_color === '#ffffff') {
+            switch (board_material) {
+                case 'StorShield':
+                case 'StorShield+':
+                case 'StorLam':
+                    section1BackgroundColor = defaultBackgroundColor;
+                    break;
+                case 'StorClear':
+                    // Transparent color
+                    section1BackgroundColor = 'rgba(0, 0, 0, 0)';
+                    $('#section1').css('border', '1px solid #000');
+                    break;
+                default:
+                    section1BackgroundColor = bg_color;
+                    break;
+            }
+
+            // Restore background image if not StorLaze
+            $('#section1').css('background-image', section_background_image);
+        } else {
+            section1BackgroundColor = bg_color;
+
+            // Restore background image if not StorLaze
+            $('#section1').css('background-image', section_background_image);
+        }
     }
     return section1BackgroundColor;
 }
+
+
 
 function updateDatabase() {
     const section1Items = localStorage.getItem("section1State");
@@ -554,14 +772,14 @@ function updateDatabase() {
             if (window.location.search === '?board=new') {
                 window.history.replaceState({}, '', '?board=' + response);
             }
-            console.log('Data updated successfully:');
+            // console.log('Data updated successfully:');
             $('#dot_alert').css('display', 'block');
             setTimeout(function () {
                 $('#dot_alert').css('display', 'none');
             }, 1000);
         },
         error: function (error) {
-            console.error('Error updating data:');
+            // console.error('Error updating data:');
             $('#dot_alert').css('display', 'block');
             $('#dot_alert').css('background-color', 'red');
             setTimeout(function () {
@@ -592,17 +810,23 @@ $('#logo_images').on('change', function() {
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                localStorage.setItem("logo_url", response.url);
-                $('#section1_logo').attr('src', response.url);
-                hidePreloader();
+                    localStorage.setItem("logo_url", response.url);
+                    $('#section1_logo').attr('src', response.url);
+                    const parts = response.url.split('/');
+                    const imageName = parts[parts.length - 1];
+                    $('#logo_name').text(imageName);
+                    hidePreloader();
                 },
                 error: function(error) {
                     console.error(error);
+                    hidePreloader();
                 }
             });
         };
 
         reader.readAsBinaryString(file);
+    } else {
+        hidePreloader();
     }
 });
 
@@ -627,21 +851,38 @@ $('#background_image_upload').on('change', function() {
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    localStorage.setItem("background_upload", response.url);
-                    $('#section1').css('background-image', 'url(' + response.url + ')');
-                    $('#section1').css('background-size', 'cover');
-                    $('#section1').css('background-repeat', 'no-repeat');
+                    const board_material = $('#board_material').val();
+                    if (board_material !== 'StorLaze') {
+                        localStorage.setItem("background_upload", response.url);
+                        $('#section1').css('background-image', 'url(' + response.url + ')');
+                        $('#section1').css('background-size', 'cover');
+                        $('#section1').css('background-repeat', 'no-repeat');
+                        const parts = response.url.split('/');
+                        const imageName = parts[parts.length - 1];
+                        $('#background_name').text(imageName);
+                    }
                     hidePreloader();
                 },
                 error: function(error) {
                     console.error(error);
+                    hidePreloader();
                 }
             });
         };
 
         reader.readAsBinaryString(file);
+    } else {
+        hidePreloader();
     }
 });
+
+$('.show_storlaze_model').on('click', function() {
+    const board_material = $('#board_material').val();
+    if (board_material === 'StorLaze') {
+        $('#backgroundImageModel').modal('show');
+    }
+});
+$('[data-toggle="tooltip"]').tooltip();
 
 // Initialize the Bootstrap collapse instances
 const collapseOne = $('#collapseOne');
@@ -673,6 +914,8 @@ $(window).on('beforeunload', function () {
 
 $('#board_title, #title_position, #title_bg_color, #board_dimensions, #background_color, #board_style, #board_material, #custom_logo, #quantity_of_boards').on('change', function() {
     updateDatabase();
+    saveSectionState();
+    updateTitlePosition();
 });
 
 $('#title_position').on('change', function() {
@@ -682,6 +925,31 @@ $('#title_position').on('change', function() {
 $('#custom_logo').on('change', function() {
     updateLogoPosition();
 });
+
+// on board dimensions change update the tools in the section1 and section2
+$('#board_dimensions, #custom_height').on('change', function() {
+    let s2_data = $('#section2 img');
+    let s1_data = $('#section1 .draggable-container img');
+
+    // get the each image data from the section2
+    for (let i = 0; i < s2_data.length; i++) {
+        let height = s2_data[i].dataset.h1;
+        let width = s2_data[i].dataset.w1;
+        console.log(height, width, 'height, width');
+        let custom = adjustToolSize(width, height);
+        let id = s2_data[i].dataset.id;
+            for (let j = 0; j < s1_data.length; j++) {
+                if (id === s1_data[j].dataset.id) {
+                    // console.log(custom.width, custom.height, 'custom');
+                    s1_data.eq(j).css("height", "" + custom.height + "px");
+                }
+            }
+    }
+    updateDatabase();
+    saveSectionState();
+});
+
+// $('#board_dimensions').on('change', function() { saveSectionState(); });
 
 function updateLogoPosition() {
     const dimentions = $('#board_dimensions').val();
@@ -697,21 +965,22 @@ function updateLogoPosition() {
             $('#section1_logo').removeAttr('style');
             $('#section1_logo').css('position', 'absolute');
             // $('#section1_logo').css('float', 'inline-end');
-            $('#section1_logo').css('top', '' +1+'%');
-            $('#section1_logo').css('left', '' + (dimensions.width - 0.4) +'in');
+            $('#section1_logo').css('top', '' + 0 +'%');
+            $('#section1_logo').css('left', '' + (dimensions.width - 50) +'px');
 
         } else if (logoPosition === 'left') {
             $('#section1_logo').removeAttr('style');
             $('#section1_logo').css('position', 'absolute');
             $('#section1_logo').css('float', 'inline-start');
-            $('#section1_logo').css('top', '' + 1 +'%');
+            $('#section1_logo').css('top', '' + 0 +'%');
             // $('#section1_logo').css('left', '' + 15+'in');
         } else if (logoPosition === 'center') {
             $('#section1_logo').removeAttr('style');
             $('#section1_logo').css('position', 'absolute');
             $('#section1_logo').css('float', 'inline-start');
-            $('#section1_logo').css('top', '' + (dimensions.height/2) +'in');
-            $('#section1_logo').css('left', '' + (dimensions.width/2) +'in');
+            $('#section1_logo').css('top', '' + (dimensions.height/2) +'px');
+            $('#section1_logo').css('left', '' + ((dimensions.width/2) - 20) +'px');
+            $('#section1_logo').css('transform', 'translate('+ (-25) +'%, '+ (-50) +'%)');
         }
     }
 }
@@ -733,17 +1002,20 @@ function updateTitlePosition() {
             $('#set_board_title').removeAttr('style');
             $('#set_board_title').css('float', 'inline-end');
             // $('#set_board_title').css('margin-left', 'calc(' + board_width + 'vw - 150px)');
-            // $('#set_board_title').css('margin-top', '0px');
+            $('#set_board_title').css('margin-top', '12px');
+            $('#set_board_title').css('margin-right', '5px');
         } else if (logoPosition === 'left') {
             // remove all the inline styles
             $('#set_board_title').removeAttr('style');
             $('#set_board_title').css('float', 'inline-start');
+            $('#set_board_title').css('margin-top', '12px');
+            $('#set_board_title').css('margin-left', '5px');
         } else if (logoPosition === 'center') {
             $('#set_board_title').removeAttr('style');
-            $('#set_board_title').css('float', 'inline-start');
+            $('#set_board_title').css('margin-bottom', '0px');
             $('#set_board_title').css('position', 'absolute');
-            $('#set_board_title').css('top', '1%');
-            $('#set_board_title').css('left', ''+ ((dimensions.width/2) - (board_title_width/2) )+'in');
+            $('#set_board_title').css('top', '3%');
+            $('#set_board_title').css('left', ''+ (((dimensions.width/2) - ((board_title_width) / 2) )) +'px');
             // $('#set_board_title').css('transform', 'translate('+ -board_width+'%, '+ board_width/2+'%)');
             $('#set_board_title').css('text-align', 'center');
         }
@@ -785,7 +1057,25 @@ $("#confirmReset").on('click', function () {
 $(".closeModel").on('click', function () {
     $('#confirmationModal').modal('hide');
     $('#confirmDeleteModal').modal('hide');
+    $('#backgroundImageModel').modal('hide');
+    // $('#boardWithTool').modal('hide');
+});
+
+$('.boardWithToolClose').on('click', function() {
+    $('#boardWithTool').modal('hide');
+    // const baord_dim = localStorage.getItem("custom_board_dimensions");
+    // $('#board_dimensions').val(baord_dim);
+});
+
+$('.closeModel1').on('click', function() {
     $('#dimentionConfirmationModal').modal('hide');
+    $('#custom_board_dimensions').css('display', 'none');
+
+    var board_dimensions_values = $('#board_dimensions').val();
+    if (board_dimensions_values === 'custom') {
+        $('#board_dimensions').val('120x120');
+        saveSectionState();
+    }
 });
 
 function clearLocalStorage() {
@@ -794,9 +1084,9 @@ function clearLocalStorage() {
     $('#title_bg_color').val('#f5f5f5');
     $('#title_position').val('left');
     $('#board_dimensions').val('24x72');
-    $('#background_color').val('#f5f5f5');
-    $('#board_style').val("null");
-    $('#board_material').val("null");
+    $('#background_color').val('#ffffff');
+    $('#board_style').val("Wall Mount");
+    $('#board_material').val("StorSheild");
     $('#custom_logo').val('left');
     $('#quantity_of_boards').val(0);
     $('#section1').css('background-image', 'none');
@@ -811,6 +1101,7 @@ function clearLocalStorage() {
     localStorage.removeItem("boardProperties");
     localStorage.removeItem("custom_board_dimensions");
     localStorage.removeItem("title_bg_color");
+    saveSectionState();
 }
 
 function resetBoard() {
@@ -883,14 +1174,35 @@ function clearlinksFromDb(value) {
 }
 
 // when user select custom board dimentions option then add display block to the custom board dimentions input
-$('#board_dimensions').on('change', function() {
+$('#board_dimensions, #custom_width, #custom_height').on('change', function() {
     const board_dimensions = $('#board_dimensions').val();
-    if (board_dimensions === 'custom') {
-        $('#custom_board_dimensions').css('display', 'flex');
+    if (board_dimensions != 'custom') {
+        localStorage.setItem("previous_board_dimensions", board_dimensions);
+    }
+
+    const board_width = $('#custom_width').val();
+    const board_height = $('#custom_height').val();
+
+    let previous_board_dimensions = localStorage.getItem("previous_board_dimensions");
+
+    if (board_width > 120 || board_height > 120) {
+        $('#board_dimensions').val(previous_board_dimensions);
         $('#dimentionConfirmationModal').modal('show');
+    } else if (board_dimensions === 'custom') {
+        $('#custom_board_dimensions').css('display', 'flex');
     } else {
         $('#custom_board_dimensions').css('display', 'none');
+        // $('#board_dimensions').val('48x72');
     }
+
+
+
+    // if (board_dimensions === 'custom') {
+    //     $('#dimentionConfirmationModal').modal('show');
+    //     $('#custom_board_dimensions').css('display', 'flex');
+    // } else {
+    //     $('#custom_board_dimensions').css('display', 'none');
+    // }
 });
 
 $('#dimentionConfirm').on('click', function() {
@@ -899,22 +1211,37 @@ $('#dimentionConfirm').on('click', function() {
 
 $('.close-button').on('click', function() {
     $(this).parent().remove();
+    $('#custom_board_dimensions').css('display', 'none');
     updateDatabase();
 });
 
 $('.custom_values').on('change', function() {
     const board_width = $('#custom_width').val();
     const board_height = $('#custom_height').val();
-    if (board_width && board_height) {
+    const board_dimensions = $('#board_dimensions').val();
+    let previous_board_dimensions = localStorage.getItem("previous_board_dimensions");
+    if (board_width && board_height && board_width <= 120 && board_height <= 120) {
         var dimensions = adjustChildSize( board_width, board_height);
-        $('#section1').css('width', dimensions.width + 'in');
-        $('#section1').css('height',  dimensions.height + 'in');
+        $('#section1').css('width', dimensions.width + 'px');
+        $('#section1').css('height',  dimensions.height + 'px');
         // append new board dimentions to the board_dimensions dropdown
         $('#board_dimensions').append('<option value="' + board_width + 'x' + board_height + '">' + board_width + 'x' + board_height + '</option>');
         $('#board_dimensions').val(board_width + 'x' + board_height);
         localStorage.setItem("custom_board_dimensions", board_width + 'x' + board_height);
+        localStorage.setItem("previous_board_dimensions", board_width + 'x' + board_height);
         updateDatabase();
+    } else if (board_width > 120) {
+        $('#custom_width').val(120);
+        $('#board_dimensions').val(previous_board_dimensions);
+        $('#dimentionConfirmationModal').modal('show');
+        $('#custom_board_dimensions').css('display', 'flex');
+    } else if (board_height > 120) {
+        $('#custom_height').val(120);
+        $('#board_dimensions').val(previous_board_dimensions);
+        $('#dimentionConfirmationModal').modal('show');
+        $('#custom_board_dimensions').css('display', 'flex');
     }
+    saveSectionState();
 });
 
 
@@ -966,12 +1293,73 @@ $('#confirmDeleteBtn').on('click', function() {
     });
 });
 
+function createNewBoard() {
+    console.log('Creating new board');
+    $('#section1').removeAttr('style');
+    $('#title_position').val('left');
+    $('#board_dimensions').val('24x72');
+    $('#background_color').val('#ffffff');
+    $('#board_style').val('Wall Mount');
+    $('#board_material').val('StorShield');
+    $('#custom_logo').val('left');
+    $('#quantity_of_boards').val(0);
+    $('#section1').css('background-color', '#ffffff');
+    $('#attributes').val("null");
+    const dimensions = adjustChildSize(24, 72);
+    $('#section1').css('width', dimensions.width + 'px');
+    $('#section1').css('height',  dimensions.height + 'px');
+
+}
+
+// board style view button click event
+$('#board_style_config').on('click', function() {
+    let board_style = $('#board_style').val();
+    let image = $('#image1');
+    // Viewer.js options (common for both conditions)
+    var viewerOptions = {
+        toolbar: false,
+        navbar: false,
+        movable: false,
+        hidden: function() {
+            viewer.destroy();
+        }
+    };
+
+    // Check board_style value and initialize viewer accordingly
+    if (board_style === 'Wall Mount') {
+        console.log('Wall Mount');
+        image.attr('src', 'https://5sshadowboard.com/wp-content/uploads/2024/02/wall-mount-1.png');
+        image[0].dataset.original = 'https://5sshadowboard.com/wp-content/uploads/2024/02/wall-mount-1.png';
+    } else if (board_style === 'Mobile') {
+        console.log('Mobile');
+        image.attr('src', 'https://5sshadowboard.com/wp-content/uploads/2024/02/mobile-2.png');
+        image[0].dataset.original = 'https://5sshadowboard.com/wp-content/uploads/2024/02/mobile-2.png';
+    } else {
+        console.log('Magnet Mounted');
+        image.attr('src', 'https://5sshadowboard.com/wp-content/uploads/2024/02/magnet.png');
+        image[0].dataset.original = 'https://5sshadowboard.com/wp-content/uploads/2024/02/magnet.png';
+    }
+
+    // Initialize Viewer.js
+    var viewer = new Viewer(document.getElementById('image1'), viewerOptions);
+
+    // Show the viewer
+    viewer.show();
+});
+
+
+const Image = `<img src="" data-original="" alt="Board Style Wall Mount" id="image1" class="img-fluid d-none" />`;
+$('body').append(Image);
+
 
 
 if (window.location.search === '?board=new') {
-    // createNewBoard();
+    createNewBoard();
+    clearLocalStorage();
 } else {
     getDataFromDb();
+    saveSectionState();
 }
 allowDrop();
+
 });

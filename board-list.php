@@ -1,26 +1,34 @@
-<div class="float-end">
-    <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="<?php echo esc_url(get_permalink()); ?>?board=new" role="button">Create Shadow Board</a>
-</div>
 
 <div id="product-list">
-    <h2>Board List</h2>
-    <div class="border border-2 border-dark px-2 py-3 rounded rounded-3">
-        <ol class="h3">
-            <?php foreach ($configurator as $config) { ?>
-                <li class="mx-3">
-                    <div class="d-flex justify-content-between">
-                        <a class="product-item" href="<?php echo esc_url(get_permalink()); ?>?board=<?= $config['id']  ?>" data-product-id="<?php echo esc_attr($config['id']); ?>">
-                            <h3><?= $config['board_title'] == '' ? "Shadow Box " . $config['id'] : $config['board_title'] ?></h3>
-                        </a>
-                        <!-- delete icon -->
-                        <a href="#" class="delete-board" data-board-id="<?= $config['id'] ?>" data-board-title="<?= $config['board_title'] == '' ? "Shadow Box " . $config['id'] : $config['board_title'] ?>" data-toggle="modal" data-target="#confirmDeleteModal">
-                            <img src="<?= plugin_dir_url(__DIR__) . 'amerison_configurator/images/trash.svg' ?>" alt="delete" width="20" height="20">
-                        </a>
-                    </div>
-                </li>
-            <?php } ?>
-        </ol>
+	<div class="parent_board_btn">
+	<div class="create_board_btn">
+    <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="<?php echo esc_url(get_permalink()); ?>?board=new" role="button">Create Shadow Board</a>
     </div>
+   <div class="board_title">
+	   <h2>Board List</h2>
+	</div>
+		</div>
+        <div class="border border-4 border-dark ps-4 pt-2 rounded rounded-3 board-list">
+            <?php if (empty($configurator)) : ?>
+                <p class="text-center">No Board is created Yet</p>
+            <?php else : ?>
+                <ol class="h3 mx-4">
+                    <?php foreach ($configurator as $config) : ?>
+                        <li class="mx-3 margin-custom">
+                            <div class="d-flex justify-content-between">
+                                <a class="product-item" href="<?php echo esc_url(get_permalink()); ?>?board=<?= $config['id'] ?>" data-product-id="<?php echo esc_attr($config['id']); ?>">
+                                    <h3><?= $config['board_title'] == '' ? "Shadow Box " . $config['id'] : $config['board_title'] ?></h3>
+                                </a>
+                                <!-- delete icon -->
+                                <a href="#" class="delete-board" data-board-id="<?= $config['id'] ?>" data-board-title="<?= $config['board_title'] == '' ? "Shadow Box " . $config['id'] : $config['board_title'] ?>" data-toggle="modal" data-target="#confirmDeleteModal">
+                                    <img src="<?= plugin_dir_url(__DIR__) . 'amerison_configurator/images/trash.svg' ?>" alt="delete" width="20" height="20">
+                                </a>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+            <?php endif; ?>
+        </div>
 </div>
 
 

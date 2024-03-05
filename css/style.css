@@ -1,142 +1,221 @@
+.entry-header {
+  display: none !important;
+}
+
+.lexend-font {
+  font-family: "Lexend", sans-serif !important;
+}
+
+.board-list {
+  height: 68vh;
+  overflow: auto;
+}
+
 .section {
-    /* margin: 10px; */
-    overflow: hidden;
+  overflow: hidden;
 }
 
 #section1 {
-    height: 50vh;
-    border: 2px solid #ccc;
-    touch-action: none;
-    /* margin: 10px; */
+  height: 50vh;
+  border: 2px solid #f3efe7;
+  touch-action: none;
+  position: absolute;
 }
 
 #section2 {
-    height: 40vh;
-    border: 2px solid #ccc;
-    /* margin: 10px; */
+  height: 40vh;
+  border: 2px solid #f3efe7;
+  display: flex;
+}
+
+#myTabs {
+  z-index: 9 !important;
 }
 
 .draggable {
-    /* width: 40px; */
-    /* background-color: #5cb85c; */
-    color: #fff;
-    text-align: center;
-    line-height: 50px;
-    cursor: move;
-    margin: 5px;
+  color: #fff;
+  text-align: center;
+  line-height: 50px;
+  cursor: move;
+  margin: 5px;
 }
 
 .section1_logo {
-    width: 10%;
-    object-fit: cover;
-    max-width: 50px !important;
+  width: auto;
+  object-fit: cover;
+  height: 40px !important;
+  margin: 5px auto;
 }
 
-.close{
-    float: right;
-    margin-right: 10px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    font-size: x-large;
+.close {
+  float: right;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  font-size: x-large;
 }
 
 .custom_board_dimensions {
-    display: none;
+  display: none;
 }
 
 .close-button {
-    cursor: pointer;
-    display: none; /* Initially hide the close button */
-    background: white;
-    padding: 3px 9px;
-    border-radius: 20px;
-    color: red;
-    font-weight: 900;
+  cursor: pointer;
+  display: none;
+  background: white;
+  padding: 3px 9px;
+  border-radius: 20px;
+  color: red;
+  font-weight: 900;
 }
 
 .set_board_title {
-    z-index: 9;
+  z-index: 9;
 }
 
 .dot_alert {
-    border: 5px solid green;
-    position: absolute;
-    top: 0;
-    right: 0;
-    border-radius: 20px;
-    display: none;
+  z-index: 9;
+  border: 5px solid green;
+  position: absolute;
+  top: 0;
+  right: -10px;
+  border-radius: 20px;
+  display: none;
 }
-
 
 /* Preloader Start */
 
 .preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
 
-  .spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid #f3f3f3; /* Light grey border */
-    border-top: 3px solid #3498db; /* Blue border for animation */
-    border-radius: 50%;
-    animation: spin 1s linear infinite; /* Animation */
-  }
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 
-  /* Animation for spinner */
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* Animation for spinner */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 /* Preloader End */
 
-#collapseOne{
-    max-height: 37rem;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-a.nav-link.border-bottom{
-    padding: 0.5rem 0.7rem !important;
-}
-.set-radius-input{
-    border-radius: 0.25rem !important;
+#collapseOne {
+  max-height: 58vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 #left_section {
-    width: 66.6%;
-    height: 80vh;
-    overflow: hidden;
-    position: relative;
+  max-width: 66.6%;
+  max-height: 70vh;
+  height: 70vh;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Apply zoom effect to elements within section1 */
 #section1 {
-    width: auto; /* Set width to auto to allow content to determine width */
-    height: auto; /* Set height to auto to allow content to determine height */
-    /* overflow: hidden; Hide overflow content to prevent it from affecting layout */
-    /* position: absolute;
-    top: 60px;
-    left: 0px; */
+  width: auto;
+  height: auto;
 }
 
-#section1.zoom-effect {
-    transform: scale(0.5); /* Adjust the scale factor as needed */
-    transform-origin: top left; /* Set the origin of the transformation */
-    transition: transform 0.3s ease; /* Add smooth transition for the zoom effect */
-}
-
-/* hover on item to show close button */
 #section1 div.draggable-container:hover .close-button {
-    display: block !important; /* Show the close button on hover */
+  display: block !important;
+}
+
+.accordian-customization {
+  width: 100%;
+  font-family: lexend, sans-serif !important;
+}
+
+.accordian-customization:hover {
+  cursor: pointer;
+  transform: none !important;
+}
+
+input[type="text"],
+input[type="number"] {
+  border: 1px solid lightgray !important;
+}
+
+#myTabs .nav-link.active {
+  color: #000000 !important;
+  background-color: rgb(223, 138, 138) !important;
+  border-color: #ffffff00 #ffffff00 #ffffff00 !important;
+}
+
+#myTabs1 .nav-link.active {
+  color: #000000 !important;
+  background-color: rgb(167, 156, 157) !important;
+  border-color: #ffffff00 #ffffff00 #ffffff00 !important;
+}
+
+.tabs-font {
+  font-size: 14px;
+}
+
+.box-border-custom {
+  height: 69.7vh;
+}
+
+/* media at mobile screen */
+@media (max-width: 786px) {
+  #left_section {
+    max-width: 100% !important;
+    max-height: 100vh;
+    height: 100vh;
+  }
+
+  .tabs-font {
+    font-size: 13px;
+  }
+}
+
+.tooltip-container {
+  position: relative;
+}
+
+.custom-tooltip {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 265px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.tooltip-trigger:hover .custom-tooltip {
+  display: flex !important;
+  align-items: center;
+  flex-direction: column;
+}
+
+.custom-tooltip button {
+  background-color: blue;
+  padding: 5px 10px;
+  cursor: pointer;
 }
