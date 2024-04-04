@@ -1,6 +1,6 @@
 <!-- <div id="image1" class="d-none"><img src="https://5sshadowboard.com/wp-content/uploads/2024/02/mobile-1.png" alt="Wall Mount" class="img-fluid" /></div> -->
 <!-- Bootstrap Modal HTML -->
-<div class="modal" id="confirmationModal" tabindex="-1" role="dialog">
+<div class="modal index" id="confirmationModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -21,7 +21,7 @@
 </div>
 
 <!-- Background Image -->
-<div class="modal" id="backgroundImageModel" tabindex="-1" role="dialog">
+<div class="modal index" id="backgroundImageModel" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -42,7 +42,7 @@
 </div>
 
 
-<div class="modal" id="dimentionConfirmationModal" tabindex="-1" role="dialog">
+<div class="modal index" id="dimentionConfirmationModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -56,13 +56,12 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary closeModel1" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary" id="dimentionConfirm">Yes</button> -->
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal" id="boardWithTool" tabindex="-1" role="dialog">
+<div class="modal index" id="boardWithTool" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -82,21 +81,226 @@
   </div>
 </div>
 
+<div class="modal index" id="request_a_custom_tool" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header py-1">
+        <h5 class="modal-title">Request a Custom Tool</h5>
+        <button type="button" class="close request_custom_close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-dark p-0 fw-bold text-center fs-6">
+            The cost per custom tool is $15.
+        </div>
+        <div class="d-flex justify-content-end">
+            <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download><i class="fa fa-download" ></i> Download Measuring Sheet </a>
+            <span class="mx-1" style="margin-top: -7px">|</span>
+            <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download> Instruction Guide</a>
+        </div>
+        <form id="custom_tool_form" action="#" method="post" enctype="multipart/form-data">
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="custom_tool_image">Upload Custom Tool</label>
+                <input
+                    type="file"
+                    class="form-control"
+                    id="custom_tool_image"
+                    name="custom_tool_image"
+                    aria-describedby="bortTitleHelp"
+                    placeholder="Upload Logo"
+                />
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-primary mt-2" id="submit_custom_tool">Submit</button>
+            </div>
+        </form>
+        <div class="d-flex justify-content-end mt-3">
+            <div class="text-primary cursor-pointer fs-6" id="request_measuring_form">Request a larger Measuring sheet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal index" id="measuring_a_custom_tool" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header py-1">
+        <h5 class="modal-title">Request a larger Measuring sheet</h5>
+        <button type="button" class="close measuring_close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="measuring_form" method="post" enctype="multipart/form-data">
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_tool_name">Tool Name</label>
+                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_name" name="measuring_tool_name" aria-describedby="toolName" placeholder="Tool Name" />
+            </div>
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_tool_image">Upload Measuring Sheet</label>
+                <input
+                    type="file"
+                    class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark"
+                    id="measuring_tool_image"
+                    name="measuring_tool_image"
+                    aria-describedby="bortTitleHelp"
+                    placeholder="Upload Logo"
+                />
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label class="fs-6 lexend-font" for="measuring_tool_width">Width</label>
+                    <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_width" name="measuring_tool_width" aria-describedby="toolWidth" placeholder="Width" required>
+                </div>
+                <div class="col">
+                    <label class="fs-6 lexend-font" for="measuring_tool_height">Height</label>
+                    <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_height" name="measuring_tool_height" aria-describedby="toolHeight" placeholder="Height" required>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_tool_features">Features</label>
+                <textarea class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_features" name="measuring_tool_features" rows="2" aria-describedby="toolFeatures" placeholder="Write down the features descriptively" required></textarea>
+            </div>
+            <!-- color picker -->
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_tool_color">Color</label>
+                <input
+                    class="tab-pane fade show active p-0"
+                    style="width: 25px; height: 25px;"
+                    type="color"
+                    name="colorInput"
+                    value="#ffffff"
+                    id="measuring_tool_color"
+                    required
+                />
+            </div>
+            <!-- Quantity -->
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_tool_quantity">Quantity</label>
+                <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_quantity" name="measuring_tool_quantity" aria-describedby="toolQuantity" placeholder="Quantity">
+            </div>
+            <!-- Postal Address -->
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_postal_address">Postal Address</label>
+                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_postal_address" name="measuring_postal_address" aria-describedby="toolPostalAddress" placeholder="Postal Address">
+            </div>
+            <!-- Company/Customer info -->
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="measuring_tool_company">Company / Customer</label>
+                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_company" name="measuring_tool_company" aria-describedby="toolCompany" placeholder="Company / Customer">
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-primary mt-2" id="submit_measuring_tool">Submit</button>
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="preloader" class="preloader"></div>
+
+<div class="d-flex justify-content-center align-items-center drawing-tools bg-white px-2 border border-2 rounded rounded-2" style="">
+    <div class="d-flex justify-content-center my-1 align-items-center">
+        <button id="drawing_select" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Select" data-bs-content="Select and manipulate objects."><i class="text-black fa fa-mouse-pointer"></i></button>
+        <button id="drawing_pencil" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Pen" data-bs-content="Freehand drawing tool."><i class="text-black fa fa-pencil"></i></button>
+        <div class="dropdown cursor-pointer" id="line_stroke" style="display: none" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Pen Size" data-bs-content="Adjust the thickness of the pen." >
+            <button id="line_dropdown" class="bg-white border-0 py-0 px-2 dropdown-toggle d-flex hide-after" data-bs-toggle="dropdown">
+                <span class="bg-black d-block" style="width: 15px; height: 2px"></span>
+            </button>
+            <ul class="dropdown-menu p-1 w-auto" id="drawing_brush_width" style="min-width: auto;">
+                <li><button id="drawing_line_1" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="2" style="width: 30px; height: 2px"></span></button></li>
+                <li><button id="drawing_line_2" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="4" style="width: 30px; height: 4px"></span></i></button></li>
+                <li><button id="drawing_line_3" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="6" style="width: 30px; height: 6px"></span></i></button></li>
+                <li><button id="drawing_line_4" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="8" style="width: 30px; height: 8px"></span></i></button></li>
+            </ul>
+        </div>
+        <!-- <button id="drawing_eraser" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Why me?" data-bs-content="And heres some amazing content."><i class="text-black bi bi-x-square-fill"></i></button> -->
+        <button id="drawing_undo" disabled class="bg-white border-0 py-0 px-2 cursor-pointer" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Undo" data-bs-content="Undo the last action."><i class="text-black fa fa-undo"></i></button>
+        <button id="drawing_redo" disabled class="bg-white border-0 py-0 px-2 cursor-pointer" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Redo" data-bs-content="Redo the last action."><i class="text-black fa fa-rotate-right"></i></button>
+        <button id="drawing_eraser" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Delete" data-bs-content="Delete the selected item."><i class="text-black fa fa-trash"></i></button>
+        <!-- <button id="crop-button" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Why me?" data-bs-content="And heres some amazing content."><i class="text-black fa fa-crop"></i></button> -->
+        <button id="drawing_text" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Text" data-bs-content="Click to add the text."><i class="text-black fa fa-font"></i></button>
+        <div class="dropdown" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape" data-bs-content="Draw predefined shapes.">
+            <button id="shape_dropdown" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
+                <i class="text-black fa fa-square"></i>
+            </button>
+            <ul id="shapes_select" class="dropdown-menu p-1 w-auto" style="min-width: auto">
+                <li><button id="drawing_rectangle" data-shape="square" class="dropdown-item p-1 shape-items"><i class="text-black fa fa-square" ></i></button></li>
+                <li><button id="drawing_circle" data-shape="circle" class="dropdown-item p-1 shape-items"><i class="text-black fa fa-circle"></i></button></li>
+            </ul>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center my-1">
+        <div class="d-flex align-items-center">
+            <div class="position-relative d-flex ms-1" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Filler" data-bs-content="Fill shape with color.">
+                <!-- <img id="color-picker" class="position-absolute" width="22" height="22" src="https://img.icons8.com/metro/26/fill-color.png" alt="fill-color"/> -->
+                <input class="tab-pane fade show active p-0 border-0 ms-1 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="drawing_fill">
+            </div>
+            <div class="position-relative d-flex ms-2 justify-content-center align-items-center">
+                <!-- <img id="colorPickerToggle" class="position-absolute ms-1" width="22" height="22" src="https://img.icons8.com/windows/32/paint-palette.png" alt="paint-palette"/> -->
+                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="drawing_stroke">
+                <span id="colorPickerToggle" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Outline" data-bs-content="Fill the outline of shape with color." class="bg-white position-absolute cursor-pointer" style="height: 17px; width: 17px; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 5px solid black"></span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center ms-1">
+            <div class="dropdown" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Text Editor" data-bs-content="Change color, size, and style text." >
+                <button id="drawing_line" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
+                    <i class="text-black fa fa-text-height"></i>
+                </button>
+                <ul class="dropdown-menu p-1">
+                    <li class="border border-dark rounded rounded-2 m-2 p-2">
+                        <div class="d-flex flex-column gap-2 justify-content-start">
+                            <div class="position-relative d-flex gap-2">
+                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="fill_color_text">
+                                <label for="textStroke">Text Color</label>
+                            </div>
+                            <div class="position-relative d-flex gap-2">
+                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="stroke_color_text">
+                                <label for="textStroke">Text Stroke</label>
+                            </div>
+                        </div>
+                    </li>
+                    <li class= "border border-dark rounded rounded-2 m-2">
+                        <select id="text_font" class="form-select border-0 bg-white text-dark p-1">
+                            <option value="Arial">Arial</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                        </select>
+                    </li>
+                    <li class= "border border-dark rounded rounded-2 m-2">
+                        <input type="number" id="text_size" class="form-control border-0 bg-white text-dark p-1" min="1" value="12">
+                    </li>
+                </ul>
+            </div>
+            <button id="drawing_clear" class="fs-6 btn btn-danger border-0 py-0 px-2">Clear All</button>
+        </div>
+    </div>
+
+</div>
+
+
 
 <div class="dot_alert" id="dot_alert"></div>
 <section class="w-auto">
     <div class="row m-0 custom_height">
-        <div class="col-md-8" id="left_section">
-            <div class="left-box-custom-border my-2 section ui-droppable-active ui-droppable-hover" id="section1">
+        <div class="col-md-8 px-0" id="left_section">
+            <canvas style="position: absolute;" id="canvas" width="400" height="400"></canvas>
+            <div class="left-box-custom-border section ui-droppable-active ui-droppable-hover" id="section1">
                 <div class="w-100 color-box-customization" style="height: 50px" id="title_background_color">
                     <div class="h5 set_board_title" id="set_board_title"></div>
-                    <img src="" alt="" class="section1_logo" id="section1_logo">
+                </div>
+                <div id="image-container" class="" style="display: none;">
+                    <img src="" alt="" id="section1_logo" data-logo="" class="">
                 </div>
             </div>
         </div>
-        <div class="col-md-4 box-border-custom p-0 border border-dark">
-            <!-- select input type -->
+        <div class="col-md-4  p-0">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
@@ -152,15 +356,28 @@
                             <!-- Board Config section -->
                             <div class="" id="boardconfig-div">
                                 <!-- board title -->
-                                <div class="">
-                                    <div class="form-group">
+                                <div class="d-flex gap-3">
+                                    <div class="form-group board-title">
                                         <label class="fs-6 lexend-font" for="bortTitle">Board Title</label>
-                                        <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
+                                        <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white" id="board_title" aria-describedby="bortTitleHelp" placeholder="Enter Board Title">
+                                    </div>
+                                    <div class="title_bg_color form-group">
+                                        <label class="fs-6 lexend-font" for="title_header_color">Title Color</label>
+                                        <div class="form-group">
+                                            <input
+                                                class="tab-pane fade show active p-0"
+                                                style="width: 25px; height: 25px;"
+                                                type="color"
+                                                name="colorInput"
+                                                value=""
+                                                id="title_header_color"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="d-flex justify-content-between">
-                                    <div class="board-dimensions form-group w-50">
+                                <div class="d-flex gap-3">
+                                    <div class="board-dimensions form-group">
                                         <label class="fs-6 lexend-font"> Title Positions </label>
 
                                         <select class="form-control px-2 py-1" id="title_position">
@@ -343,8 +560,10 @@
                                     <h6 class="pt-2 mb-0" style="font-size: 12px" id="logo_name"></h6>
                                 </div>
 
+
+
                                 <!-- Custom Logo -->
-                                <div class="custom-Logo form-group">
+                                <!-- <div class="custom-Logo form-group">
                                     <label class="fs-6 lexend-font" class="mb-1"> Logo Placement </label>
                                     <select class="form-control px-2 py-1" id="custom_logo">
                                         <option value="null">Select Option</option>
@@ -352,7 +571,7 @@
                                         <option value="right">Top Right</option>
                                         <option value="center">Center</option>
                                     </select>
-                                </div>
+                                </div> -->
 
                                 <!-- Quantity of Board(s) -->
                                 <div class="quantity-of-Board form-group">
@@ -370,17 +589,6 @@
                                 aria-labelledby="justified-tab-1"
                             >
 
-                                <!-- tool shadow color -->
-                                <div class="form-group tool_shadow_box">
-                                    <label class="fs-6 lexend-font"> Tool shadow color </label>
-
-                                    <select class="form-control px-2 py-1">
-                                        <option selected>Select Option</option>
-                                        <option value="1">Black</option>
-                                        <option value="2">White</option>
-                                    </select>
-                                </div>
-
                                 <!-- Tool / Hardware Bank  -->
                                 <div class="form-group mb-2">
                                     <label class="fs-6 lexend-font" for="sel1">Select Tool</label>
@@ -389,17 +597,28 @@
                                     </select>
                                 </div>
 
-                                <div class="section" id="section2"></div>
+                                <div class="form-group mb-2">
+                                    <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="searchInput" placeholder="Search names...">
+                                </div>
+
+                                <span id="request_custom_tool" class="d-flex justify-content-end text-decoration-underline text-primary cursor-pointer fs-6">Request a Custom Tool</span>
+
+                                <div class="loader" id="loader" style="display: none;">Loading...</div>
+                                    <label class="fs-6 lexend-font mt-1" for="sel1">Tools</label>
+                                    <div class="section gap-2 overflow-auto" id="section2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="You can update the color of the tool in the Shadow Board."></div>
+                                </div>
+
+                                <label class="fs-6 lexend-font mt-4" for="sel1">Custom Tools</label>
+                                <div class="section gap-2 overflow-auto" id="custom_section" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Custom Tools color" data-bs-content="You can update the color of the tool in the Shadow Board.">
                                 </div>
                             </div>
                             </div>
-                            
                         </div>
                         </div>
                     </div>
                     </div>
                     <div class="d-flex justify-content-center border-top border-dark">
-                        <button type="button" class="btn btn-danger my-2 border border-top-1 " id="reset_board">Reset Board</button>
+                        <button type="button" class="btn btn-danger my-2 border border-top-1" id="reset_board">Reset Board</button>
                     </div>
                 </div>
                 </div>
