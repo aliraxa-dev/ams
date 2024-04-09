@@ -12,7 +12,7 @@ var boardProperties = {
     quantity_of_boards: '',
 }
 
-const colors = ['#aa182c', '#a87bc9', '#ff5100', '#ffd600', '#9ea1a2', '#6d3628', '#005cb9', '#0db14b', '#ee4d9a', '#231f20'];
+const colors = ['#aa182c', '#a87bc9', '#ff5100', '#ffd600', '#9ea1a2', '#6d3628', '#005cb9', '#0db14b', '#ee4d9a', '#231f20', '#ffffff'];
 
 
 let console_disabled = false;
@@ -461,7 +461,7 @@ function allowDrop() {
 
     $clone.css({
         top: 0 + "px",
-        left: left + "px",
+        left: 0 + "px",
         position: "absolute",
         width: "auto",
         height: height + "px",
@@ -2330,54 +2330,39 @@ $("#submit_custom_tool").on("click", function() {
 $("#submit_measuring_tool").on("click", function() {
     showPreloader();
     const name = $('#measuring_tool_name').val();
-    const file = $('#measuring_tool_image').prop('files')[0];
-    const width = $('#measuring_tool_width').val();
-    const height = $('#measuring_tool_height').val();
-    const features = $('#measuring_tool_features').val();
-    const color = $('#measuring_tool_color').val();
-    const quantity = $('#measuring_tool_quantity').val();
-    const company = $('#measuring_tool_company').val();
     const address = $('#measuring_postal_address').val();
+    const quantity = $('#measuring_tool_quantity').val();
+    const comments = $('#measuring_tool_features').val();
+    const totalCost = $('#measuring_tool_company').val();
     var board_id = window.location.search.split('=')[1];
 
-    if (file) {
-        var reader = new FileReader();
+    var formData = new FormData();
+    formData.append('action', 'process_measuring_tool_request');
+    formData.append('board_id', board_id);
+    formData.append('name', name);
+    formData.append('address', address);
+    formData.append('quantity', quantity);
+    formData.append('comments', comments);
+    formData.append('totalCost', totalCost);
 
-        reader.onload = function(e) {
-            var formData = new FormData();
-            formData.append('action', 'process_measuring_tool_request');
-            formData.append('board_id', board_id);
-            formData.append('name', name);
-            formData.append('file', file);
-            formData.append('width', width);
-            formData.append('height', height);
-            formData.append('features', features);
-            formData.append('color', color);
-            formData.append('quantity', quantity);
-            formData.append('company', company);
-            formData.append('address', address);
-
-            $.ajax({
-                url: amerison_vars.ajaxurl,
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    // Hide modal on success
-                    // console.log('Measuring tool request sent successfully');
-                    $('#measuring_a_custom_tool').modal('hide');
-                    hidePreloader();
-                    toastr.success('Measuring tool request sent successfully');
-                },
-                error: function(error) {
-                    console.error('Error sending measuring tool request');
-                }
-            });
+    $.ajax({
+        url: amerison_vars.ajaxurl,
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            // Hide modal on success
+            $('#measuring_a_custom_tool').modal('hide');
+            hidePreloader();
+            toastr.success('Measuring tool request sent successfully');
+        },
+        error: function(error) {
+            console.error('Error sending measuring tool request');
         }
-        reader.readAsDataURL(file);
-    }
+    });
 });
+
 
 $('#color-picker').on('click', function() {
     $('#drawing_fill').click();

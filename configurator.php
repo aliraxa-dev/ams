@@ -97,7 +97,7 @@
         <div class="d-flex justify-content-end">
             <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download><i class="fa fa-download" ></i> Download Measuring Sheet </a>
             <span class="mx-1" style="margin-top: -7px">|</span>
-            <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download> Instruction Guide</a>
+            <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download><i class="fa fa-download" ></i> Instruction Guide</a>
         </div>
         <form id="custom_tool_form" action="#" method="post" enctype="multipart/form-data">
             <div class="form-group mt-2">
@@ -134,63 +134,33 @@
         </button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-danger p-0 fw-bold text-center fs-6">
+            A $40 fee will be charged for the larger measuring sheet, the charge will be reimbursed upon placing an order for a shadow board.
+        </div>
         <form id="measuring_form" method="post" enctype="multipart/form-data">
             <div class="form-group mt-2">
-                <label class="fs-6 lexend-font" for="measuring_tool_name">Tool Name</label>
-                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_name" name="measuring_tool_name" aria-describedby="toolName" placeholder="Tool Name" />
+                <label class="fs-6 lexend-font" for="measuring_tool_name">Name</label>
+                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_name" name="measuring_tool_name" aria-describedby="toolName" placeholder="Enter name" />
             </div>
+            <!-- Postal Address -->
             <div class="form-group mt-2">
-                <label class="fs-6 lexend-font" for="measuring_tool_image">Upload Measuring Sheet</label>
-                <input
-                    type="file"
-                    class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark"
-                    id="measuring_tool_image"
-                    name="measuring_tool_image"
-                    aria-describedby="bortTitleHelp"
-                    placeholder="Upload Logo"
-                />
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label class="fs-6 lexend-font" for="measuring_tool_width">Width</label>
-                    <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_width" name="measuring_tool_width" aria-describedby="toolWidth" placeholder="Width" required>
-                </div>
-                <div class="col">
-                    <label class="fs-6 lexend-font" for="measuring_tool_height">Height</label>
-                    <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_height" name="measuring_tool_height" aria-describedby="toolHeight" placeholder="Height" required>
-                </div>
-            </div>
-            <div class="form-group mt-2">
-                <label class="fs-6 lexend-font" for="measuring_tool_features">Features</label>
-                <textarea class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_features" name="measuring_tool_features" rows="2" aria-describedby="toolFeatures" placeholder="Write down the features descriptively" required></textarea>
-            </div>
-            <!-- color picker -->
-            <div class="form-group mt-2">
-                <label class="fs-6 lexend-font" for="measuring_tool_color">Color</label>
-                <input
-                    class="tab-pane fade show active p-0"
-                    style="width: 25px; height: 25px;"
-                    type="color"
-                    name="colorInput"
-                    value="#ffffff"
-                    id="measuring_tool_color"
-                    required
-                />
+                <label class="fs-6 lexend-font" for="measuring_postal_address">Address</label>
+                <textarea class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_postal_address" name="measuring_postal_address" rows="3" aria-describedby="toolPostalAddress" placeholder="Write down the address" required></textarea>
             </div>
             <!-- Quantity -->
             <div class="form-group mt-2">
                 <label class="fs-6 lexend-font" for="measuring_tool_quantity">Quantity</label>
-                <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_quantity" name="measuring_tool_quantity" aria-describedby="toolQuantity" placeholder="Quantity">
+                <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_quantity" name="measuring_tool_quantity" aria-describedby="toolQuantity" placeholder="Enter quantity">
             </div>
-            <!-- Postal Address -->
+            <!-- Comments -->
             <div class="form-group mt-2">
-                <label class="fs-6 lexend-font" for="measuring_postal_address">Postal Address</label>
-                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_postal_address" name="measuring_postal_address" aria-describedby="toolPostalAddress" placeholder="Postal Address">
+                <label class="fs-6 lexend-font" for="measuring_tool_features">Comments</label>
+                <textarea class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_features" name="measuring_tool_features" rows="3" aria-describedby="toolFeatures" placeholder="Write down the comments descriptively" required></textarea>
             </div>
-            <!-- Company/Customer info -->
+            <!-- TotalCost -->
             <div class="form-group mt-2">
-                <label class="fs-6 lexend-font" for="measuring_tool_company">Company / Customer</label>
-                <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_company" name="measuring_tool_company" aria-describedby="toolCompany" placeholder="Company / Customer">
+                <label class="fs-6 lexend-font" for="measuring_tool_company">Total cost</label>
+                <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_company" name="measuring_tool_company" aria-describedby="toolCompany" placeholder="Enter total cost">
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <button type="button" class="btn btn-primary mt-2" id="submit_measuring_tool">Submit</button>
@@ -581,37 +551,29 @@
                             </div>
                             </div>
                             <div class="tab-pane fade" id="content2">
-                            <!-- Tool config start -->
-                            <div
-                                class="tab-pane"
-                                id="justified-tabpanel-1"
-                                role="tabpanel"
-                                aria-labelledby="justified-tab-1"
-                            >
+                                <!-- Tool config start -->
+                                <div class="tab-pane" id="justified-tabpanel-1" role="tabpanel" aria-labelledby="justified-tab-1">
+                                    <!-- Tool / Hardware Bank  -->
+                                    <div class="form-group mb-2">
+                                        <label class="fs-6 lexend-font" for="sel1">Select Tool</label>
+                                        <select class="form-control px-2 py-1" id="attributes">
+                                        <option selected value="null">Select Product</option>
+                                        </select>
+                                    </div>
 
-                                <!-- Tool / Hardware Bank  -->
-                                <div class="form-group mb-2">
-                                    <label class="fs-6 lexend-font" for="sel1">Select Tool</label>
-                                    <select class="form-control px-2 py-1" id="attributes">
-                                    <option selected value="null">Select Product</option>
-                                    </select>
-                                </div>
+                                    <div class="form-group mb-2">
+                                        <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="searchInput" placeholder="Search names...">
+                                    </div>
 
-                                <div class="form-group mb-2">
-                                    <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="searchInput" placeholder="Search names...">
-                                </div>
+                                    <span id="request_custom_tool" class="text-decoration-underline text-primary cursor-pointer fs-6 float-end">Request a Custom Tool</span>
 
-                                <span id="request_custom_tool" class="d-flex justify-content-end text-decoration-underline text-primary cursor-pointer fs-6">Request a Custom Tool</span>
-
-                                <div class="loader" id="loader" style="display: none;">Loading...</div>
+                                    <div class="loader" id="loader" style="display: none;">Loading...</div>
                                     <label class="fs-6 lexend-font mt-1" for="sel1">Tools</label>
                                     <div class="section gap-2 overflow-auto" id="section2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="You can update the color of the tool in the Shadow Board."></div>
-                                </div>
 
-                                <label class="fs-6 lexend-font mt-4" for="sel1">Custom Tools</label>
-                                <div class="section gap-2 overflow-auto" id="custom_section" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Custom Tools color" data-bs-content="You can update the color of the tool in the Shadow Board.">
+                                    <label class="fs-6 lexend-font mt-4" for="sel1">Custom Tools</label>
+                                    <div class="section gap-2 overflow-auto" id="custom_section" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="" title="Custom Tools color" data-bs-content="You can update the color of the tool in the Shadow Board."></div>
                                 </div>
-                            </div>
                             </div>
                         </div>
                         </div>

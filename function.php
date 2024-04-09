@@ -52,11 +52,12 @@ function enqueue_admin_bootstrap() {
 add_action('admin_enqueue_scripts', 'enqueue_admin_bootstrap');
 
 function enqueue_admin_assets() {
+    $timestamp = time();
     // Enqueue your custom CSS
     wp_enqueue_style('custom-admin-css', plugin_dir_url(__FILE__) . '/css/style.css', array(), $timestamp);
 
     // Enqueue your custom JavaScript
-    wp_enqueue_script('custom-admin-js', plugin_dir_url(__FILE__) . '/js/admin-script.js', array('jquery'), $timestamp, true);
+    wp_enqueue_script('custom-admin-js', plugin_dir_url(__FILE__) . '/js/admin-script.js?v=001', array('jquery'), $timestamp, true);
 
     wp_localize_script(
         'amerison_script',
@@ -71,8 +72,8 @@ add_action('admin_enqueue_scripts', 'enqueue_admin_assets');
 
 
 function configurator_page() {
-    $page_title = 'Configurator';
-    $menu_title = 'Configurator';
+    $page_title = 'Boards List';
+    $menu_title = 'Boards List';
     $capability = 'manage_options';
     $menu_slug = 'amerison-configurator';
     $function = 'configurator_page_content';
@@ -81,7 +82,7 @@ function configurator_page() {
 
     add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
 
-    $sub_menu_title = 'Request Custom Tool';
+    $sub_menu_title = 'Custom Requests';
     $sub_menu_slug = 'request-custom-tool';
     $sub_function = 'request_custom_tool_page_content';
     add_submenu_page($menu_slug, $page_title, $sub_menu_title, $capability, $sub_menu_slug, $sub_function);
@@ -95,42 +96,10 @@ function configurator_page_content() {
     $configurator = get_all_boards();
     $delete_all = admin_url('admin-ajax.php?action=delete_all');
 
-    ?>
-    <script>
-        jQuery(document).ready(function($) {
-            $('#delete_all_boards').on('click', function() {
-                if (confirm('Are you sure you want to delete all boards?')) {
-                    $.post('<?= $delete_all ?>', {
-                        action: 'delete_all'
-                    }, function(response) {
-                        if (response) {
-                            console.log('All boards deleted successfully!');
-                            location.reload();
-                        }
-                    });
-                }
-            });
-
-            $('.delete-board').on('click', function() {
-                var board_id = $(this).data('id');
-                if (confirm('Are you sure you want to delete this board?')) {
-                    $.post(ajaxurl, {
-                        action: 'delete_all',
-                        board_id: board_id
-                    }, function(response) {
-                        if (response) {
-                            location.reload();
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-    <?php
     // show the list of all the boards here in the table
     ?>
     <div class="wrap">
-        <h1 class="wp-heading-inline">Configurator</h1>
+        <h1 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">List of Boards</h1>
 
     <!-- Delete All Boards -->
     <button id="delete_all_boards" class="button button-primary" style="margin-left: 20px; float: inline-end; margin-bottom: 20px;">Delete All Boards</button>
@@ -138,17 +107,16 @@ function configurator_page_content() {
     <table class="wp-list-table widefat fixed striped">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Board Title</th>
-                <th>Board Dimensions</th>
-                <th>Background Color</th>
-                <th>Board Style</th>
-                <th>Board Material</th>
-                <th>Quantity of Boards</th>
-                <th>Attachment ID</th>
-                <th>Logo URL</th>
-                <th>Background URL</th>
-                <th>Timestamp</th>
+                <th style="width: 60px">ID</th>
+                <th>Title</th>
+                <th>Dimensions</th>
+                <th>Board Color</th>
+                <th>Style</th>
+                <th>Material</th>
+                <th>Quantity</th>
+                <th>Logo</th>
+                <th>Background</th>
+                <th>Updated at</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -158,13 +126,29 @@ function configurator_page_content() {
                     <td><?= $board->id ?></td>
                     <td><?= $board->board_title ?></td>
                     <td><?= $board->board_dimensions ?></td>
-                    <td><?= $board->background_color ?></td>
+                    <td>
+                        <div style="border: 1px solid black; width: 30px; height: 30px; background-color: <?= $board->background_color ?>;"></div>
+                    </td>
+
                     <td><?= $board->board_style ?></td>
                     <td><?= $board->board_material ?></td>
                     <td><?= $board->quantity_of_boards ?></td>
-                    <td><?= $board->attachment_id ?></td>
-                    <td><?= $board->logo_url ?></td>
-                    <td><?= $board->background_url ?></td>
+                    <td>
+                        <?php if (!empty($board->logo_url)): ?>
+                            <img src="<?= $board->logo_url ?>" alt="Logo" style="width: 30px">
+                        <?php else: ?>
+                            No Logo
+                        <?php endif; ?>
+                    </td>
+
+                    <td>
+                        <?php if (!empty($board->background_url)): ?>
+                            <img src="<?= $board->background_url ?>" alt="Background" style="width: 30px">
+                        <?php else: ?>
+                            No Background
+                        <?php endif; ?>
+                    </td>
+
                     <td><?= $board->timestamp ?></td>
                     <td>
                         <!-- <a href="<?= admin_url('admin.php?page=amerison-configurator&board=' . $board->id) ?>">Edit</a> -->
@@ -185,13 +169,17 @@ function request_custom_tool_page_content() {
     <div id="preloader" class="preloader"></div>
 
     <div class="wrap">
-        <h1 class="wp-heading-inline">Request Custom Tools List</h1>
+        <!-- <h1 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Request Custom Tools List</h1> -->
 
-        <!-- Tab Content -->
-        <div id="custom-tools" class="tab-content">
+        <div id="tabs" style="border-bottom: 3px solid #000000;">
+            <button class="tablink btn tab-color rounded-0 fw-bolder text-dark" data-tab="Tab1">Custom Tools</button>
+            <button class="tablink btn tab-color rounded-0 fw-bolder text-dark" data-tab="Tab2">Measuring Sheets</button>
+        </div>
+        <div id="Tab1" class="tabcontent">
+        <div id="custom-tools" class="tab-content py-3">
             <?php
             // Display Custom Tools Requests Table
-            echo '<h2>Custom Tools Requests</h2>';
+            echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Custom Tool Requests</h4>';
             echo '<table class="wp-list-table widefat fixed striped">';
             echo '<thead>
                     <tr>
@@ -208,7 +196,7 @@ function request_custom_tool_page_content() {
             foreach ($custom_tool_requests as $request) {
                 echo '<tr>';
                 echo '<td>' . $request['id'] . '</td>';
-                echo '<td>' . get_user_name_by_id($request['user_id']) . '</td>';
+                echo '<td>' . ucwords(get_user_name_by_id($request['user_id'])) . '</td>';
                 echo '<td><a href="' . ($request['file']) . '" download>Download</a></td>';
                 echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
                 echo '<td>' . ($request['status']) . '</td>';
@@ -259,29 +247,24 @@ function request_custom_tool_page_content() {
                 </div>
             </div>
             </div>
-
         </div>
-
-        <div id="measuring-tools" class="tab-content">
+        </div>
+        <div id="Tab2" class="tabcontent" style="display: none">
+        <div id="measuring-tools" class="tab-content py-3">
             <?php
             // Display Measuring Tools Requests Table
-            echo '<h2>Measuring Sheets Requests</h2>';
+            echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Measuring Sheet Requests</h4>';
             echo '<table class="wp-list-table widefat fixed striped">';
             echo '<thead>
                     <tr>
-                        <th>User Name</th>
-                        <th>Tool Name</th>
-                        <th>Width</th>
-                        <th>Height</th>
-                        <th>Features</th>
-                        <th>Color</th>
-                        <th>Quantity</th>
-                        <th>Company</th>
-                        <th>Postal Address</th>
+                        <th>User</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th style="width: 85px">Quantity</th>
+                        <th>Comments</th>
+                        <th>Total cost</th>
                         <th>Status</th>
                         <th>Request Date</th>
-                        <th>File Download</th>
-                        <th>Upload</th>
                         <th>Actions</th>
                     </tr>
                 </thead>';
@@ -289,26 +272,21 @@ function request_custom_tool_page_content() {
             $measuring_tool_requests = get_measuring_tool_requests();
             foreach ($measuring_tool_requests as $request) {
                 echo '<tr>';
-                echo '<td>' . get_user_name_by_id($request['user_id']) . '</td>';
+                echo '<td>' . ucwords(get_user_name_by_id($request['user_id'])) . '</td>';
                 echo '<td>' . $request['name'] . '</td>';
-                echo '<td>' . $request['width'] . '</td>';
-                echo '<td>' . $request['height'] . '</td>';
-                echo '<td>' . $request['features'] . '</td>';
-                echo '<td>' . $request['color'] . '</td>';
+                echo '<td>' . ($request['address'] === null ? 'N/A' : $request['address']) . '</td>';
                 echo '<td>' . $request['quantity'] . '</td>';
-                echo '<td>' . $request['company'] . '</td>';
-                echo '<td>' . $request['address'] . '</td>';
+                echo '<td>' . $request['comments'] . '</td>';
+                echo '<td>' . $request['total_cost'] . '</td>';
                 echo '<td>' . ($request['status']) . '</td>';
                 echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
-                echo '<td> <a href="' . ($request['image']) . '" download>Download</a></td>';
-                // upload action
-                echo '<td><input type="file" class="form-control" id="upload_file_measure_'.$request['id'].'"></td>';
-                echo '<td><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">Send</button></td>';
+                echo '<td><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">Update</button></td>';
                 echo '</td>';
             }
             echo '</tbody>';
             echo '</table>';
             ?>
+        </div>
         </div>
     </div>
     <?php
@@ -336,61 +314,92 @@ function get_measuring_tool_requests() {
 add_action('wp_ajax_send_measuring_sheet_email', 'send_measuring_sheet_email');
 add_action('wp_ajax_nopriv_send_measuring_sheet_email', 'send_measuring_sheet_email');
 
+// function send_measuring_sheet_email() {
+//     if (isset($_POST['request_id']) && isset($_FILES['file'])) {
+//         $request_id = $_POST['request_id'];
+
+//         $upload_dir = wp_upload_dir();
+//         $file_name = time() . '_' . $_FILES['file']['name'];
+//         $file_tmp = $_FILES['file']['tmp_name'];
+//         $file_path = $upload_dir['path'] . '/' . $file_name;
+//         $file_link = $upload_dir['url'] . '/' . $file_name;
+
+
+//         // Move uploaded file to the upload directory
+//         if (move_uploaded_file($file_tmp, $file_path)) {
+//             $id = get_sheet_by_id('id', $request_id);
+
+//             $user_id = $id->user_id;
+//             $subject = 'Measuring Sheet Request';
+//             $message = "
+//                 <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
+//                 <p>Your measuring sheet has been created. You can download it from the link below:\n</p>
+//                 <p><a href=" . $file_link . ">Download Measuring Sheet</a>\n</p>
+//                 <p>Thank you.</p>
+//                 <p>Regards,</p>
+//                 <p>Amerison</p>
+//             ";
+
+//             // Check if the file exists before sending the email
+//             if (file_exists($file_path)) {
+//                 send_email_to_user($user_id, $subject, $message);
+
+//                 // Update the request status to 'Sent'
+//                 global $wpdb;
+//                 $table_name = $wpdb->prefix . 'measure_request';
+//                 $wpdb->update($table_name, array('status' => 'Sent'), array('id' => $request_id));
+//             } else {
+//                 echo 'File not found.';
+//             }
+
+//         } else {
+//             // Move uploaded file to the upload directory
+//             if (move_uploaded_file($file_tmp, $file_path)) {
+//                 // File successfully uploaded
+//             } else {
+//                 // Failed to move the file
+//                 $last_error = error_get_last();
+//                 if ($last_error) {
+//                     error_log('File upload error: ' . print_r($last_error, true));
+//                 }
+//                 echo 'Error moving file.';
+//                 wp_die();
+//             }
+//         }
+//     }
+//     wp_die();
+// }
+
 function send_measuring_sheet_email() {
-    if (isset($_POST['request_id']) && isset($_FILES['file'])) {
+    if (isset($_POST['request_id'])) {
         $request_id = $_POST['request_id'];
 
-        $upload_dir = wp_upload_dir();
-        $file_name = time() . '_' . $_FILES['file']['name'];
-        $file_tmp = $_FILES['file']['tmp_name'];
-        $file_path = $upload_dir['path'] . '/' . $file_name;
-        $file_link = $upload_dir['url'] . '/' . $file_name;
+        $id = get_sheet_by_id('id', $request_id);
+        $user_id = $id->user_id;
+        $subject = 'Measuring Sheet Request';
+        $message = "
+            <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
+            <p>Your measuring sheet has been delivered. You will receive it soon.\n</p>
+            <p>Thank you.</p>
+            <p>Regards,</p>
+            <p>Amerison</p>
+        ";
 
+        // Send email to user
+        send_email_to_user($user_id, $subject, $message);
 
-        // Move uploaded file to the upload directory
-        if (move_uploaded_file($file_tmp, $file_path)) {
-            $id = get_sheet_by_id('id', $request_id);
+        // Update the request status to 'Sent'
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'measure_request';
+        $wpdb->update($table_name, array('status' => 'Sent'), array('id' => $request_id));
 
-            $user_id = $id->user_id;
-            $subject = 'Measuring Sheet Request';
-            $message = "
-                <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
-                <p>Your measuring sheet has been created. You can download it from the link below:\n</p>
-                <p><a href=" . $file_link . ">Download Measuring Sheet</a>\n</p>
-                <p>Thank you.</p>
-                <p>Regards,</p>
-                <p>Amerison</p>
-            ";
-
-            // Check if the file exists before sending the email
-            if (file_exists($file_path)) {
-                send_email_to_user($user_id, $subject, $message);
-
-                // Update the request status to 'Sent'
-                global $wpdb;
-                $table_name = $wpdb->prefix . 'measure_request';
-                $wpdb->update($table_name, array('status' => 'Sent'), array('id' => $request_id));
-            } else {
-                echo 'File not found.';
-            }
-
-        } else {
-            // Move uploaded file to the upload directory
-            if (move_uploaded_file($file_tmp, $file_path)) {
-                // File successfully uploaded
-            } else {
-                // Failed to move the file
-                $last_error = error_get_last();
-                if ($last_error) {
-                    error_log('File upload error: ' . print_r($last_error, true));
-                }
-                echo 'Error moving file.';
-                wp_die();
-            }
-        }
+        echo 'Email sent successfully.';
+    } else {
+        echo 'Request ID not provided.';
     }
     wp_die();
 }
+
 
 
 
@@ -759,14 +768,10 @@ function create_measure_request_table() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         name VARCHAR(255),
-        image VARCHAR(255),
-        width INT NOT NULL,
-        height INT NOT NULL,
-        features TEXT NOT NULL,
-        color VARCHAR(50) NOT NULL,
-        quantity INT,
-        company VARCHAR(300),
         address VARCHAR(300),
+        quantity INT,
+        comments TEXT NOT NULL,
+        total_cost INT,
         status VARCHAR(50) DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
@@ -917,47 +922,23 @@ function process_measuring_tool_request() {
         wp_send_json_error('User not logged in.');
     }
 
-    if (!isset($_FILES['file']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
-        wp_send_json_error('No file uploaded.');
-    }
-
-    // Handle file upload
-    $upload_dir = wp_upload_dir();
-    $file_name = time() . $_FILES['file']['name'];
-    $file_tmp = $_FILES['file']['tmp_name'];
-    $file_path = $upload_dir['path'] . '/' . $file_name;
-    $file_link = $upload_dir['url'] . '/' . $file_name;
-
-
-    // Move the uploaded file to the upload directory
-    if (!move_uploaded_file($file_tmp, $file_path)) {
-        wp_send_json_error('Failed to move uploaded file.');
-    }
-
     // get the current user id
     $user_id = get_current_user_id();
     $name = $_POST['name'] ? $_POST['name'] : '';
-    $width = $_POST['width'] ? $_POST['width'] : 0;
-    $height = $_POST['height'] ? $_POST['height'] : 0;
-    $features = $_POST['features'] ? $_POST['features'] : '';
-    $color = $_POST['color'] ? $_POST['color'] : '';
-    $quantity = $_POST['quantity'] ? $_POST['quantity'] : 0;
-    $company = $_POST['company'] ? $_POST['company'] : '';
     $address = $_POST['address'] ? $_POST['address'] : '';
+    $comments = $_POST['comments'] ? $_POST['comments'] : '';
+    $quantity = $_POST['quantity'] ? $_POST['quantity'] : 0;
+    $totalCost = $_POST['totalCost'] ? $_POST['totalCost'] : '';
 
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
     $wpdb->insert($table_name, array(
         'user_id' => $user_id,
         'name' => $name,
-        'image' => $file_link,
-        'width' => $width,
-        'height' => $height,
-        'features' => $features,
-        'color' => $color,
-        'quantity' => $quantity,
-        'company' => $company,
         'address' => $address,
+        'quantity' => $quantity,
+        'comments' => $comments,
+        'total_cost' => $totalCost,
         'status' => 'Pending',
         'created_at' => current_time('mysql')
     ));
@@ -971,9 +952,6 @@ function process_measuring_tool_request() {
         <p>Amerison</p>
     ";
     send_email_to_user($user_id, $subject, $message);
-
-    // Send success response
-    // wp_send_json_success('Measuring tool request sent successfully.');
 
 }
 
