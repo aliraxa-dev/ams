@@ -3,26 +3,39 @@ jQuery(document).ready(function ($) {
 
     $('#delete_all_boards').on('click', function() {
         if (confirm('Are you sure you want to delete all boards?')) {
-            $.post('<?= $delete_all ?>', {
-                action: 'delete_all'
-            }, function(response) {
-                if (response) {
-                    console.log('All boards deleted successfully!');
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'delete_all'
+                },
+                success: function(response) {
                     location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to delete boards.');
                 }
             });
         }
     });
 
+
     $('.delete-board').on('click', function() {
         var board_id = $(this).data('id');
+        console.log(board_id);
         if (confirm('Are you sure you want to delete this board?')) {
-            $.post(ajaxurl, {
-                action: 'delete_all',
-                board_id: board_id
-            }, function(response) {
-                if (response) {
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'deleteBoard',
+                    board_id: board_id
+                },
+                success: function(response) {
                     location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to delete board.');
                 }
             });
         }
@@ -181,6 +194,30 @@ jQuery(document).ready(function ($) {
             },
             error: function(xhr, status, error) {
                 alert('Failed to send measuring sheet.');
+            }
+        });
+    });
+
+    $('.stripe-refund').on("click", function() {
+        var id = $(this).data('id');
+        var payment_amount = (admin.large_measuring * 100) ?? 0;
+
+        var formData = {
+            action: 'initiate_stripe_refund',
+            id: id,
+            payment_amount: payment_amount
+        };
+
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                alert(response);
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert('Failed to initiate refund.');
             }
         });
     });

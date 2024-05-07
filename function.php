@@ -4,10 +4,12 @@ Plugin Name: Amerison Configurator
 Description: This plugin is used to create a product configurator.
 Version: 1.0
 Author: Ali Raza
-URL: aliraza.live
+URL: alirazaofficial.com
 */
 
-// Enqueue the necessary scripts and styles
+/*
+* All the scripts, libraries and custom files
+*/
 
 function enqueue_amerison_scripts() {
     $timestamp = time();
@@ -15,7 +17,6 @@ function enqueue_amerison_scripts() {
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
     wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), $timestamp, true);
-    // add bootstrap css and js
     wp_enqueue_style('jquery-ui-css', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
     wp_enqueue_style('cropper-css', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css');
     wp_enqueue_script('popper-js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js', array(), $timestamp, true);
@@ -28,82 +29,99 @@ function enqueue_amerison_scripts() {
     wp_enqueue_script('fabric-js', 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js', array(), null, true);
     wp_enqueue_script('cropperjs', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js', array(), null, true);
     wp_enqueue_script('toaster-js', 'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js', array(), null, true);
+    wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', array(), null, true);
+    wp_add_inline_script('stripe-js', 'var stripe = Stripe("' . get_option('stripe_settings')['publishable_key'] . '");');
 
-
-    // Pass Ajax URL to script.js
     wp_localize_script(
         'amerison_script',
         'amerison_vars',
         array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'user_id' => get_current_user_id(),
+            'stripe' => get_option('stripe_settings')['publishable_key'],
+            'custom_price' => get_option('stripe_settings')['custom_price'],
+            'large_measuring' => get_option('stripe_settings')['large_measuring'],
         )
     );
 }
 add_action('wp_enqueue_scripts', 'enqueue_amerison_scripts');
 
-function enqueue_admin_bootstrap() {
-    // Enqueue Bootstrap CSS
-    wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
 
-    // Enqueue Bootstrap JavaScript (optional)
+/*
+* Included labraries on admin side
+*/
+function enqueue_admin_bootstrap() {
+    wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
 }
 add_action('admin_enqueue_scripts', 'enqueue_admin_bootstrap');
 
+/*
+* Included custom files on admin side
+*/
+
 function enqueue_admin_assets() {
     $timestamp = time();
-    // Enqueue your custom CSS
-    wp_enqueue_style('custom-admin-css', plugin_dir_url(__FILE__) . '/css/style.css', array(), $timestamp);
-
-    // Enqueue your custom JavaScript
-    wp_enqueue_script('custom-admin-js', plugin_dir_url(__FILE__) . '/js/admin-script.js?v=001', array('jquery'), $timestamp, true);
+    wp_enqueue_style('custom-admin-css', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
+    wp_enqueue_script('custom-admin-js', plugin_dir_url(__FILE__) . 'js/admin-script.js', array('jquery'), $timestamp, true);
 
     wp_localize_script(
-        'amerison_script',
-        'amerison_vars',
+        'custom-admin-js',
+        'admin',
         array(
             'ajaxurl' => admin_url('admin-ajax.php'),
+            'large_measuring' => get_option('stripe_settings')['large_measuring'],
         )
     );
 }
 add_action('admin_enqueue_scripts', 'enqueue_admin_assets');
 
-
+/*
+* Custom plugin admin dashboard board list menu and custom request menu
+*/
 
 function configurator_page() {
-    $page_title = 'Boards List';
-    $menu_title = 'Boards List';
+    $page_title = 'Amerison Configurator';
+    $menu_title = 'Amerison Configurator';
+    $main_submenu_title = 'Amerison Configurator';
     $capability = 'manage_options';
     $menu_slug = 'amerison-configurator';
     $function = 'configurator_page_content';
     $icon_url = 'dashicons-admin-generic';
     $position = 20;
 
+    // Add the main menu page
     add_menu_page($page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position);
 
-    $sub_menu_title = 'Custom Requests';
-    $sub_menu_slug = 'request-custom-tool';
+    // Add the submenu page with a different menu title
+    $sub_menu_title = 'All Shadow Boards';
+    add_submenu_page($menu_slug, $page_title, $sub_menu_title, $capability, $menu_slug, $function);
+
+
+    $sub_menu_title = 'All Requests';
+    $sub_menu_slug = 'custom-request';
     $sub_function = 'request_custom_tool_page_content';
     add_submenu_page($menu_slug, $page_title, $sub_menu_title, $capability, $sub_menu_slug, $sub_function);
-}
 
+    $stripe_settings_page = 'Stripe Settings';
+    $stripe_settings_title = 'Stripe Settings';
+    $stripe_settings_capability = 'manage_options';
+    $stripe_settings_slug = 'stripe-settings';
+    $stripe_settings_function = 'render_stripe_setting_page';
+    add_submenu_page($menu_slug, $stripe_settings_page, $stripe_settings_title, $stripe_settings_capability, $stripe_settings_slug, $stripe_settings_function);
+}
 add_action('admin_menu', 'configurator_page');
 
-
-// Add the page content for the configurator page list all the boards
+/*
+* Admin dashboard board list page content
+*/
 function configurator_page_content() {
     $configurator = get_all_boards();
     $delete_all = admin_url('admin-ajax.php?action=delete_all');
-
-    // show the list of all the boards here in the table
     ?>
     <div class="wrap">
-        <h1 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">List of Boards</h1>
-
-    <!-- Delete All Boards -->
-    <button id="delete_all_boards" class="button button-primary" style="margin-left: 20px; float: inline-end; margin-bottom: 20px;">Delete All Boards</button>
-
+        <h1 class="wp-heading-inline mb-3 fw-bold">List of Boards</h1>
+    <button id="delete_all_boards" class="btn btn-danger" style="margin-left: 20px; float: inline-end; margin-bottom: 20px;">Delete All Boards</button>
     <table class="wp-list-table widefat fixed striped">
         <thead>
             <tr>
@@ -126,10 +144,7 @@ function configurator_page_content() {
                     <td><?= $board->id ?></td>
                     <td><?= $board->board_title ?></td>
                     <td><?= $board->board_dimensions ?></td>
-                    <td>
-                        <div style="border: 1px solid black; width: 30px; height: 30px; background-color: <?= $board->background_color ?>;"></div>
-                    </td>
-
+                    <td><div style="border: 1px solid black; width: 30px; height: 30px; background-color: <?= $board->background_color ?>;"></div></td>
                     <td><?= $board->board_style ?></td>
                     <td><?= $board->board_material ?></td>
                     <td><?= $board->quantity_of_boards ?></td>
@@ -140,7 +155,6 @@ function configurator_page_content() {
                             No Logo
                         <?php endif; ?>
                     </td>
-
                     <td>
                         <?php if (!empty($board->background_url)): ?>
                             <img src="<?= $board->background_url ?>" alt="Background" style="width: 30px">
@@ -148,12 +162,8 @@ function configurator_page_content() {
                             No Background
                         <?php endif; ?>
                     </td>
-
                     <td><?= $board->timestamp ?></td>
-                    <td>
-                        <!-- <a href="<?= admin_url('admin.php?page=amerison-configurator&board=' . $board->id) ?>">Edit</a> -->
-                        <a href="#" class="delete-board" data-id="<?= $board->id ?>">Delete</a>
-                    </td>
+                    <td><button class="delete-board btn btn-danger py-0" data-id="<?= $board->id ?>">Delete</button></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -164,13 +174,14 @@ function configurator_page_content() {
 
 
 
+/*
+* Admin dashboard custom request page content
+*/
+
 function request_custom_tool_page_content() {
     ?>
     <div id="preloader" class="preloader"></div>
-
     <div class="wrap">
-        <!-- <h1 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Request Custom Tools List</h1> -->
-
         <div id="tabs" style="border-bottom: 3px solid #000000;">
             <button class="tablink btn tab-color rounded-0 fw-bolder text-dark" data-tab="Tab1">Custom Tools</button>
             <button class="tablink btn tab-color rounded-0 fw-bolder text-dark" data-tab="Tab2">Measuring Sheets</button>
@@ -178,7 +189,6 @@ function request_custom_tool_page_content() {
         <div id="Tab1" class="tabcontent">
         <div id="custom-tools" class="tab-content py-3">
             <?php
-            // Display Custom Tools Requests Table
             echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Custom Tool Requests</h4>';
             echo '<table class="wp-list-table widefat fixed striped">';
             echo '<thead>
@@ -200,14 +210,12 @@ function request_custom_tool_page_content() {
                 echo '<td><a href="' . ($request['file']) . '" download>Download</a></td>';
                 echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
                 echo '<td>' . ($request['status']) . '</td>';
-                // upload action
                 echo '<td><button class="upload-custom-tool btn btn-primary cursor-pointer" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' data-id="' . $request['id'] . '">Upload</button></td>';
                 echo '</tr>';
             }
             echo '</tbody>';
             echo '</table>';
             ?>
-
             <div class="modal" id="uploadToolModel" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -231,7 +239,6 @@ function request_custom_tool_page_content() {
                             <input type="number" class="form-control" id="tool_height" placeholder="Enter Height">
                             <small id="heightHelp" class="form-text text-muted">Please write tool height in inches.</small>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="tool_type">Tool Type</label>
                             <select class="form-select form-select-sm mw-100" id="tool_type" aria-label=".form-select-sm example">
@@ -240,7 +247,6 @@ function request_custom_tool_page_content() {
                                 <option value="outline">Outline</option>
                             </select>
                         </div>
-
                         <button type="button" class="btn btn-primary" id="upload_file">Upload</button>
                     </div>
                 </div>
@@ -252,7 +258,6 @@ function request_custom_tool_page_content() {
         <div id="Tab2" class="tabcontent" style="display: none">
         <div id="measuring-tools" class="tab-content py-3">
             <?php
-            // Display Measuring Tools Requests Table
             echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Measuring Sheet Requests</h4>';
             echo '<table class="wp-list-table widefat fixed striped">';
             echo '<thead>
@@ -280,7 +285,7 @@ function request_custom_tool_page_content() {
                 echo '<td>' . $request['total_cost'] . '</td>';
                 echo '<td>' . ($request['status']) . '</td>';
                 echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
-                echo '<td><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">Update</button></td>';
+                echo '<td><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">Update</button> <button class="stripe-refund btn btn-danger" ' . ($request['payment_intent'] === "Refunded" ? 'disabled' : '') . ' id="stripe_refund_' . $request['id'] . '" data-id="' . $request['id'] . '">Refund</button></td>';
                 echo '</td>';
             }
             echo '</tbody>';
@@ -292,88 +297,283 @@ function request_custom_tool_page_content() {
     <?php
 }
 
+
+// Render settings page
+function render_stripe_setting_page() {
+    ?>
+    <div class="wrap">
+        <h2>Stripe Settings</h2>
+        <form method="post" action="options.php">
+            <?php settings_fields('stripe_settings_group'); ?>
+            <?php do_settings_sections('my-plugin-settings'); ?>
+            <?php submit_button('Save Settings'); ?>
+        </form>
+    </div>
+    <?php
+}
+
+// Register settings and fields
+function stripe_register_settings() {
+    register_setting('stripe_settings_group', 'stripe_settings', 'stripe_validate_settings');
+    add_settings_section('stripe_settings_section', '', 'stripe_settings_section_callback', 'my-plugin-settings');
+    add_settings_field('stripe_publishable_key', 'Publishable Key', 'stripe_publishable_key_callback', 'my-plugin-settings', 'stripe_settings_section');
+    add_settings_field('stripe_secret_key', 'Secret Key', 'stripe_secret_key_callback', 'my-plugin-settings', 'stripe_settings_section');
+    add_settings_section('stripe_price_settings_section', '', 'stripe_price_settings_section_callback', 'my-plugin-settings');
+    add_settings_field('stripe_custom_tool_price', 'Custom Tool Price ($)', 'stripe_custom_tool_price_callback', 'my-plugin-settings', 'stripe_price_settings_section');
+    add_settings_field('stripe_large_measuring_price', 'Large Measuring Price ($)', 'stripe_large_measuring_price_callback', 'my-plugin-settings', 'stripe_price_settings_section');
+}
+add_action('admin_init', 'stripe_register_settings');
+
+// Validate settings
+function stripe_validate_settings($input) {
+    // Validate and sanitize input data
+    $output = array();
+    $output['publishable_key'] = sanitize_text_field($input['publishable_key']);
+    $output['secret_key'] = sanitize_text_field($input['secret_key']);
+    $output['custom_price'] = sanitize_text_field($input['custom_price']);
+    $output['large_measuring'] = sanitize_text_field($input['large_measuring']);
+    // Add additional validation if needed
+    return $output;
+}
+
+// Settings section callback
+function stripe_settings_section_callback() {
+    echo '<div class="badge bg-success">Enter your Stripe API keys below:</div>';
+}
+
+// Publishable key field callback
+function stripe_publishable_key_callback() {
+    $options = get_option('stripe_settings');
+    echo '<input type="text" id="publishable_key" class="w-50" name="stripe_settings[publishable_key]" value="' . esc_attr($options['publishable_key']) . '" />';
+    echo '<p class="description">You can find your API keys in your Stripe dashboard.</p>';
+}
+
+// Secret key field callback
+function stripe_secret_key_callback() {
+    $options = get_option('stripe_settings');
+    echo '<input type="text" id="secret_key" class="w-50" name="stripe_settings[secret_key]" value="' . esc_attr($options['secret_key']) . '" />';
+    echo '<p class="description">You can find your API keys in your Stripe dashboard.</p>';
+    echo '<div class="badge bg-danger">Please note that the secret key should be kept confidential.</div>';
+}
+
+// Settings section callback
+function stripe_price_settings_section_callback() {
+    echo '<hr>';
+    echo '<div class="badge bg-success">Enter your prices for the custom requests below:</div>';
+}
+// custom tool amount field
+function stripe_custom_tool_price_callback() {
+    $options = get_option('stripe_settings');
+    echo '<input type="text" id="custom_price" class="w-50" name="stripe_settings[custom_price]" value="' . esc_attr($options['custom_price']) . '" />';
+    echo '<p class="description">Enter the price for custom tool request price (default $15).</p>';
+}
+
+// custom tool amount field
+function stripe_large_measuring_price_callback() {
+    $options = get_option('stripe_settings');
+    echo '<input type="text" id="large_measuring" class="w-50" name="stripe_settings[large_measuring]" value="' . esc_attr($options['large_measuring']) . '" />';
+    echo '<p class="description">Enter the price for large measuring sheet request price (default $40).</p>';
+}
+
+
+// function initiate_stripe_payment() {
+//     if (!is_user_logged_in()) {
+//         wp_send_json_error('User not logged in.');
+//     }
+
+//     $amount = isset($_POST['amount']) ? sanitize_text_field($_POST['amount']) : '';
+//     $token = $_POST['token']['id'];
+//     $message = '$' . ($amount / 100) . ' is paid by user';
+
+//     $stripe = new \Stripe\StripeClient(get_option('stripe_settings')['secret_key']);
+//     $stripe->charges->create([
+//         'amount' => $amount,
+//         'currency' => 'usd',
+//         'source' => $token,
+//         'description' => $message,
+//     ]);
+
+//     if ($amount > 0 && !empty($token)) {
+//         wp_send_json_success('Payment successful.');
+//     } else {
+//         wp_send_json_error('Payment failed.');
+//     }
+// }
+
+function initiate_stripe_payment() {
+    if (!is_user_logged_in()) {
+        wp_send_json_error('User not logged in.');
+    }
+
+    $amount = isset($_POST['amount']) ? intval($_POST['amount']) : 0; // Convert amount to integer
+    $token = $_POST['token']['id'];
+
+    // Create a Payment Intent
+    $stripe = new \Stripe\StripeClient(get_option('stripe_settings')['secret_key']);
+    $payment_intent = $stripe->paymentIntents->create([
+        'amount' => $amount,
+        'currency' => 'usd',
+        'payment_method_types' => ['card'],
+    ]);
+
+    // Charge the Payment Intent with payment method data
+    $responce = $stripe->paymentIntents->confirm(
+        $payment_intent->id,
+        [
+            'payment_method_data' => [
+                'type' => 'card',
+                'card' => ['token' => $token]
+            ]
+        ]
+    );
+
+    if ($responce->status === 'succeeded') {
+        wp_send_json_success($responce->id);
+    } else {
+        wp_send_json_error('Payment failed.');
+    }
+}
+
+
+add_action('wp_ajax_initiate_stripe_payment', 'initiate_stripe_payment');
+add_action('wp_ajax_nopriv_initiate_stripe_payment', 'initiate_stripe_payment');
+
+function get_payment_intent_id($id) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'measure_request';
+    $payment_intent = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $id", ARRAY_A);
+    return $payment_intent['payment_intent'];
+}
+
+function update_user_refund_status($id) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'measure_request';
+    $wpdb->update($table_name, array('payment_intent' => 'Refunded'), array('id' => $id));
+}
+
+function initiate_stripe_refund() {
+    // Check if the user is eligible for a refund (e.g., if they made a payment of $40)
+    $id = isset($_POST['id']) ? sanitize_text_field($_POST['id']) : '';
+    $payment_amount = isset($_POST['payment_amount']) ? sanitize_text_field($_POST['payment_amount']) : '';
+
+    // get the payment intent id from the database from table where user id is equal to $id
+    $payment_intent_id = get_payment_intent_id($id);
+
+    if ($payment_amount > 0 && !empty($payment_intent_id)) {
+        try {
+            // Refund the payment
+            $stripe = new \Stripe\StripeClient(get_option('stripe_settings')['secret_key']);
+            $refund = $stripe->refunds->create([
+                'payment_intent' => $payment_intent_id,
+            ]);
+
+            // Check if the refund was successful
+            if ($refund->status === 'succeeded') {
+                // Refund successful, update user's payment status or refund details in your database
+                update_user_refund_status($id);
+                $id = get_sheet_by_id('id', $id);
+                $user_id = $id->user_id;
+                $subject = 'Measuring Sheet Request';
+                $message = "
+                    <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
+                    <p>Refund of 40$ is initiated successfully.\n</p>
+                    <p>Thank you.</p>
+                    <p>Regards,</p>
+                    <p>Amerison</p>
+                ";
+                send_email_to_user($user_id, $subject, $message);
+                echo 'Refund initiated successfully!';
+            } else {
+                // Refund failed, handle error
+                echo 'Refund failed!';
+            }
+        } catch (\Stripe\Exception\CardException $e) {
+            // Handle card errors
+            echo 'Refund failed: ' . $e->getError()->message;
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            // Handle invalid request errors
+            echo 'Refund failed: ' . $e->getError()->message;
+        } catch (\Stripe\Exception\AuthenticationException $e) {
+            // Handle authentication errors
+            echo 'Refund failed: ' . $e->getError()->message;
+        } catch (\Stripe\Exception\ApiConnectionException $e) {
+            // Handle network errors
+            echo 'Refund failed: ' . $e->getError()->message;
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // Handle generic API errors
+            echo 'Refund failed: ' . $e->getError()->message;
+        }
+    } else {
+        echo 'User is not eligible for a refund.';
+        update_user_refund_status($id);
+    }
+}
+
+add_action('wp_ajax_initiate_stripe_refund', 'initiate_stripe_refund');
+add_action('wp_ajax_nopriv_initiate_stripe_refund', 'initiate_stripe_refund');
+
+/**
+ * Function to get user name by user id
+ *
+ * @param int $user_id The ID of the user whose name is to be retrieved.
+ * @return string The name of the user corresponding to the provided user ID.
+ */
+
 function get_user_name_by_id($user_id) {
     $user_info = get_userdata($user_id);
     return $user_info ? $user_info->display_name : '';
 }
 
-function get_custom_tool_requests() {
+/**
+ * Retrieves custom tool requests from the database.
+ *
+ * This function retrieves custom tool requests stored in the WordPress database
+ * table named with the prefix 'wp_{$wpdb->prefix}request_custom_tool'.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @return array|null Array of custom tool requests as associative arrays,
+ *                    or null if no requests are found.
+ */
+
+ function get_custom_tool_requests() {
     global $wpdb;
-    // Retrieve data from custom tool requests table
-    $custom_tool_requests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}request_custom_tool", ARRAY_A);
+    $custom_tool_requests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}request_custom_tool ORDER BY created_at DESC", ARRAY_A);
     return $custom_tool_requests;
 }
 
+
+/**
+ * Retrieves measuring tool requests from the database.
+ *
+ * This function retrieves measuring tool requests stored in the WordPress database
+ * table named with the prefix 'wp_{$wpdb->prefix}measure_request'.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @return array|null Array of measuring tool requests as associative arrays,
+ *                    or null if no requests are found.
+ */
+
 function get_measuring_tool_requests() {
     global $wpdb;
-    // Retrieve data from measuring tool requests table
-    $measuring_tool_requests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}measure_request", ARRAY_A);
+    $measuring_tool_requests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}measure_request ORDER BY created_at DESC", ARRAY_A);
     return $measuring_tool_requests;
 }
 
-add_action('wp_ajax_send_measuring_sheet_email', 'send_measuring_sheet_email');
-add_action('wp_ajax_nopriv_send_measuring_sheet_email', 'send_measuring_sheet_email');
-
-// function send_measuring_sheet_email() {
-//     if (isset($_POST['request_id']) && isset($_FILES['file'])) {
-//         $request_id = $_POST['request_id'];
-
-//         $upload_dir = wp_upload_dir();
-//         $file_name = time() . '_' . $_FILES['file']['name'];
-//         $file_tmp = $_FILES['file']['tmp_name'];
-//         $file_path = $upload_dir['path'] . '/' . $file_name;
-//         $file_link = $upload_dir['url'] . '/' . $file_name;
-
-
-//         // Move uploaded file to the upload directory
-//         if (move_uploaded_file($file_tmp, $file_path)) {
-//             $id = get_sheet_by_id('id', $request_id);
-
-//             $user_id = $id->user_id;
-//             $subject = 'Measuring Sheet Request';
-//             $message = "
-//                 <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
-//                 <p>Your measuring sheet has been created. You can download it from the link below:\n</p>
-//                 <p><a href=" . $file_link . ">Download Measuring Sheet</a>\n</p>
-//                 <p>Thank you.</p>
-//                 <p>Regards,</p>
-//                 <p>Amerison</p>
-//             ";
-
-//             // Check if the file exists before sending the email
-//             if (file_exists($file_path)) {
-//                 send_email_to_user($user_id, $subject, $message);
-
-//                 // Update the request status to 'Sent'
-//                 global $wpdb;
-//                 $table_name = $wpdb->prefix . 'measure_request';
-//                 $wpdb->update($table_name, array('status' => 'Sent'), array('id' => $request_id));
-//             } else {
-//                 echo 'File not found.';
-//             }
-
-//         } else {
-//             // Move uploaded file to the upload directory
-//             if (move_uploaded_file($file_tmp, $file_path)) {
-//                 // File successfully uploaded
-//             } else {
-//                 // Failed to move the file
-//                 $last_error = error_get_last();
-//                 if ($last_error) {
-//                     error_log('File upload error: ' . print_r($last_error, true));
-//                 }
-//                 echo 'Error moving file.';
-//                 wp_die();
-//             }
-//         }
-//     }
-//     wp_die();
-// }
+/**
+ * Sends an email containing a measuring sheet to the user associated with a given request ID.
+ *
+ * This function checks if a request ID is provided via the $_POST superglobal.
+ * If a request ID is provided, it retrieves the user ID associated with the request ID,
+ * constructs an email containing a message with the user's name and sends it to the user.
+ * It also updates the status of the request in the database to 'Sent'.
+ * If no request ID is provided, it echoes a message indicating the absence of the request ID.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function send_measuring_sheet_email() {
     if (isset($_POST['request_id'])) {
         $request_id = $_POST['request_id'];
-
         $id = get_sheet_by_id('id', $request_id);
         $user_id = $id->user_id;
         $subject = 'Measuring Sheet Request';
@@ -384,11 +584,7 @@ function send_measuring_sheet_email() {
             <p>Regards,</p>
             <p>Amerison</p>
         ";
-
-        // Send email to user
         send_email_to_user($user_id, $subject, $message);
-
-        // Update the request status to 'Sent'
         global $wpdb;
         $table_name = $wpdb->prefix . 'measure_request';
         $wpdb->update($table_name, array('status' => 'Sent'), array('id' => $request_id));
@@ -399,43 +595,39 @@ function send_measuring_sheet_email() {
     }
     wp_die();
 }
+add_action('wp_ajax_send_measuring_sheet_email', 'send_measuring_sheet_email');
+add_action('wp_ajax_nopriv_send_measuring_sheet_email', 'send_measuring_sheet_email');
 
-
-
+/**
+ * Submits a custom tool design request.
+ *
+ * This function is responsible for processing a custom tool design request. It first verifies if the user is logged in.
+ * Then it checks if a file has been uploaded and if a request ID is provided.
+ * If the conditions are met, it moves the uploaded file to the designated upload directory.
+ * It then inserts the file as an attachment to the WordPress media library and retrieves its ID.
+ * With the provided width, height, and tool type, it creates a new WooCommerce product variation representing the custom tool.
+ * If the required attribute term ('pa_color') exists, it assigns it to the product variation.
+ * Finally, it updates the status of the custom tool request in the database to 'Sent', sends an email notification to the user,
+ * and returns a success message.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function submit_custom_tool_design() {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('User not logged in.');
-    }
-
-    if (!isset($_FILES['file']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
-        wp_send_json_error('No file uploaded.');
-    }
-
     $request_id = isset($_POST['request_id']) ? $_POST['request_id'] : '';
-
-    if (empty($request_id)) {
-        wp_send_json_error('Invalid board ID.');
-    }
-
-    // using request_id to get the user id from the request_custom_tool table
     $user_id = get_custom_sheet_by_id('id', $request_id)->user_id;
 
+    if (empty($request_id)) { wp_send_json_error('Invalid board ID.'); }
+    if (!is_user_logged_in()) { wp_send_json_error('User not logged in.'); }
+    if (!isset($_FILES['file']) || !is_uploaded_file($_FILES['file']['tmp_name'])) { wp_send_json_error('No file uploaded.'); }
 
-    // Handle file upload
     $upload_dir = wp_upload_dir();
     $file_name = time() . $_FILES['file']['name'];
     $file_tmp = $_FILES['file']['tmp_name'];
     $file_path = $upload_dir['path'] . '/' . $file_name;
     $file_link = $upload_dir['url'] . '/' . $file_name;
+    if (!move_uploaded_file($file_tmp, $file_path)) { wp_send_json_error('Failed to move uploaded file.'); }
 
-
-    // Move the uploaded file to the upload directory
-    if (!move_uploaded_file($file_tmp, $file_path)) {
-        wp_send_json_error('Failed to move uploaded file.');
-    }
-
-    // Prepare attachment data
     $attachment = array(
         'guid'           => $upload_dir['url'] . '/' . $file_name,
         'post_mime_type' => $_FILES['file']['type'],
@@ -443,34 +635,26 @@ function submit_custom_tool_design() {
         'post_content'   => '',
         'post_status'    => 'inherit'
     );
-
-    // Insert the attachment into the media library
     $attachment_id = wp_insert_attachment($attachment, $file_path);
 
 
     $width = $_POST['width'] ? $_POST['width'] : 0;
     $height = $_POST['height'] ? $_POST['height'] : 0;
     $toolType = $_POST['tool_type'] ? $_POST['tool_type'] : '';
-    // Get terms for the "Color" attribute
-    $attribute_terms = get_terms('pa_color', array('hide_empty' => false));
 
-    // print_r($attribute_terms);
-    // exit;
+    $attribute_terms = get_terms('pa_color', array('hide_empty' => false));
 
     if (!empty($attribute_terms)) {
         $attribute_custom = $attribute_terms[2];
-
         $product = new WC_Product_Variable();
         $name = 'TOOL' . time();
         $product->set_name($name);
-        // set image
         $product->set_image_id($attachment_id);
         $product->set_status('publish');
         $product->set_catalog_visibility('hidden');
         $product->set_description('This is a custom tool requested by a user.');
         $product->set_short_description('Custom requested Tool');
         $product->set_stock_status('in stock');
-
         $product->set_backorders('no');
         $product->set_tag_ids(array(23));
         $product->set_reviews_allowed(false);
@@ -480,20 +664,16 @@ function submit_custom_tool_design() {
         $product->set_height($height);
         $product->set_weight($user_id);
         $product->set_sku(time());
-
         $product_id = $product->save();
 
-        // add the color attribute
         $attribute = new WC_Product_Attribute();
         $attribute->set_id( wc_attribute_taxonomy_id_by_name( 'pa_color' ) );
         $attribute->set_name( 'pa_color' );
-        // see if current format attribute exists and set as var
         $pa_color_term = get_term_by('name', $woo_product_meta['format'], 'pa_color');
         if(!$pa_color_term){
-            // create new pa_color term
             wp_insert_term(
-                $woo_product_meta['custom'], // the term
-                'pa_color' // the taxonomy
+                $woo_product_meta['custom'],
+                'pa_color'
             );
             $pa_color_term = get_term_by('name', $woo_product_meta['format'], 'pa_color');
         } else {
@@ -505,26 +685,16 @@ function submit_custom_tool_design() {
         $attribute->set_variation( true );
         $attribute->is_taxonomy( true );
         $attributes[] = $attribute;
-
         $product->set_attributes( $attributes );
-
-        // create product variation
         $variation = new WC_Product_Variation();
         $variation->set_parent_id( $product_id );
-
         $variation->save();
-
-        // set attributes
         $variation->set_attributes(
             array(
                 'pa_color' => $attribute_custom->term_id,
             )
         );
-
         $variation->save();
-
-        // $variation_data = $variation->get_data();
-
         $variation->set_image_id( $attachment_id );
         $variation->set_regular_price(0);
         $variation->set_weight($user_id);
@@ -532,21 +702,15 @@ function submit_custom_tool_design() {
         $variation->set_width($width);
         $variation->set_height($height);
         $variation->set_description($toolType);
-
         $variation->save();
-
         $product->save();
-
-        // echo 'Variation added successfully.';
     } else {
         echo 'No attribute terms found.';
     }
 
-    // update the current request status to sent
     global $wpdb;
     $table_name = $wpdb->prefix . 'request_custom_tool';
     $wpdb->update($table_name, array('status' => 'Sent'), array('id' => $request_id));
-
     $subject = 'Completion of Your Custom Tool Request';
     $message = "
         <h3>Dear " . get_user_name_by_id($user_id) . ",</h3>
@@ -555,17 +719,23 @@ function submit_custom_tool_design() {
         <p>Regards,</p>
         <p>Amerison</p>
     ";
-
     send_email_to_user($user_id, $subject, $message);
-
-    // Send success response
     wp_send_json_success('Custom tool request sent successfully.');
-
 }
-
 add_action('wp_ajax_submit_custom_tool_design', 'submit_custom_tool_design');
 add_action('wp_ajax_nopriv_submit_custom_tool_design', 'submit_custom_tool_design');
 
+/**
+ * Sends an email to a user.
+ *
+ * This function constructs and sends an email to the user identified by the provided user ID.
+ * It retrieves the user's email address using the user ID, constructs the email with the provided subject and message,
+ * and sends it using WordPress's wp_mail function.
+ *
+ * @param int $user_id The ID of the user to whom the email will be sent.
+ * @param string $subject The subject of the email.
+ * @param string $message The content of the email.
+ */
 
 function send_email_to_user($user_id, $subject, $message) {
     $user_info = get_userdata($user_id);
@@ -573,9 +743,21 @@ function send_email_to_user($user_id, $subject, $message) {
     $subject = $subject;
     $message = $message;
     $headers = array('Content-Type: text/html; charset=UTF-8');
-
     $sent = wp_mail($to, $subject, $message, $headers);
 }
+
+/**
+ * Retrieves a user from the database by a specific field value.
+ *
+ * This function queries the WordPress database to retrieve a user based on a specified field value.
+ * It accepts the field name and its corresponding value as parameters, constructs and executes a prepared SQL query,
+ * and returns the user object if found.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @param string $field The name of the field to search against.
+ * @param mixed $value The value of the field to match.
+ * @return object|null The user object if found, or null if not found.
+ */
 
 function get_user_by_id($field, $value) {
     global $wpdb;
@@ -585,6 +767,19 @@ function get_user_by_id($field, $value) {
     ));
     return $user;
 }
+
+/**
+ * Retrieves a measuring sheet from the database by a specific field value.
+ *
+ * This function queries the WordPress database to retrieve a measuring sheet based on a specified field value.
+ * It accepts the field name and its corresponding value as parameters, constructs and executes a prepared SQL query,
+ * and returns the measuring sheet object if found.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @param string $field The name of the field to search against.
+ * @param mixed $value The value of the field to match.
+ * @return object|null The measuring sheet object if found, or null if not found.
+ */
 
 function get_sheet_by_id($field, $value) {
     global $wpdb;
@@ -596,6 +791,19 @@ function get_sheet_by_id($field, $value) {
     return $sheet;
 }
 
+/**
+ * Retrieves a custom tool request sheet from the database by a specific field value.
+ *
+ * This function queries the WordPress database to retrieve a custom tool request sheet based on a specified field value.
+ * It accepts the field name and its corresponding value as parameters, constructs and executes a prepared SQL query,
+ * and returns the custom tool request sheet object if found.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @param string $field The name of the field to search against.
+ * @param mixed $value The value of the field to match.
+ * @return object|null The custom tool request sheet object if found, or null if not found.
+ */
+
 function get_custom_sheet_by_id($field, $value) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'request_custom_tool';
@@ -606,6 +814,14 @@ function get_custom_sheet_by_id($field, $value) {
     return $sheet;
 }
 
+/**
+ * Deletes all records from the 'configurator_data' table.
+ *
+ * This function deletes all records from the 'configurator_data' table in the WordPress database.
+ * It constructs and executes an SQL query to delete all records from the specified table.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function delete_all() {
     global $wpdb;
@@ -614,12 +830,20 @@ function delete_all() {
     $wpdb->query($sql);
     wp_die();
 }
-
 add_action('wp_ajax_delete_all', 'delete_all');
 add_action('wp_ajax_nopriv_delete_all', 'delete_all');
 
+/**
+ * Retrieves a list of products with their details and variations.
+ *
+ * This function queries the WordPress database to retrieve a list of products along with their details and variations.
+ * It constructs a WP_Query object to fetch all products, iterates through each product, and collects relevant information,
+ * such as product ID, name, price, image, attributes, and variations.
+ * It then returns an array containing the collected product data.
+ *
+ * @return array An array containing details of products and their variations.
+ */
 
-// get woocommeres products
 function get_products()
 {
     $args = array(
@@ -628,23 +852,15 @@ function get_products()
         'orderby' => 'title',
         'order' => 'ASC',
     );
-
     $products = new WP_Query($args);
     $product_list = array();
-
     foreach ($products->posts as $product) {
         $product_id = $product->ID;
-
-        // Get product data
         $product_data = wc_get_product($product_id);
-
-        // Get product attributes
         $attributes = array();
         foreach ($product_data->get_attributes() as $attribute) {
             $attributes[$attribute->get_name()] = $attribute->get_options();
         }
-
-        // Get variations
         $variations = array();
         if ($product_data->is_type('variable')) {
             foreach ($product_data->get_available_variations() as $variation) {
@@ -657,12 +873,10 @@ function get_products()
                     'width' => $variation['dimensions']['width'],
                     'height' => $variation['dimensions']['height'],
                     'user_id' => $variation['weight'],
-                    // remove p tag from description
                     'toolType' => $variation['variation_description'],
                 );
             }
         }
-
         $product_list[] = array(
             'id' => $product_id,
             'title' => $product_data->get_name(),
@@ -673,12 +887,20 @@ function get_products()
             'variations' => $variations,
         );
     }
-
     wp_reset_postdata();
     return $product_list;
 }
 
-// woo-commerce product attributes function
+/**
+ * Retrieves product attributes and their values.
+ *
+ * This function retrieves product attributes and their corresponding values.
+ * It iterates through the specified taxonomies, retrieves the attributes' labels and values,
+ * and stores them in an array.
+ *
+ * @return array An array containing product attributes and their values.
+ */
+
 function get_product_attributes()
 {
     $attributes = array();
@@ -696,13 +918,24 @@ function get_product_attributes()
     }
     return $attributes;
 }
+
+/**
+ * Creates the 'configurator_data' table in the WordPress database.
+ *
+ * This function creates the 'configurator_data' table if it does not already exist in the WordPress database.
+ * It defines the table structure including columns for various configuration data related to a configurator,
+ * such as user ID, board title, colors, dimensions, background, style, material, quantity, and more.
+ * The function utilizes WordPress's dbDelta function to execute the SQL query and create the table.
+ * It also registers this function to run during plugin activation.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
+
 function create_configurator_table()
 {
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
-
     $charset_collate = $wpdb->get_charset_collate();
-
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         user_id mediumint(9) NULL,
@@ -725,11 +958,8 @@ function create_configurator_table()
         timestamp datetime DEFAULT '0000-00-00 00:00:00' NULL,
         PRIMARY KEY (id)
     ) $charset_collate;";
-
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
     $resp = dbDelta($sql);
-
     if (is_wp_error($resp)) {
         error_log('Error creating database table: ' . $resp->get_error_message());
     } else {
@@ -738,32 +968,22 @@ function create_configurator_table()
 }
 register_activation_hook(__FILE__, 'create_configurator_table');
 
-// // a function which create a column canvasState in the table configurator_data
-// function add_column_to_configurator_table()
-// {
-//     global $wpdb;
-//     $table_name = $wpdb->prefix . 'configurator_data';
-//     $column_name = 'canvasState';
-//     $column_type = 'text';
-//     $default = 'NULL';
-
-//     $sql = "ALTER TABLE $table_name CHANGE $column_name $column_name $column_type $default";
-
-//     $wpdb->query($sql);
-// }
-
-// // Hook the function to plugin activation
-// register_activation_hook(__FILE__, 'add_column_to_configurator_table');
-
-
+/**
+ * Creates the 'measure_request' table in the WordPress database.
+ *
+ * This function creates the 'measure_request' table if it does not already exist in the WordPress database.
+ * It defines the table structure including columns for storing information related to measuring sheet requests,
+ * such as user ID, name, address, quantity, comments, total cost, status, and creation timestamp.
+ * The function utilizes WordPress's dbDelta function to execute the SQL query and create the table.
+ * 
+ * Note: This function should be called during plugin or theme activation.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function create_measure_request_table() {
     global $wpdb;
-
-    // Define table name with WordPress prefix
     $table_name = $wpdb->prefix . 'measure_request';
-
-    // SQL query to create table
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -773,33 +993,30 @@ function create_measure_request_table() {
         comments TEXT NOT NULL,
         total_cost INT,
         status VARCHAR(50) DEFAULT 'Pending',
+        payment_intent VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
-
-    // Include WordPress upgrade functions
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-    // Execute SQL query to create table
     dbDelta( $sql );
 }
-
-// Hook function to plugin activation
 register_activation_hook( __FILE__, 'create_measure_request_table' );
 
+/**
+ * Checks if the 'measure_request' table exists in the WordPress database.
+ *
+ * This function checks if the 'measure_request' table exists in the WordPress database.
+ * It constructs an SQL query to check if a table with the specified name exists.
+ * If the table exists, it returns true; otherwise, it returns false.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @return bool True if the table exists, false otherwise.
+ */
 
 function is_measure_request_table_created() {
     global $wpdb;
-
-    // Define table name with WordPress prefix
     $table_name = $wpdb->prefix . 'measure_request';
-
-    // SQL query to check if the table exists
     $sql = "SHOW TABLES LIKE '$table_name'";
-
-    // Execute SQL query
     $result = $wpdb->get_var( $sql );
-
-    // Check if the table exists
     if ( $result == $table_name ) {
         return true;
     } else {
@@ -807,26 +1024,25 @@ function is_measure_request_table_created() {
     }
 }
 
-// // Example usage
-// if ( is_measure_request_table_created() ) {
-//     echo 'Table wp_measure_request exists!';
-//     // die;
-// } else {
-//     echo 'Table wp_measure_request does not exist.';
-//     // die;
-// }
+/**
+ * Creates the 'request_custom_tool' table in the WordPress database.
+ *
+ * This function creates the 'request_custom_tool' table if it does not already exist in the WordPress database.
+ * It defines the table structure including columns for storing information related to custom tool requests,
+ * such as file name, dimensions, status, creation timestamp, associated board ID, and user ID.
+ * The function checks if the table exists before attempting to create it to avoid duplication.
+ * It utilizes WordPress's dbDelta function to execute the SQL query and create the table.
+ * 
+ * Note: This function should be called during plugin or theme activation.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function create_request_custom_tool_table() {
     global $wpdb;
-
-    // Define table name
     $table_name = $wpdb->prefix . 'request_custom_tool';
-
-    // Check if table already exists
     if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-        // Table doesn't exist, so we create it
         $charset_collate = $wpdb->get_charset_collate();
-
         $sql = "CREATE TABLE $table_name (
             id INT AUTO_INCREMENT PRIMARY KEY,
             file VARCHAR(255) NOT NULL,
@@ -837,17 +1053,27 @@ function create_request_custom_tool_table() {
             board_id INT,
             user_id INT
         ) $charset_collate;";
-
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
 }
-
-// Hook the function to plugin activation
 register_activation_hook(__FILE__, 'create_request_custom_tool_table');
 
-function process_custom_tool_request() {
+/**
+ * Processes a custom tool request.
+ *
+ * This function processes a custom tool request submitted by a logged-in user.
+ * It first checks if the user is logged in and if a file has been uploaded.
+ * If a board ID is provided, it moves the uploaded file to the designated upload directory,
+ * inserts a record into the 'request_custom_tool' table with relevant details including file link, dimensions, status, and user ID.
+ * It then sends an email notification to the user acknowledging the receipt of the request.
+ * This function is hooked to the 'wp_ajax_process_custom_tool_request' action to handle requests from logged-in users,
+ * and to the 'wp_ajax_nopriv_process_custom_tool_request' action to handle requests from non-logged-in users.
+ * 
+ * Note: This function assumes the existence of the 'request_custom_tool' table and the 'send_email_to_user' function.
+ */
 
+function process_custom_tool_request() {
     if (!is_user_logged_in()) {
         wp_send_json_error('User not logged in.');
     }
@@ -862,42 +1088,30 @@ function process_custom_tool_request() {
         wp_send_json_error('Invalid board ID.');
     }
 
-
-
-    // Handle file upload
     $upload_dir = wp_upload_dir();
-    // update each file name with unique name add time stamp
     $file_name = time() . $_FILES['file']['name'];
     $file_tmp = $_FILES['file']['tmp_name'];
     $file_path = $upload_dir['path'] . '/' . $file_name;
     $file_link = $upload_dir['url'] . '/' . $file_name;
 
-    // print_r($file_link);
-    // exit;
-
-
-    // Move the uploaded file to the upload directory
     if (!move_uploaded_file($file_tmp, $file_path)) {
         wp_send_json_error('Failed to move uploaded file.');
     }
 
-    // get the current user id
     $user_id = get_current_user_id();
     $width = $_POST['width'] ? $_POST['width'] : 0;
     $height = $_POST['height'] ? $_POST['height'] : 0;
-
     global $wpdb;
     $table_name = $wpdb->prefix . 'request_custom_tool';
     $wpdb->insert($table_name, array(
         'file' => $file_link,
         'width' => $width,
         'height' => $height,
-        'status' => 'Pending', // default status is 'Pending
-        'created_at' => current_time('mysql'), // current time
+        'status' => 'Pending',
+        'created_at' => current_time('mysql'),
         'board_id' => $board_id,
         'user_id' => $user_id,
     ));
-
     $subject = 'Acknowledgement of Your Custom Tool Request';
     $message = "
         <h3>Dear " . get_user_name_by_id($user_id) . ",</h3>
@@ -906,29 +1120,35 @@ function process_custom_tool_request() {
         <p>Regards,</p>
         <p>Amerison</p>
     ";
-
     send_email_to_user($user_id, $subject, $message);
-
-    // Send success response
-    // wp_send_json_success('Custom tool request sent successfully.');
 }
-
 add_action('wp_ajax_process_custom_tool_request', 'process_custom_tool_request');
 add_action('wp_ajax_nopriv_process_custom_tool_request', 'process_custom_tool_request');
 
+/**
+ * Processes a measuring tool request.
+ *
+ * This function processes a measuring tool request submitted by a logged-in user.
+ * It retrieves user details and request information from the submitted data,
+ * inserts a record into the 'measure_request' table with relevant details including user ID, name, address, quantity, comments, total cost, and status.
+ * It then sends an email notification to the user acknowledging the receipt of the request.
+ * This function is hooked to the 'wp_ajax_process_measuring_tool_request' action to handle requests from logged-in users,
+ * and to the 'wp_ajax_nopriv_process_measuring_tool_request' action to handle requests from non-logged-in users.
+ * 
+ * Note: This function assumes the existence of the 'measure_request' table and the 'send_email_to_user' function.
+ */
 
 function process_measuring_tool_request() {
     if (!is_user_logged_in()) {
         wp_send_json_error('User not logged in.');
     }
-
-    // get the current user id
     $user_id = get_current_user_id();
     $name = $_POST['name'] ? $_POST['name'] : '';
     $address = $_POST['address'] ? $_POST['address'] : '';
     $comments = $_POST['comments'] ? $_POST['comments'] : '';
     $quantity = $_POST['quantity'] ? $_POST['quantity'] : 0;
     $totalCost = $_POST['totalCost'] ? $_POST['totalCost'] : '';
+    $payment_intent = $_POST['payment_intent'] ? $_POST['payment_intent'] : '';
 
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
@@ -940,9 +1160,9 @@ function process_measuring_tool_request() {
         'comments' => $comments,
         'total_cost' => $totalCost,
         'status' => 'Pending',
+        'payment_intent' => $payment_intent,
         'created_at' => current_time('mysql')
     ));
-
     $subject = 'Acknowledgement of Your Larger Measuring Sheet Request';
     $message = "
         <h3>Dear " . get_user_name_by_id($user_id) . ",</h3>
@@ -953,34 +1173,39 @@ function process_measuring_tool_request() {
     ";
     send_email_to_user($user_id, $subject, $message);
 
+    wp_send_json_success('Request submitted successfully.');
 }
-
 add_action('wp_ajax_process_measuring_tool_request', 'process_measuring_tool_request');
 add_action('wp_ajax_nopriv_process_measuring_tool_request', 'process_measuring_tool_request');
 
-
+/**
+ * Updates or inserts configurator data into the database.
+ *
+ * This function processes a request to update or insert configurator data into the database.
+ * It retrieves data from the submitted POST request, including section items, colors, and other configuration details.
+ * Based on the existence of existing data, it either updates or inserts a record into the 'configurator_data' table.
+ * It then sends the response containing the new ID of the inserted record.
+ * This function is hooked to the 'wp_ajax_update_configurator_data' action to handle requests from logged-in users,
+ * and to the 'wp_ajax_nopriv_update_configurator_data' action to handle requests from non-logged-in users.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table and the use of sanitize_text_field function.
+ */
 
 function update_configurator_data() {
    if (isset($_POST['section1Items'])) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'configurator_data';
-
         $user_id = get_current_user_id();
         $config_data = sanitize_text_field($_POST['section1Items']);
         $color = sanitize_text_field($_POST['color']);
         $data = $_POST['data'];
         $id = $_POST['id'];
         $canvasState = $_POST['canvasState'];
-
-
-        // Check if there's existing data for the id
         $existing_data = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $table_name WHERE id = %d",
             $id
         ));
-
         if ($existing_data) {
-            // If data exists, update it
             $wpdb->update(
                 $table_name,
                 array(
@@ -1004,7 +1229,6 @@ function update_configurator_data() {
                 array('%d')
             );
         } else {
-            // If no data exists, insert a new record
             $wpdb->insert(
                 $table_name,
                 array(
@@ -1027,47 +1251,59 @@ function update_configurator_data() {
                 array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
             );
         }
-
         $new_id = $wpdb->insert_id;
         echo $new_id;
         wp_die();
     } else {
         wp_send_json_error('Invalid request!');
     }
-
 }
-
 add_action('wp_ajax_update_configurator_data', 'update_configurator_data');
-add_action('wp_ajax_nopriv_update_configurator_data', 'update_configurator_data'); // Allow non-logged in users to use the AJAX endpoint
+add_action('wp_ajax_nopriv_update_configurator_data', 'update_configurator_data');
 
-// Function to get configurator data from database table based on user id
+/**
+ * Retrieves configurator data from the database for the current user.
+ *
+ * This function retrieves configurator data from the database for the currently logged-in user.
+ * It queries the 'configurator_data' table based on the user ID and returns the results.
+ * This function is hooked to the 'wp_ajax_get_configurator_data' action to handle requests from logged-in users,
+ * and to the 'wp_ajax_nopriv_get_configurator_data' action to handle requests from non-logged-in users.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @return array Configurator data for the current user.
+ */
+
 function get_configurator_data_from_db() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
-
     $user_id = get_current_user_id();
     $config_data = $wpdb->get_results($wpdb->prepare(
         "SELECT * FROM $table_name WHERE user_id = %d",
         $user_id
     ), ARRAY_A);
-
     return $config_data;
 }
-
-// WordPress AJAX handler for getting configurator data
 add_action('wp_ajax_get_configurator_data', 'get_configurator_data');
 add_action('wp_ajax_nopriv_get_configurator_data', 'get_configurator_data');
 
+/**
+ * Retrieves configurator data from the database based on board ID.
+ *
+ * This function retrieves configurator data from the database based on the provided board ID.
+ * It constructs an SQL query to select data from the 'configurator_data' table for the specified board ID,
+ * executes the query, and sends the JSON response containing the retrieved data.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
+
 function get_configurator_data() {
     global $wpdb;
-
-    // Get the board ID from the AJAX request
     $board_id = isset($_POST['board_id']) ? intval($_POST['board_id']) : 0;
-
-    // Your table name
     $table_name = $wpdb->prefix . 'configurator_data';
-
-    // Query to get configurator data based on board ID
     $config_data = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT * FROM $table_name WHERE id = %d",
@@ -1075,11 +1311,22 @@ function get_configurator_data() {
         ),
         ARRAY_A
     );
-
-    // Send the JSON-encoded response
     wp_send_json($config_data);
 }
 
+/**
+ * Retrieves configurator data from the database based on board ID.
+ *
+ * This function retrieves configurator data from the database based on the provided board ID.
+ * It constructs an SQL query to select data from the 'configurator_data' table for the specified board ID,
+ * executes the query, and returns the result.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @param int $board_id The ID of the board to retrieve data for.
+ * @return object|null The board data if found, or null if not found.
+ */
 
 function get_data_by_id($board_id) {
     global $wpdb;
@@ -1089,7 +1336,19 @@ function get_data_by_id($board_id) {
     return $board;
 }
 
-// get all the boards if current user is admin
+/**
+ * Retrieves all configurator boards from the database.
+ *
+ * This function retrieves all configurator boards from the database.
+ * It constructs an SQL query to select all data from the 'configurator_data' table,
+ * executes the query, and returns the results.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ *
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @return array An array containing all configurator boards.
+ */
+
 function get_all_boards() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
@@ -1098,105 +1357,79 @@ function get_all_boards() {
     return $boards;
 }
 
-
-// function handle_logo_upload() {
-//     error_log(print_r($_FILES, true));
-
-//     if (isset($_FILES['logo_images'])) {
-//         $uploaded_logo = $_FILES['logo_images'];
-//         if ($uploaded_logo['error'] == 0) {
-//             $upload_overrides = array('test_form' => false);
-//             $movefile = wp_handle_upload($uploaded_logo, $upload_overrides);
-
-//             if ($movefile && empty($movefile['error'])) {
-//                 // File successfully uploaded, handle the attachment
-//                 $attachment = array(
-//                     'post_title' => sanitize_file_name($uploaded_logo['name']),
-//                     'post_content' => '',
-//                     'post_status' => 'inherit',
-//                     'post_mime_type' => $uploaded_logo['type'],
-//                 );
-
-//                 $attach_id = wp_insert_attachment($attachment, $movefile['file']);
-//                 require_once(ABSPATH . 'wp-admin/includes/image.php');
-//                 $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
-//                 wp_update_attachment_metadata($attach_id, $attach_data);
-
-//                 // Return success response
-//                 echo json_encode(array('success' => true, 'url' => $movefile['url']));
-//             } else {
-//                 // Error handling for wp_handle_upload
-//                 echo json_encode(array('error' => $movefile['error']));
-//             }
-//         } else {
-//             // Error handling for file upload
-//             echo json_encode(array('error' => 'Error uploading file. Error code: ' . $uploaded_logo['error']));
-//         }
-//     }
-// }
-
-// // Hook for both logged in and non-logged in users
-// add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
-// add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+/**
+ * Handles the upload of a logo image and saves data to the database.
+ *
+ * This function handles the upload of a logo image and saves relevant data to the database.
+ * It first checks if both the logo image and board ID are set in the POST request.
+ * If so, it proceeds to handle the file upload using WordPress's wp_handle_upload function.
+ * Upon successful upload, it inserts an attachment into the media library and retrieves the attachment ID.
+ * It then generates attachment metadata and updates the attachment metadata in the database.
+ * Next, it saves the logo data (board ID, attachment ID, and URL) to the database using the save_logo_data_to_database function.
+ * Finally, it sends a JSON-encoded response indicating success or failure of the upload process.
+ * 
+ * Note: This function assumes the existence of the save_logo_data_to_database function and relies on WordPress's media handling functions.
+ */
 
 function handle_logo_upload() {
     if (isset($_FILES['logo_images'], $_POST['board_id'])) {
         $uploaded_logo = $_FILES['logo_images'];
         $board_id = intval($_POST['board_id']);
-
         if ($uploaded_logo['error'] == 0 && $board_id > 0) {
             $upload_overrides = array('test_form' => false);
             $movefile = wp_handle_upload($uploaded_logo, $upload_overrides);
-
             if ($movefile && empty($movefile['error'])) {
-                // File successfully uploaded, handle the attachment
                 $attachment = array(
                     'post_title'     => sanitize_file_name($uploaded_logo['name']),
                     'post_content'   => '',
                     'post_status'    => 'inherit',
                     'post_mime_type' => $uploaded_logo['type'],
                 );
-
                 $attach_id = wp_insert_attachment($attachment, $movefile['file']);
                 require_once(ABSPATH . 'wp-admin/includes/image.php');
                 $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
                 wp_update_attachment_metadata($attach_id, $attach_data);
-
-                // Save information to custom database table
                 save_logo_data_to_database($board_id, $attach_id, $movefile['url']);
-
-                // Return success response
                 echo json_encode(array('success' => true, 'url' => $movefile['url']));
             } else {
-                // Error handling for wp_handle_upload
                 echo json_encode(array('error' => $movefile['error']));
             }
         } else {
-            // Error handling for invalid board_id or file upload error
             echo json_encode(array('error' => 'Invalid request.'));
         }
     } else {
-        // Error handling for missing file or board_id
         echo json_encode(array('error' => 'Invalid request.'));
     }
-
     wp_die();
 }
+add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
+add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+
+/**
+ * Saves logo data to the database.
+ *
+ * This function saves logo data (attachment ID and URL) to the database for a specific board.
+ * It first checks if data for the given board ID already exists in the database.
+ * If data exists, it updates the existing record with the new attachment ID, logo URL, and timestamp.
+ * If data does not exist, it inserts a new record into the database with the board ID, attachment ID, logo URL, and timestamp.
+ * It then sends a JSON-encoded response containing the logo URL and attachment ID.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ * 
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @param int $board_id The ID of the board.
+ * @param int $attachment_id The ID of the logo attachment.
+ * @param string $logo_url The URL of the logo image.
+ */
 
 function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
     global $wpdb;
-
-    // Your table name
     $table_name = $wpdb->prefix . 'configurator_data';
-
-    // Check if there's existing data for the id
     $existing_data = $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM $table_name WHERE id = %d",
         $board_id
     ));
-
     if ($existing_data) {
-        // If data exists, update it
         $wpdb->update(
             $table_name,
             array(
@@ -1209,7 +1442,6 @@ function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
             array('%d')
         );
     } else {
-        // If no data exists, insert a new record
         $wpdb->insert(
             $table_name,
             array(
@@ -1221,72 +1453,82 @@ function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
             array('%d', '%d', '%s')
         );
     }
-
-    // Send the JSON-encoded response with url and attachment_id
     wp_send_json(array('url' => $logo_url, 'attachment_id' => $attachment_id));
 }
 
-add_action('wp_ajax_handle_logo_upload', 'handle_logo_upload');
-add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
+/**
+ * Handles the upload of a background image and saves data to the database.
+ *
+ * This function handles the upload of a background image and saves relevant data to the database.
+ * It first checks if both the background image and board ID are set in the POST request.
+ * If so, it proceeds to handle the file upload using WordPress's wp_handle_upload function.
+ * Upon successful upload, it inserts an attachment into the media library and retrieves the attachment ID.
+ * It then generates attachment metadata and updates the attachment metadata in the database.
+ * Next, it saves the background data (board ID, attachment ID, and URL) to the database using the save_background_data_to_database function.
+ * Finally, it sends a JSON-encoded response indicating success or failure of the upload process.
+ * 
+ * Note: This function assumes the existence of the save_background_data_to_database function and relies on WordPress's media handling functions.
+ */
 
 function handle_background_upload() {
     if (isset($_FILES['background_image_upload'], $_POST['board_id'])) {
         $uploaded_background = $_FILES['background_image_upload'];
         $board_id = intval($_POST['board_id']);
-
         if ($uploaded_background['error'] == 0 && $board_id > 0) {
             $upload_overrides = array('test_form' => false);
             $movefile = wp_handle_upload($uploaded_background, $upload_overrides);
-
             if ($movefile && empty($movefile['error'])) {
-                // File successfully uploaded, handle the attachment
                 $attachment = array(
                     'post_title'     => sanitize_file_name($uploaded_background['name']),
                     'post_content'   => '',
                     'post_status'    => 'inherit',
                     'post_mime_type' => $uploaded_background['type'],
                 );
-
                 $attach_id = wp_insert_attachment($attachment, $movefile['file']);
                 require_once(ABSPATH . 'wp-admin/includes/image.php');
                 $attach_data = wp_generate_attachment_metadata($attach_id, $movefile['file']);
                 wp_update_attachment_metadata($attach_id, $attach_data);
-
-                // Save information to custom database table
                 save_background_data_to_database($board_id, $attach_id, $movefile['url']);
-
-                // Return success response
                 echo json_encode(array('success' => true, 'url' => $movefile['url']));
             } else {
-                // Error handling for wp_handle_upload
                 echo json_encode(array('error' => $movefile['error']));
             }
         } else {
-            // Error handling for invalid board_id or file upload error
             echo json_encode(array('error' => 'Invalid request.'));
         }
     } else {
-        // Error handling for missing file or board_id
         echo json_encode(array('error' => 'Invalid request.'));
     }
-
     wp_die();
 }
+add_action('wp_ajax_handle_background_upload', 'handle_background_upload');
+add_action('wp_ajax_nopriv_handle_background_upload', 'handle_background_upload');
+
+/**
+ * Saves background data to the database.
+ *
+ * This function saves background data (attachment ID and URL) to the database for a specific board.
+ * It first checks if data for the given board ID already exists in the database.
+ * If data exists, it updates the existing record with the new background URL and timestamp.
+ * If data does not exist, it inserts a new record into the database with the board ID, background URL, and timestamp.
+ * It then sends a JSON-encoded response containing the background URL and attachment ID.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ * 
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ * @param int $board_id The ID of the board.
+ * @param int $attachment_id The ID of the background attachment.
+ * @param string $background_url The URL of the background image.
+ */
 
 function save_background_data_to_database($board_id, $attachment_id, $background_url) {
     global $wpdb;
-
-    // Your table name
     $table_name = $wpdb->prefix . 'configurator_data';
-
-    // Check if there's existing data for the id
     $existing_data = $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM $table_name WHERE id = %d",
         $board_id
     ));
-
     if ($existing_data) {
-        // If data exists, update it
         $wpdb->update(
             $table_name,
             array(
@@ -1298,7 +1540,6 @@ function save_background_data_to_database($board_id, $attachment_id, $background
             array('%d')
         );
     } else {
-        // If no data exists, insert a new record
         $wpdb->insert(
             $table_name,
             array(
@@ -1309,14 +1550,22 @@ function save_background_data_to_database($board_id, $attachment_id, $background
             array('%d', '%s')
         );
     }
-
-    // Send the JSON-encoded response with url and attachment_id
     wp_send_json(array('url' => $background_url, 'attachment_id' => $attachment_id));
 }
 
-add_action('wp_ajax_handle_background_upload', 'handle_background_upload');
-add_action('wp_ajax_nopriv_handle_background_upload', 'handle_background_upload');
-
+/**
+ * Clears specific links from the database.
+ *
+ * This function clears specific links (logo URL or background URL) associated with a board from the database.
+ * It first retrieves the board ID and the type of link to clear from the POST data.
+ * If the value is 'logo_url', it updates the database to set both the attachment ID and logo URL to NULL for the given board ID.
+ * If the value is 'background_url', it updates the database to set the background URL to NULL for the given board ID.
+ * Additionally, it calls the delete_image_callback function to perform any necessary cleanup of the deleted image.
+ * 
+ * Note: This function assumes the existence of the delete_image_callback function and relies on the 'configurator_data' table.
+ * 
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function clearLinksFromDb() {
     global $wpdb;
@@ -1333,9 +1582,20 @@ function clearLinksFromDb() {
     delete_image_callback($_POST['image_url']);
     wp_die();
 }
-
 add_action('wp_ajax_clearLinksFromDb', 'clearLinksFromDb');
 add_action('wp_ajax_nopriv_clearLinksFromDb', 'clearLinksFromDb');
+
+/**
+ * Deletes a board from the database.
+ *
+ * This function deletes a board and its associated data from the database.
+ * It retrieves the board ID from the POST data and constructs a SQL query to delete the board from the database table.
+ * The function then executes the query to perform the deletion.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ * 
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
 
 function deleteBoard() {
     global $wpdb;
@@ -1345,16 +1605,25 @@ function deleteBoard() {
     $wpdb->query($sql);
     wp_die();
 }
-
 add_action('wp_ajax_deleteBoard', 'deleteBoard');
 add_action('wp_ajax_nopriv_deleteBoard', 'deleteBoard');
 
+/**
+ * Resets a board to its default state.
+ *
+ * This function resets a board to its default state by updating its data in the database.
+ * It retrieves the board ID from the POST data and constructs an array with default values for the board's properties.
+ * The function then updates the board's data in the database table using the WordPress database abstraction class.
+ * 
+ * Note: This function assumes the existence of the 'configurator_data' table.
+ * 
+ * @global wpdb $wpdb WordPress database access abstraction object.
+ */
+
 function resetBoard() {
     global $wpdb;
-
     $table_name = $wpdb->prefix . 'configurator_data';
     $board_id = $_POST['board_id'];
-
     $data = [
         'board_title' => '',
         'title_position' => 'left',
@@ -1373,7 +1642,6 @@ function resetBoard() {
         'background_url' => null,
         'timestamp' => current_time('mysql')
     ];
-
     $wpdb->update(
         $table_name,
         $data,
@@ -1381,54 +1649,113 @@ function resetBoard() {
         ['%s', '%s', '%s','%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'],
         ['%d']
     );
-
     wp_die();
 }
-
 add_action('wp_ajax_resetBoard', 'resetBoard');
 add_action('wp_ajax_nopriv_resetBoard', 'resetBoard');
 
+/**
+ * Deletes an image attachment from the media library.
+ *
+ * This function deletes an image attachment from the media library based on the provided image URL.
+ * It first checks if the image URL is valid and retrieves the attachment ID using 'attachment_url_to_postid'.
+ * If the attachment ID is found, it attempts to delete the attachment using 'wp_delete_attachment'.
+ * The function then sends a JSON response indicating success or failure.
+ *
+ * @param string $image_url The URL of the image to be deleted.
+ */
+
 function delete_image_callback($image_url) {
-    // Check if image URL is provided
     if ($image_url) {
-        // Get attachment ID from image URL
         $attachment_id = attachment_url_to_postid($image_url);
-
-        // Check if attachment ID is valid
         if ($attachment_id) {
-            // Delete the attachment
             $deleted = wp_delete_attachment($attachment_id, true);
-
             if ($deleted) {
-                // Return success response
                 wp_send_json_success('Image deleted successfully.');
             } else {
-                // Return error response
                 wp_send_json_error('Error deleting image.');
             }
         } else {
-            // Return error response if attachment ID is not found
             wp_send_json_error('Attachment ID not found for the provided image URL.');
         }
     } else {
-        // Return error response if image URL is not provided
         wp_send_json_error('Image URL is missing.');
     }
-
-    // Make sure to exit after sending the JSON response
     wp_die();
 }
 
-// Register shortcode
-function drag_and_clone_shortcode() {
+/**
+ * Adds board data to the WooCommerce cart.
+ *
+ * This function adds board data to the WooCommerce cart. It receives the board products and quantities
+ * via a POST request. It iterates through each product and quantity, adding them to the cart using
+ * the 'add_to_cart' method of the WooCommerce cart object.
+ */
+
+function addBoardDataToCart() {
+    $products = $_POST['products'];
+    $user_id = get_current_user_id();
+    $cart = WC()->cart;
+    foreach ($products as $product) {
+        $product_id = $product['product_id'];
+        $quantity = $product['quantity'];
+        $cart->add_to_cart($product_id, $quantity, 0, [], ['tool-color' => $product['color'], 'user_id' => $user_id]);
+    }
+    wp_die();
+}
+add_action('wp_ajax_addBoardDataToCart', 'addBoardDataToCart');
+add_action('wp_ajax_nopriv_addBoardDataToCart', 'addBoardDataToCart');
+
+// Add color column after product name in cart table header
+add_filter('woocommerce_get_item_data', 'display_color_in_cart_header', 10, 2);
+function display_color_in_cart_header($item_data, $cart_item) {
+    $product = WC()->cart->get_cart();
+    $color = $product[$cart_item['key']]['tool-color'];
+
+    $value = '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;background-color: '. $color .';"></div>';
+
+    if (!empty($color)) {
+        $item_data[] = array(
+            'key'   => esc_attr__('Tool Color', 'product-custom-color'),
+            'value' => $value,
+        );
+    }
+
+    return $item_data;
+}
+
+// also save the color in the order item meta
+add_action('woocommerce_checkout_create_order_line_item', 'save_color_to_order_item_meta', 10, 4);
+function save_color_to_order_item_meta($item, $cart_item_key, $values, $order) {
+    $color = $values['tool-color'];
+    // print_r($values);
+    if (!empty($color)) {
+        $item->update_meta_data('Tool Color', '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;margin-left: 90px;background: '.$color.'"></div>');
+    }
+}
+
+
+
+/**
+ * Displays the Amerison configurator shortcode.
+ *
+ * This function checks if the user is logged in. If the user is logged in, it retrieves products, configurator data,
+ * and product attributes. It then includes different template files based on the URL parameters.
+ * If the URL contains '/custom-request', it includes the 'custom-tool.php' template file.
+ * If the URL contains '/board', it includes the 'configurator.php' template file.
+ * Otherwise, it includes the 'board-list.php' template file.
+ * It also passes necessary data to JavaScript variables.
+ *
+ * If the user is not logged in, it includes the 'main.php' template file.
+ */
+
+function amerison_shortcode() {
     if (is_user_logged_in()) {
         $products = get_products();
         $configurator = get_configurator_data_from_db();
         $attributes = get_product_attributes();
         ob_start();
-        // get the url of the current page
         $url = $_SERVER['REQUEST_URI'];
-
         if( isset($_GET['board']) ) {
             $board_id = $_GET['board'];
             $board = get_data_by_id($board_id);
@@ -1440,7 +1767,6 @@ function drag_and_clone_shortcode() {
         } else {
             include plugin_dir_path(__FILE__) . 'board-list.php';
         }
-
         ?>
         <script>
             var WP_PRODUCTS = <?= json_encode($products) ?>;
@@ -1449,19 +1775,9 @@ function drag_and_clone_shortcode() {
             var CONFIGURATOR_ENG = {};
         </script>
         <?php
-
         return ob_get_clean();
     } else {
         include plugin_dir_path(__FILE__) . 'main.php';
     }
 }
-
-add_shortcode('amerison_configurator', 'drag_and_clone_shortcode');
-
-// Register script for the shortcode
-function drag_and_clone_script()
-{
-    // Leave this empty since the script is now enqueued separately
-}
-
-add_action('wp_footer', 'drag_and_clone_script');
+add_shortcode('amerison_configurator', 'amerison_shortcode');

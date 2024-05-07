@@ -1,4 +1,3 @@
-<!-- <div id="image1" class="d-none"><img src="https://5sshadowboard.com/wp-content/uploads/2024/02/mobile-1.png" alt="Wall Mount" class="img-fluid" /></div> -->
 <!-- Bootstrap Modal HTML -->
 <div class="modal index" id="confirmationModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -86,12 +85,12 @@
     <div class="modal-content">
       <div class="modal-header py-1">
         <h5 class="modal-title">Request a Custom Tool</h5>
-        <button type="button" class="close request_custom_close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close request_custom_close py-0" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-dark p-0 fw-bold text-center fs-6">
+        <div class="badge bg-dark fw-bold w-100 text-center fs-6 mb-3">
             The cost per custom tool is $15.
         </div>
         <div class="d-flex justify-content-end">
@@ -111,6 +110,16 @@
                     placeholder="Upload Logo"
                 />
             </div>
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="card_info">Card info</label>
+                <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+            </div>
+            
+
+            <!-- Used to display form errors. -->
+            <div id="card-errors" class="badge bg-danger" role="alert"></div>
             <div class="d-flex justify-content-end align-items-center">
                 <button type="button" class="btn btn-primary mt-2" id="submit_custom_tool">Submit</button>
             </div>
@@ -129,12 +138,12 @@
     <div class="modal-content">
       <div class="modal-header py-1">
         <h5 class="modal-title">Request a larger Measuring sheet</h5>
-        <button type="button" class="close measuring_close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close measuring_close py-0" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-danger p-0 fw-bold text-center fs-6">
+        <div class="badge bg-danger w-100 fw-bold text-center fs-6 mb-3" style="text-wrap: wrap;">
             A $40 fee will be charged for the larger measuring sheet, the charge will be reimbursed upon placing an order for a shadow board.
         </div>
         <form id="measuring_form" method="post" enctype="multipart/form-data">
@@ -145,7 +154,7 @@
             <!-- Postal Address -->
             <div class="form-group mt-2">
                 <label class="fs-6 lexend-font" for="measuring_postal_address">Address</label>
-                <textarea class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_postal_address" name="measuring_postal_address" rows="3" aria-describedby="toolPostalAddress" placeholder="Write down the address" required></textarea>
+                <textarea class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_postal_address" name="measuring_postal_address" rows="1" aria-describedby="toolPostalAddress" placeholder="Write down the address" required></textarea>
             </div>
             <!-- Quantity -->
             <div class="form-group mt-2">
@@ -161,6 +170,10 @@
             <div class="form-group mt-2">
                 <label class="fs-6 lexend-font" for="measuring_tool_company">Total cost</label>
                 <input type="number" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="measuring_tool_company" name="measuring_tool_company" aria-describedby="toolCompany" placeholder="Enter total cost">
+            </div>
+            <div class="form-group mt-2">
+                <label class="fs-6 lexend-font" for="card_info_measuring">Card info</label>
+                <div id="card-element-measuring"></div>
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <button type="button" class="btn btn-primary mt-2" id="submit_measuring_tool">Submit</button>
@@ -210,11 +223,11 @@
         <div class="d-flex align-items-center">
             <div class="position-relative d-flex ms-1" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Filler" data-bs-content="Fill shape with color.">
                 <!-- <img id="color-picker" class="position-absolute" width="22" height="22" src="https://img.icons8.com/metro/26/fill-color.png" alt="fill-color"/> -->
-                <input class="tab-pane fade show active p-0 border-0 ms-1 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="drawing_fill">
+                <input class="tab-pane fade show active p-0 border-0 ms-1 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="drawing_fill">
             </div>
             <div class="position-relative d-flex ms-2 justify-content-center align-items-center">
                 <!-- <img id="colorPickerToggle" class="position-absolute ms-1" width="22" height="22" src="https://img.icons8.com/windows/32/paint-palette.png" alt="paint-palette"/> -->
-                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="drawing_stroke">
+                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="drawing_stroke">
                 <span id="colorPickerToggle" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Outline" data-bs-content="Fill the outline of shape with color." class="bg-white position-absolute cursor-pointer" style="height: 17px; width: 17px; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 5px solid black"></span>
             </div>
         </div>
@@ -227,11 +240,11 @@
                     <li class="border border-dark rounded rounded-2 m-2 p-2">
                         <div class="d-flex flex-column gap-2 justify-content-start">
                             <div class="position-relative d-flex gap-2">
-                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="fill_color_text">
+                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="fill_color_text">
                                 <label for="textStroke">Text Color</label>
                             </div>
                             <div class="position-relative d-flex gap-2">
-                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="rgb(255,255,255,0)" id="stroke_color_text">
+                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="stroke_color_text">
                                 <label for="textStroke">Text Stroke</label>
                             </div>
                         </div>
@@ -252,6 +265,12 @@
         </div>
     </div>
 
+</div>
+
+
+<!-- add to cart button -->
+<div class="d-flex justify-content-end align-items-center my-1">
+    <button id="add_to_cart" class="btn btn-primary border-0 py-1 px-2" style="display: none">Add to Cart</button>
 </div>
 
 
@@ -339,7 +358,7 @@
                                                 style="width: 25px; height: 25px;"
                                                 type="color"
                                                 name="colorInput"
-                                                value=""
+                                                value="#000000"
                                                 id="title_header_color"
                                             />
                                         </div>
@@ -530,19 +549,6 @@
                                     <h6 class="pt-2 mb-0" style="font-size: 12px" id="logo_name"></h6>
                                 </div>
 
-
-
-                                <!-- Custom Logo -->
-                                <!-- <div class="custom-Logo form-group">
-                                    <label class="fs-6 lexend-font" class="mb-1"> Logo Placement </label>
-                                    <select class="form-control px-2 py-1" id="custom_logo">
-                                        <option value="null">Select Option</option>
-                                        <option selected value="left">Top Left</option>
-                                        <option value="right">Top Right</option>
-                                        <option value="center">Center</option>
-                                    </select>
-                                </div> -->
-
                                 <!-- Quantity of Board(s) -->
                                 <div class="quantity-of-Board form-group">
                                     <label class="fs-6 lexend-font"> Quantity of Board(s) </label>
@@ -572,7 +578,7 @@
                                     <div class="section gap-2 overflow-auto" id="section2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="You can update the color of the tool in the Shadow Board."></div>
 
                                     <label class="fs-6 lexend-font mt-4" for="sel1">Custom Tools</label>
-                                    <div class="section gap-2 overflow-auto" id="custom_section" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="" title="Custom Tools color" data-bs-content="You can update the color of the tool in the Shadow Board."></div>
+                                    <div class="section gap-2 overflow-auto" id="custom_section"></div>
                                 </div>
                             </div>
                         </div>

@@ -15,7 +15,7 @@
 }
 
 .modal-dialog {
-  max-width: 40% !important;
+  max-width: 50% !important;
   margin: 0;
   padding: 0;
 }
@@ -29,6 +29,7 @@
   height: 68vh;
   overflow: auto;
 }
+
 
 .section {
   overflow: hidden;
@@ -73,13 +74,22 @@
   height: 100%;
 }
 
+.viewer-container {
+  z-index: 999999 !important;
+}
+
 .color-box-customization {
   position: absolute;
   z-index: 999;
 }
 
-.request_custom_close {
+.request_custom_close, .close {
   color: #000000;
+}
+
+.close:hover {
+  color: #000000 !important;
+  background-color: transparent !important;
 }
 
 .close {
@@ -350,6 +360,10 @@ input {
   color: #000000 !important;
 }
 
+#submit {
+  color: #fff !important;
+}
+
 
 
 .no-custom-tools {
@@ -358,4 +372,10 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#card-element, #card-element-measuring {
+  border: 2px solid rgb(197, 189, 189);
+  padding: 8px;
+  border-radius: 5px;
 }

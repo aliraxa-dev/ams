@@ -5,7 +5,7 @@
     <a name="shadow_box" id="create_shadow_box" class="btn btn-primary" href="<?php echo esc_url(get_permalink()); ?>?board=new" role="button">Create Shadow Board</a>
     </div>
    <div class="board_title">
-	   <h2>Board List</h2>
+	   <h2>Boards List</h2>
 	</div>
 		</div>
         <div class="border border-4 border-dark ps-4 pt-2 rounded rounded-3 board-list">
