@@ -91,12 +91,21 @@
       </div>
       <div class="modal-body">
         <div class="badge bg-dark fw-bold w-100 text-center fs-6 mb-3">
-            The cost per custom tool is $15.
+            The cost per custom tool is $<span id="custom_price"></span>.
         </div>
         <div class="d-flex justify-content-end">
-            <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download><i class="fa fa-download" ></i> Download Measuring Sheet </a>
+            <a href="https://5sshadowboard.com/wp-content/uploads/2024/05/11x17_Measuring-Board.pdf" target="_blank" class="text-primary fs-6" download><i class="fa fa-download" ></i> Download Measuring Sheet </a>
             <span class="mx-1" style="margin-top: -7px">|</span>
-            <a href="https://5sshadowboard.com/wp-content/uploads/2024/03/sample.pdf" target="blank" class="text-primary fs-6" download><i class="fa fa-download" ></i> Instruction Guide</a>
+
+            <div class="btn-group">
+            <div class="btn-sm bg-transparent lexend-font text-primary fw-light fs-6 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-caret-down fs-5" ></i> Instruction Guide</a>
+            </div>
+            <ul class="dropdown-menu">
+                <li><a href="https://5sshadowboard.com/wp-content/uploads/2024/05/custom-tool-process.pdf" target="_blank" class="lexend-font text-primary fs-6 dropdown-item" download><i class="fa fa-download" ></i> Custom Tool Process</a></li>
+                <li><a href="https://5sshadowboard.com/wp-content/uploads/2024/05/Tool-Measuring-Instructions_2021.pdf" target="_blank" class="lexend-font text-primary fs-6 dropdown-item" download><i class="fa fa-download" ></i> Tool Measuring Instructions</a></li>
+            </ul>
+            </div>
         </div>
         <form id="custom_tool_form" action="#" method="post" enctype="multipart/form-data">
             <div class="form-group mt-2">
@@ -144,7 +153,7 @@
       </div>
       <div class="modal-body">
         <div class="badge bg-danger w-100 fw-bold text-center fs-6 mb-3" style="text-wrap: wrap;">
-            A $40 fee will be charged for the larger measuring sheet, the charge will be reimbursed upon placing an order for a shadow board.
+            A $<span id="larger_price"></span> fee will be charged for the larger measuring sheet, the charge will be reimbursed upon placing an order for a shadow board.
         </div>
         <form id="measuring_form" method="post" enctype="multipart/form-data">
             <div class="form-group mt-2">
@@ -188,91 +197,91 @@
 
 <div id="preloader" class="preloader"></div>
 
-<div class="d-flex justify-content-center align-items-center drawing-tools bg-white px-2 border border-2 rounded rounded-2" style="">
-    <div class="d-flex justify-content-center my-1 align-items-center">
-        <button id="drawing_select" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Select" data-bs-content="Select and manipulate objects."><i class="text-black fa fa-mouse-pointer"></i></button>
-        <button id="drawing_pencil" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Pen" data-bs-content="Freehand drawing tool."><i class="text-black fa fa-pencil"></i></button>
-        <div class="dropdown cursor-pointer" id="line_stroke" style="display: none" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Pen Size" data-bs-content="Adjust the thickness of the pen." >
-            <button id="line_dropdown" class="bg-white border-0 py-0 px-2 dropdown-toggle d-flex hide-after" data-bs-toggle="dropdown">
-                <span class="bg-black d-block" style="width: 15px; height: 2px"></span>
-            </button>
-            <ul class="dropdown-menu p-1 w-auto" id="drawing_brush_width" style="min-width: auto;">
-                <li><button id="drawing_line_1" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="2" style="width: 30px; height: 2px"></span></button></li>
-                <li><button id="drawing_line_2" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="4" style="width: 30px; height: 4px"></span></i></button></li>
-                <li><button id="drawing_line_3" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="6" style="width: 30px; height: 6px"></span></i></button></li>
-                <li><button id="drawing_line_4" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="8" style="width: 30px; height: 8px"></span></i></button></li>
-            </ul>
-        </div>
-        <!-- <button id="drawing_eraser" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Why me?" data-bs-content="And heres some amazing content."><i class="text-black bi bi-x-square-fill"></i></button> -->
-        <button id="drawing_undo" disabled class="bg-white border-0 py-0 px-2 cursor-pointer" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Undo" data-bs-content="Undo the last action."><i class="text-black fa fa-undo"></i></button>
-        <button id="drawing_redo" disabled class="bg-white border-0 py-0 px-2 cursor-pointer" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Redo" data-bs-content="Redo the last action."><i class="text-black fa fa-rotate-right"></i></button>
-        <button id="drawing_eraser" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Delete" data-bs-content="Delete the selected item."><i class="text-black fa fa-trash"></i></button>
-        <!-- <button id="crop-button" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Why me?" data-bs-content="And heres some amazing content."><i class="text-black fa fa-crop"></i></button> -->
-        <button id="drawing_text" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Text" data-bs-content="Click to add the text."><i class="text-black fa fa-font"></i></button>
-        <div class="dropdown" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape" data-bs-content="Draw predefined shapes.">
-            <button id="shape_dropdown" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
-                <i class="text-black fa fa-square"></i>
-            </button>
-            <ul id="shapes_select" class="dropdown-menu p-1 w-auto" style="min-width: auto">
-                <li><button id="drawing_rectangle" data-shape="square" class="dropdown-item p-1 shape-items"><i class="text-black fa fa-square" ></i></button></li>
-                <li><button id="drawing_circle" data-shape="circle" class="dropdown-item p-1 shape-items"><i class="text-black fa fa-circle"></i></button></li>
-            </ul>
-        </div>
-    </div>
-    <div class="d-flex justify-content-center align-items-center my-1">
-        <div class="d-flex align-items-center">
-            <div class="position-relative d-flex ms-1" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Filler" data-bs-content="Fill shape with color.">
-                <!-- <img id="color-picker" class="position-absolute" width="22" height="22" src="https://img.icons8.com/metro/26/fill-color.png" alt="fill-color"/> -->
-                <input class="tab-pane fade show active p-0 border-0 ms-1 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="drawing_fill">
-            </div>
-            <div class="position-relative d-flex ms-2 justify-content-center align-items-center">
-                <!-- <img id="colorPickerToggle" class="position-absolute ms-1" width="22" height="22" src="https://img.icons8.com/windows/32/paint-palette.png" alt="paint-palette"/> -->
-                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="drawing_stroke">
-                <span id="colorPickerToggle" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Outline" data-bs-content="Fill the outline of shape with color." class="bg-white position-absolute cursor-pointer" style="height: 17px; width: 17px; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 5px solid black"></span>
-            </div>
-        </div>
-        <div class="d-flex align-items-center ms-1">
-            <div class="dropdown" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Text Editor" data-bs-content="Change color, size, and style text." >
-                <button id="drawing_line" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
-                    <i class="text-black fa fa-text-height"></i>
+<div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-center align-items-center drawing-tools bg-white px-2 border border-2 rounded rounded-2" style="">
+        <div class="d-flex justify-content-center my-1 align-items-center">
+            <button id="drawing_select" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Select" data-bs-content="Select and manipulate objects."><i class="text-black fa fa-mouse-pointer"></i></button>
+            <button id="drawing_pencil" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Pen" data-bs-content="Freehand drawing tool."><i class="text-black fa fa-pencil"></i></button>
+            <div class="dropdown cursor-pointer" id="line_stroke" style="display: none" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Pen Size" data-bs-content="Adjust the thickness of the pen." >
+                <button id="line_dropdown" class="bg-white border-0 py-0 px-2 dropdown-toggle d-flex hide-after" data-bs-toggle="dropdown">
+                    <span class="bg-black d-block" style="width: 15px; height: 2px"></span>
                 </button>
-                <ul class="dropdown-menu p-1">
-                    <li class="border border-dark rounded rounded-2 m-2 p-2">
-                        <div class="d-flex flex-column gap-2 justify-content-start">
-                            <div class="position-relative d-flex gap-2">
-                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="fill_color_text">
-                                <label for="textStroke">Text Color</label>
-                            </div>
-                            <div class="position-relative d-flex gap-2">
-                                <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="stroke_color_text">
-                                <label for="textStroke">Text Stroke</label>
-                            </div>
-                        </div>
-                    </li>
-                    <li class= "border border-dark rounded rounded-2 m-2">
-                        <select id="text_font" class="form-select border-0 bg-white text-dark p-1">
-                            <option value="Arial">Arial</option>
-                            <option value="Courier New">Courier New</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                        </select>
-                    </li>
-                    <li class= "border border-dark rounded rounded-2 m-2">
-                        <input type="number" id="text_size" class="form-control border-0 bg-white text-dark p-1" min="1" value="12">
-                    </li>
+                <ul class="dropdown-menu p-1 w-auto" id="drawing_brush_width" style="min-width: auto; z-index: 99999">
+                    <li><button id="drawing_line_1" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="2" style="width: 30px; height: 2px"></span></button></li>
+                    <li><button id="drawing_line_2" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="4" style="width: 30px; height: 4px"></span></i></button></li>
+                    <li><button id="drawing_line_3" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="6" style="width: 30px; height: 6px"></span></i></button></li>
+                    <li><button id="drawing_line_4" class="bg-white border-0 py-0 px-2"><span class="bg-black d-block drawing_line" data-width="8" style="width: 30px; height: 8px"></span></i></button></li>
                 </ul>
             </div>
-            <button id="drawing_clear" class="fs-6 btn btn-danger border-0 py-0 px-2">Clear All</button>
+            <!-- <button id="drawing_eraser" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Why me?" data-bs-content="And heres some amazing content."><i class="text-black bi bi-x-square-fill"></i></button> -->
+            <button id="drawing_undo" disabled class="bg-white border-0 py-0 px-2 cursor-pointer" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Undo" data-bs-content="Undo the last action."><i class="text-black fa fa-undo"></i></button>
+            <button id="drawing_redo" disabled class="bg-white border-0 py-0 px-2 cursor-pointer" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Redo" data-bs-content="Redo the last action."><i class="text-black fa fa-rotate-right"></i></button>
+            <button id="drawing_eraser" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Delete" data-bs-content="Delete the selected item."><i class="text-black fa fa-trash"></i></button>
+            <!-- <button id="crop-button" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Why me?" data-bs-content="And heres some amazing content."><i class="text-black fa fa-crop"></i></button> -->
+            <button id="drawing_text" class="bg-white border-0 py-0 px-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Text" data-bs-content="Click to add the text."><i class="text-black fa fa-font"></i></button>
+            <div class="dropdown" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape" data-bs-content="Draw predefined shapes.">
+                <button id="shape_dropdown" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
+                    <i class="text-black fa fa-square"></i>
+                </button>
+                <ul id="shapes_select" class="dropdown-menu p-1 w-auto" style="min-width: auto">
+                    <li><button id="drawing_rectangle" data-shape="square" class="dropdown-item p-1 shape-items"><i class="text-black fa fa-square" ></i></button></li>
+                    <li><button id="drawing_circle" data-shape="circle" class="dropdown-item p-1 shape-items"><i class="text-black fa fa-circle"></i></button></li>
+                </ul>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center align-items-center my-1">
+            <div class="d-flex align-items-center">
+                <div class="position-relative d-flex ms-1" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Filler" data-bs-content="Fill shape with color.">
+                    <!-- <img id="color-picker" class="position-absolute" width="22" height="22" src="https://img.icons8.com/metro/26/fill-color.png" alt="fill-color"/> -->
+                    <input class="tab-pane fade show active p-0 border-0 ms-1 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="drawing_fill">
+                </div>
+                <div class="position-relative d-flex ms-2 justify-content-center align-items-center">
+                    <!-- <img id="colorPickerToggle" class="position-absolute ms-1" width="22" height="22" src="https://img.icons8.com/windows/32/paint-palette.png" alt="paint-palette"/> -->
+                    <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="drawing_stroke">
+                    <span id="colorPickerToggle" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Shape Outline" data-bs-content="Fill the outline of shape with color." class="bg-white position-absolute cursor-pointer" style="height: 17px; width: 17px; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 5px solid black"></span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center ms-1">
+                <div class="dropdown" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Text Editor" data-bs-content="Change color, size, and style text." >
+                    <button id="drawing_line" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
+                        <i class="text-black fa fa-text-height"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1">
+                        <li class="border border-dark rounded rounded-2 m-2 p-2">
+                            <div class="d-flex flex-column gap-2 justify-content-start">
+                                <div class="position-relative d-flex gap-2">
+                                    <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="fill_color_text">
+                                    <label for="textStroke">Text Color</label>
+                                </div>
+                                <div class="position-relative d-flex gap-2">
+                                    <input class="tab-pane fade show active p-0 border-0 cursor-pointer" style="width: 17px; height: 17px; opacity: 1" type="color" name="colorInput" value="#000000" id="stroke_color_text">
+                                    <label for="textStroke">Text Stroke</label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class= "border border-dark rounded rounded-2 m-2">
+                            <select id="text_font" class="form-select border-0 bg-white text-dark p-1">
+                                <option value="Arial">Arial</option>
+                                <option value="Courier New">Courier New</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                            </select>
+                        </li>
+                        <li class= "border border-dark rounded rounded-2 m-2">
+                            <input type="number" id="text_size" class="form-control border-0 bg-white text-dark p-1" min="1" value="12">
+                        </li>
+                    </ul>
+                </div>
+                <button id="drawing_clear" class="fs-6 btn btn-danger border-0 py-0 px-2">Clear All</button>
+            </div>
         </div>
     </div>
 
+
+    <!-- add to cart button -->
+    <div class="d-flex justify-content-end align-items-center my-1">
+        <button id="add_to_cart" class="btn btn-primary border-0 py-1 px-2" style="display: none">Add to Cart</button>
+    </div>
 </div>
-
-
-<!-- add to cart button -->
-<div class="d-flex justify-content-end align-items-center my-1">
-    <button id="add_to_cart" class="btn btn-primary border-0 py-1 px-2" style="display: none">Add to Cart</button>
-</div>
-
 
 
 <div class="dot_alert" id="dot_alert"></div>
@@ -370,8 +379,8 @@
                                         <label class="fs-6 lexend-font"> Title Positions </label>
 
                                         <select class="form-control px-2 py-1" id="title_position">
-                                            <option selected>Select Option</option>
-                                            <option value="left">Top Left</option>
+                                            <option value="null">Select Option</option>
+                                            <option value="left" selected>Top Left</option>
                                             <option value="right">Top Right</option>
                                             <option value="center">Center</option>
                                         </select>
@@ -425,7 +434,7 @@
                                     <ul class="nav nav-tabs w-100 m-0 bg-white" id="myTabs1">
                                     <li class="nav-item w-50 tabs-font">
                                         <a
-                                        class="nav-link active border-bottom show_storlaze_model lexend-font"
+                                        class="nav-link active border-bottom show_ToughSteel_model lexend-font"
                                         id="tab1"
                                         data-bs-toggle="tab"
                                         href="#solidcolor"
@@ -434,7 +443,7 @@
                                     </li>
                                     <li class="nav-item w-50 tabs-font">
                                         <a
-                                        class="nav-link border-bottom show_storlaze_model lexend-font"
+                                        class="nav-link border-bottom show_ToughSteel_model lexend-font"
                                         id="tab2"
                                         data-bs-toggle="tab"
                                         href="#uploadbackground"
@@ -521,11 +530,11 @@
                                 <div class="board-Material form-group">
                                     <label class="fs-6 lexend-font"> Board Material </label>
                                     <select class="form-control px-2 py-1" id="board_material">
-                                        <option selected value="StorShield">StorShield</option>
-                                        <option value="StorLam">StorLam</option>
-                                        <option value="StorClear">StorClear</option>
-                                        <option value="StorShield+">StorShield+</option>
-                                        <option value="StorLaze">StorLaze</option>
+                                        <option selected value="ToughGuard">ToughGuard</option>
+                                        <option value="ToughLite">ToughLite</option>
+                                        <option value="ToughClear">ToughClear</option>
+                                        <option value="ToughGuard+">ToughGuard+</option>
+                                        <option value="ToughSteel">ToughSteel</option>
                                     </select>
                                 </div>
 
@@ -561,24 +570,24 @@
                                 <div class="tab-pane" id="justified-tabpanel-1" role="tabpanel" aria-labelledby="justified-tab-1">
                                     <!-- Tool / Hardware Bank  -->
                                     <div class="form-group mb-2">
-                                        <label class="fs-6 lexend-font" for="sel1">Select Tool</label>
+                                        <label class="fs-6 lexend-font" for="select_tools">Select tool type</label>
                                         <select class="form-control px-2 py-1" id="attributes">
-                                        <option selected value="null">Select Product</option>
+                                        <option selected value="null">Select type</option>
                                         </select>
                                     </div>
 
                                     <div class="form-group mb-2">
-                                        <input type="text" class="form-control rounded rounded-2 px-2 py-1 bg-white text-dark" id="searchInput" placeholder="Search names...">
+                                        <input type="text" class="form-control rounded rounded-1 px-2 py-1 bg-white text-dark border-primary" id="searchInput" aria-describedby="basic-addon1" placeholder="Search tool name...">
                                     </div>
 
-                                    <span id="request_custom_tool" class="text-decoration-underline text-primary cursor-pointer fs-6 float-end">Request a Custom Tool</span>
-
                                     <div class="loader" id="loader" style="display: none;">Loading...</div>
-                                    <label class="fs-6 lexend-font mt-1" for="sel1">Tools</label>
-                                    <div class="section gap-2 overflow-auto" id="section2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="You can update the color of the tool in the Shadow Board."></div>
+                                    <label class="fs-6 lexend-font mt-2 badge bg-secondary w-100 rounded-0 border border-2 border-dark" for="sel1">Tools list</label>
+                                    <div class="section gap-2 overflow-auto border border-2 border-dark border-top-0" id="section2" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="Click or drag a tool to the shadow board. You can update the color of the tool in the Shadow Board."></div>
 
-                                    <label class="fs-6 lexend-font mt-4" for="sel1">Custom Tools</label>
-                                    <div class="section gap-2 overflow-auto" id="custom_section"></div>
+                                    <div id="request_custom_tool" class="btn btn-primary cursor-pointer fs-6 float-end py-1 my-2">Request a custom tool</div>
+
+                                    <label class="fs-6 lexend-font badge bg-secondary w-100 rounded-0 border border-2 border-dark" for="sel1">Custom tools list</label>
+                                    <div class="section gap-2 overflow-auto border border-2 border-dark border-top-0" id="custom_section"></div>
                                 </div>
                             </div>
                         </div>
@@ -586,7 +595,7 @@
                     </div>
                     </div>
                     <div class="d-flex justify-content-center border-top border-dark">
-                        <button type="button" class="btn btn-danger my-2 border border-top-1" id="reset_board">Reset Board</button>
+                        <button class="btn btn-danger my-2 border border-top-1" id="reset_board">Reset Board</button>
                     </div>
                 </div>
                 </div>

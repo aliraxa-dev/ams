@@ -42,9 +42,20 @@
   position: absolute;
 }
 
+#section2 {
+  height: 250px;
+}
+
 #section2, #custom_section {
   border: 2px solid #f3efe7;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#custom_section {
+  align-items: center;
+  text-wrap: pretty;
 }
 
 .tool-name {
@@ -252,6 +263,10 @@ input[type="number"] {
   width: fit-content;
 }
 
+.bdt-gallery-thumbnail img {
+  cursor: pointer;
+}
+
 /* media at mobile screen */
 @media (max-width: 786px) {
   #left_section {
@@ -354,6 +369,8 @@ input[type="number"] {
 
 input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
   color: #000000 !important;
+  box-shadow: none !important;
+  border-color: #3498db !important;
 }
 
 input {
@@ -364,7 +381,11 @@ input {
   color: #fff !important;
 }
 
-
+.form-control::placeholder {
+  font-size: 0.95rem;
+  color: #aaa;
+  font-style: italic;
+}
 
 .no-custom-tools {
   width: 100%;
@@ -372,6 +393,7 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-wrap: wrap !important;
 }
 
 #card-element, #card-element-measuring {

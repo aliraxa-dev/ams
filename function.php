@@ -81,11 +81,11 @@ add_action('admin_enqueue_scripts', 'enqueue_admin_assets');
 */
 
 function configurator_page() {
-    $page_title = 'Amerison Configurator';
-    $menu_title = 'Amerison Configurator';
-    $main_submenu_title = 'Amerison Configurator';
+    $page_title = 'Configurator';
+    $menu_title = 'Configurator';
+    $main_submenu_title = 'Configurator';
     $capability = 'manage_options';
-    $menu_slug = 'amerison-configurator';
+    $menu_slug = 'amerisan-configurator';
     $function = 'configurator_page_content';
     $icon_url = 'dashicons-admin-generic';
     $position = 20;
@@ -126,8 +126,8 @@ function configurator_page_content() {
         <thead>
             <tr>
                 <th style="width: 60px">ID</th>
-                <th>Title</th>
-                <th>Dimensions</th>
+                <th style="width: 200px">Title</th>
+                <th style="width: 100px">Dimensions</th>
                 <th>Board Color</th>
                 <th>Style</th>
                 <th>Material</th>
@@ -193,9 +193,9 @@ function request_custom_tool_page_content() {
             echo '<table class="wp-list-table widefat fixed striped">';
             echo '<thead>
                     <tr>
-                        <th>ID</th>
-                        <th>User Name</th>
-                        <th>File Download</th>
+                        <th style="width: 80px">ID</th>
+                        <th style="width: 200px">User Name</th>
+                        <th style="width: 200px">File Download</th>
                         <th>Request Date</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -210,7 +210,7 @@ function request_custom_tool_page_content() {
                 echo '<td><a href="' . ($request['file']) . '" download>Download</a></td>';
                 echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
                 echo '<td>' . ($request['status']) . '</td>';
-                echo '<td><button class="upload-custom-tool btn btn-primary cursor-pointer" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' data-id="' . $request['id'] . '">Upload</button></td>';
+                echo '<td><button class="upload-custom-tool btn btn-primary cursor-pointer" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' data-id="' . $request['id'] . '">'. ($request['status'] === "Pending" ? 'Upload' : 'Uploaded') . '</button></td>';
                 echo '</tr>';
             }
             echo '</tbody>';
@@ -262,9 +262,9 @@ function request_custom_tool_page_content() {
             echo '<table class="wp-list-table widefat fixed striped">';
             echo '<thead>
                     <tr>
-                        <th>User</th>
-                        <th>Name</th>
-                        <th>Address</th>
+                        <th style="width: 100px">User</th>
+                        <th style="width: 200px">Name</th>
+                        <th style="width: 200px">Address</th>
                         <th style="width: 85px">Quantity</th>
                         <th>Comments</th>
                         <th>Total cost</th>
@@ -285,7 +285,7 @@ function request_custom_tool_page_content() {
                 echo '<td>' . $request['total_cost'] . '</td>';
                 echo '<td>' . ($request['status']) . '</td>';
                 echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
-                echo '<td><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">Update</button> <button class="stripe-refund btn btn-danger" ' . ($request['payment_intent'] === "Refunded" ? 'disabled' : '') . ' id="stripe_refund_' . $request['id'] . '" data-id="' . $request['id'] . '">Refund</button></td>';
+                echo '<td style="display: flex; gap: 3px"><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">'. ($request['status'] === "Pending" ? 'Update' : 'Updated') . '</button> <button class="stripe-refund btn btn-danger" ' . ($request['payment_intent'] === "Refunded" ? 'disabled' : '') . ' id="stripe_refund_' . $request['id'] . '" data-id="' . $request['id'] . '">' . ($request['payment_intent'] === "Refunded" ? 'Refunded' : 'Refund') . '</button></td>';
                 echo '</td>';
             }
             echo '</tbody>';
@@ -351,7 +351,7 @@ function stripe_publishable_key_callback() {
 // Secret key field callback
 function stripe_secret_key_callback() {
     $options = get_option('stripe_settings');
-    echo '<input type="text" id="secret_key" class="w-50" name="stripe_settings[secret_key]" value="' . esc_attr($options['secret_key']) . '" />';
+    echo '<input type="password" id="secret_key" class="w-50" name="stripe_settings[secret_key]" value="' . esc_attr($options['secret_key']) . '" />';
     echo '<p class="description">You can find your API keys in your Stripe dashboard.</p>';
     echo '<div class="badge bg-danger">Please note that the secret key should be kept confidential.</div>';
 }
@@ -473,19 +473,19 @@ function initiate_stripe_refund() {
                 update_user_refund_status($id);
                 $id = get_sheet_by_id('id', $id);
                 $user_id = $id->user_id;
-                $subject = 'Measuring Sheet Request';
+                $subject = 'Refund Initiated';
                 $message = "
                     <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
-                    <p>Refund of 40$ is initiated successfully.\n</p>
+                    <p>Refund of $". get_option('stripe_settings')['large_measuring'] . " is initiated successfully.\n</p>
                     <p>Thank you.</p>
                     <p>Regards,</p>
-                    <p>Amerison</p>
+                    <p>Amerisan</p>
                 ";
                 send_email_to_user($user_id, $subject, $message);
-                echo 'Refund initiated successfully!';
+                wp_send_json_success('Refund initiated successfully!');
             } else {
                 // Refund failed, handle error
-                echo 'Refund failed!';
+                wp_send_json_success('Refund failed!');
             }
         } catch (\Stripe\Exception\CardException $e) {
             // Handle card errors
@@ -582,7 +582,7 @@ function send_measuring_sheet_email() {
             <p>Your measuring sheet has been delivered. You will receive it soon.\n</p>
             <p>Thank you.</p>
             <p>Regards,</p>
-            <p>Amerison</p>
+            <p>Amerisan</p>
         ";
         send_email_to_user($user_id, $subject, $message);
         global $wpdb;
@@ -717,7 +717,7 @@ function submit_custom_tool_design() {
         <p>We're pleased to inform you that your custom tool request has been successfully completed and uploaded on Configurator.\n</p>
         <p>Thank you.</p>
         <p>Regards,</p>
-        <p>Amerison</p>
+        <p>Amerisan</p>
     ";
     send_email_to_user($user_id, $subject, $message);
     wp_send_json_success('Custom tool request sent successfully.');
@@ -968,6 +968,27 @@ function create_configurator_table()
 }
 register_activation_hook(__FILE__, 'create_configurator_table');
 
+
+// create table for pricing with the columns id, size, toughlite, toughguard, toughguard+, toughclear, created_at, updated_at
+function create_amerisan_pricing_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amerisan_pricing';
+    $charset_collate = $wpdb->get_charset_collate();
+    $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        size VARCHAR(255) NOT NULL,
+        toughlite float,
+        toughguard float,
+        toughguardplus float,
+        toughclear float,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) $charset_collate;";
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+}
+register_activation_hook(__FILE__, 'create_amerisan_pricing_table');
+
 /**
  * Creates the 'measure_request' table in the WordPress database.
  *
@@ -1118,7 +1139,7 @@ function process_custom_tool_request() {
         <p>We\'ve received your request for a custom tool. Further instructions will be provided soon.\n</p>
         <p>Thank you.</p>
         <p>Regards,</p>
-        <p>Amerison</p>
+        <p>Amerisan</p>
     ";
     send_email_to_user($user_id, $subject, $message);
 }
@@ -1169,7 +1190,7 @@ function process_measuring_tool_request() {
         <p>We've received your request for a larger measuring sheet. Further instructions will be provided soon.\n</p>
         <p>Thank you.</p>
         <p>Regards,</p>
-        <p>Amerison</p>
+        <p>Amerisan</p>
     ";
     send_email_to_user($user_id, $subject, $message);
 
@@ -1620,7 +1641,7 @@ add_action('wp_ajax_nopriv_deleteBoard', 'deleteBoard');
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function resetBoard() {
+function reset_board() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $board_id = $_POST['board_id'];
@@ -1651,8 +1672,8 @@ function resetBoard() {
     );
     wp_die();
 }
-add_action('wp_ajax_resetBoard', 'resetBoard');
-add_action('wp_ajax_nopriv_resetBoard', 'resetBoard');
+add_action('wp_ajax_reset_board', 'reset_board');
+add_action('wp_ajax_nopriv_reset_board', 'reset_board');
 
 /**
  * Deletes an image attachment from the media library.

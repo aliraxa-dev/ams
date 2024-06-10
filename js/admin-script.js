@@ -213,7 +213,7 @@ jQuery(document).ready(function ($) {
             type: 'POST',
             data: formData,
             success: function(response) {
-                alert(response);
+                alert(response.data);
                 location.reload();
             },
             error: function(xhr, status, error) {
