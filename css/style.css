@@ -214,6 +214,11 @@
   display: block !important;
 }
 
+#section1 div.draggable-container:hover .hide-important {
+  display: none !important;
+}
+
+
 .accordian-customization {
   width: 100%;
   font-family: lexend, sans-serif !important;

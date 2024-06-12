@@ -154,8 +154,11 @@ jQuery(document).ready(function ($) {
 
     function appendColorPalette(item, colors, top, left, id = 0, randId) {
         const colorPalette = $('<div class="custom-color-picker" id=""><div class="color-input cursor-pointer" style="background-color: black" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover focus" title="Click here to change the tool color."><div class="color-options" data-id="' + randId + '"></div></div>');
-
         item.append(colorPalette);
+        const stainlessSteel = $('#board_material').val();
+        if (stainlessSteel !== 'ToughSteel') {
+            $('.custom-color-picker').addClass('hide-important');
+        }
 
         const colorOptions = colorPalette.find('.color-options');
 
@@ -265,6 +268,9 @@ jQuery(document).ready(function ($) {
                     });
 
                     appendColorPalette(draggableContainer, colors, ui.position.top, ui.position.left, id, randomId);
+                    if ($('#board_material').val() === 'ToughSteel') {
+                        changeSVGColor(image, 'black', randomId, 'outline');
+                    }
 
                     closeButton.click(function () {
                         draggableContainer.remove();
@@ -575,7 +581,7 @@ jQuery(document).ready(function ($) {
         return new bootstrap.Popover(popoverTriggerEl)
     })
 
-
+    let stanelessSteelPrompt = false;
     function changeBG() {
         const title_bg_color = $('#title_bg_color').val();
         $('#title_background_color').css('background-color', title_bg_color);
@@ -589,10 +595,23 @@ jQuery(document).ready(function ($) {
 
         if (board_material === 'ToughSteel') {
             $('#section1').css('background-color', 'rgb(192, 192, 192)');
+            if (!stanelessSteelPrompt) {
+                $('#stanelessSteelPrompt').modal('show');
+            }
+            $('#attributes option[value="solid"]').remove();
+            $('#attributes').val($('#attributes option:eq(1)').val());
+            $('.custom-color-picker').addClass('hide-important');
         } else {
             const background_color = $('#background_color').val();
             $('#section1').css('background-color', background_color);
             localStorage.setItem("background_color", background_color);
+            stanelessSteelPrompt = false;
+            // add solid option if it doesn't exist
+            if ($('#attributes option[value="solid"]').length === 0) {
+                $('#attributes').append('<option value="solid">Solid</option>');
+            }
+            $('.custom-color-picker').removeClass('hide-important');
+
         }
 
 
@@ -633,6 +652,7 @@ jQuery(document).ready(function ($) {
         }
 
     }
+
 
 
     function getDataFromDb() {
@@ -1192,6 +1212,8 @@ jQuery(document).ready(function ($) {
         $('#confirmationModal').modal('hide');
         $('#confirmDeleteModal').modal('hide');
         $('#backgroundImageModel').modal('hide');
+        $('#stanelessSteelPrompt').modal('hide');
+        stanelessSteelPrompt = true;
     });
 
     $('.boardWithToolClose').on('click', function () {
@@ -1472,7 +1494,7 @@ jQuery(document).ready(function ($) {
                             if (path.classList.contains('cls-2')) {
                                 path.style.fill = "#000000";
                             } else if (path.classList.contains('cls-3') || path.classList.contains('cls-1')) {
-                                path.style.fill = "white";
+                                path.style.fill = "transparent";
                             } else {
                                 path.style.fill = "#000000";
                             }
@@ -1480,7 +1502,7 @@ jQuery(document).ready(function ($) {
                             if (path.classList.contains('cls-2')) {
                                 path.style.fill = color;
                             } else if (path.classList.contains('cls-3') || path.classList.contains('cls-1')) {
-                                path.style.fill = "white";
+                                path.style.fill = "transparent";
                             } else {
                                 path.style.fill = color;
                             }
