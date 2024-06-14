@@ -40,6 +40,27 @@
   </div>
 </div>
 
+<!-- Prompt for Staneless steel -->
+<div class="modal index" id="stanelessSteelPrompt" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Notice</h5>
+        <button type="button" class="close closeModel" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      For stainless steel boards, please reach out to us for pricing.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary closeModel" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary" id="confirmReset">Yes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="modal index" id="dimentionConfirmationModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
