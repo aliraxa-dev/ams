@@ -599,7 +599,7 @@ jQuery(document).ready(function ($) {
                 $('#stanelessSteelPrompt').modal('show');
             }
             $('#attributes option[value="solid"]').remove();
-            $('#attributes').val($('#attributes option:eq(1)').val());
+            // $('#attributes').val($('#attributes option:eq(1)').val());
             $('.custom-color-picker').addClass('hide-important');
         } else {
             const background_color = $('#background_color').val();
@@ -775,16 +775,7 @@ jQuery(document).ready(function ($) {
                             $('#section1').css('background-image', 'none');
                         }
 
-                        const board_dimensions_options = $('#board_dimensions').children();
-                        for (const option of board_dimensions_options) {
-                            const optionValue = option.value;
-                            if (optionValue === data.board_dimensions && optionValue !== 'custom') {
-                                $('#board_dimensions').val(data.board_dimensions);
-                            } else if (optionValue === 'custom' && !['24x72', '36x72', '48x72'].includes(data.board_dimensions)) {
-                                $('#board_dimensions').append(`<option value="${data.board_dimensions}">${data.board_dimensions}</option>`);
-                                $('#board_dimensions').val(data.board_dimensions);
-                            }
-                        }
+                        $('#board_dimensions').val(data.board_dimensions);
 
                         localStorage.setItem("custom_board_dimensions", data.board_dimensions);
 
