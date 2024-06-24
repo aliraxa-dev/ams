@@ -41,6 +41,7 @@ function enqueue_amerison_scripts() {
             'stripe' => get_option('stripe_settings')['publishable_key'],
             'custom_price' => get_option('stripe_settings')['custom_price'],
             'large_measuring' => get_option('stripe_settings')['large_measuring'],
+            'nonce' => wp_create_nonce('amerison_nonce'),
         )
     );
 }
@@ -989,6 +990,35 @@ function create_amerisan_pricing_table() {
 }
 register_activation_hook(__FILE__, 'create_amerisan_pricing_table');
 
+
+// get all the pricing data from the database
+function get_amerisan_pricing() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amerisan_pricing';
+    $pricing = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    return $pricing;
+}
+
+function get_amerisan_pricing_size_callback() {
+    // check_ajax_referer('nonce', 'nonce');
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amerisan_pricing';
+
+    $results = $wpdb->get_results("SELECT size FROM $table_name", ARRAY_A);
+
+    if ($results) {
+        wp_send_json_success($results);
+    } else {
+        wp_send_json_error('No pricing data found.');
+    }
+}
+
+add_action('wp_ajax_get_amerisan_pricing_size', 'get_amerisan_pricing_size_callback');
+add_action('wp_ajax_nopriv_get_amerisan_pricing_size', 'get_amerisan_pricing_size_callback');
+
+
+// get_amerisan_pricing_size();
 /**
  * Creates the 'measure_request' table in the WordPress database.
  *

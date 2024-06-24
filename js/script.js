@@ -2207,6 +2207,7 @@ jQuery(document).ready(function ($) {
         saveSectionState();
     }
     allowDrop();
+    getAmerisanPricingSize();
 
     /*
     * Add to cart functionality for the board items
@@ -2291,5 +2292,33 @@ jQuery(document).ready(function ($) {
         window.location.href = productPageURL;
     });
 
+
+    // ajax to get the size from pricing table
+    function getAmerisanPricingSize() {
+        const nonce = amerison_vars.nonce;
+        $.ajax({
+            url: amerison_vars.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'get_amerisan_pricing_size',
+                nonce: nonce
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    const sizes = response.data;
+                    $('#board_dimensions').empty();
+                    sizes.forEach(function (size) {
+                        $('#board_dimensions').append('<option value="' + size.size + '">' + size.size + '</option>');
+                    });
+                } else {
+                    console.error('Error retrieving data:', response.data.message);
+                }
+            },
+            error: function (error) {
+                console.error('Error in AJAX request:', error);
+            }
+        });
+    }
 
 });

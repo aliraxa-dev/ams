@@ -423,25 +423,25 @@
 
                                 <!-- board Dimensions -->
                                 <div class="board-dimensions form-group">
-                                <label class="fs-6 lexend-font"> Board Dimensions </label>
+                                <label class="fs-6 lexend-font"> Board Dimensions </label><i class="fa fa-info-circle fs-5 px-2 pt-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Note" data-bs-content='If there are area restrictions, and you require a size not displayed, please reach out to us for assistance and pricing.'></i>
 
-                                <select class="form-control px-2 py-1" id="board_dimensions">
-                                    <option selected value="24x72">24x72</option>
+                                <select class="form-control px-2 py-1" id="board_dimensions" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Note" data-bs-content='If a larger board is required, please reach to us for assistance and pricing.'>
+                                    <!-- <option selected value="24x72">24x72</option>
                                     <option value="36x72">36x72</option>
                                     <option value="48x72">48x72</option>
-                                    <option value="custom">custom</option>
+                                    <option value="custom">custom</option> -->
                                 </select>
                                 </div>
 
                                 <!-- Custom board Dimensions -->
-                                <div class="custom_board_dimensions flex-column" id="custom_board_dimensions">
+                                <!-- <div class="custom_board_dimensions flex-column" id="custom_board_dimensions">
                                 <label class="fs-6 lexend-font pt-3 pb-1"> Custom Board Dimensions </label>
                                 <div class="d-flex gap-4">
                                 <input type="text" class="form-control bg-white text-dark custom_values rounded rounded-2 px-2 py-1" id="custom_width" aria-describedby="bortTitleHelp" placeholder="width">
                                 <span class="pt-2 fw-bolder" >X</span>
                                 <input type="text" class="form-control bg-white text-dark custom_values rounded rounded-2 px-2 py-1" id="custom_height" aria-describedby="bortTitleHelp" placeholder="height">
                                 </div>
-                                </div>
+                                </div> -->
 
                                 <!-- Background color -->
                                 <div class="background-color form-group mt-3 py-2 border rounded rounded-2">
