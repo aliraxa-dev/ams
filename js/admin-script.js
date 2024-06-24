@@ -139,40 +139,6 @@ jQuery(document).ready(function ($) {
         }
     });
 
-
-    // $('.send-measuring-sheet').on("click", function() {
-    //     var requestId = $(this).data('id');
-    //     var file = $('#upload_file_measure_' + requestId).prop('files')[0];
-        // showPreloader();
-
-    //     if (file) {
-    //         var render = new FileReader();
-    //         render.onload = function(e) {
-    //             var formData = new FormData();
-    //             formData.append('action', 'send_measuring_sheet_email');
-    //             formData.append('request_id', requestId);
-    //             formData.append('file', file);
-
-    //             $.ajax({
-    //                 url: ajaxurl,
-    //                 type: 'POST',
-    //                 data: formData,
-    //                 contentType: false,
-    //                 processData: false,
-    //                 success: function(response) {
-                        // hidePreloader();
-    //                     alert('Measuring sheet sent successfully!');
-    //                     location.reload();
-    //                 },
-    //                 error: function(xhr, status, error) {
-    //                     alert('Failed to send measuring sheet.');
-    //                 }
-    //             });
-    //         }
-    //         render.readAsDataURL(file);
-    //     }
-    // });
-
     $('.send-measuring-sheet').on("click", function() {
         var requestId = $(this).data('id');
         // showPreloader();
@@ -218,6 +184,68 @@ jQuery(document).ready(function ($) {
             },
             error: function(xhr, status, error) {
                 alert('Failed to initiate refund.');
+            }
+        });
+    });
+
+    // show popup on click
+    $('.update_price').on("click", function() {
+        showPreloader();
+        var id = $(this).data('id');
+        console.log(id);
+        var formData = {
+            action: 'get_amerisan_pricing_by_id',
+            id: id
+        };
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                console.log(response);
+                // populate data
+                $('#update_price_id').val(response.data.id);
+                $('#inputSize').val(response.data.size);
+                $('#inputToughLite').val(response.data.toughlite);
+                $('#inputToughGuard').val(response.data.toughguard);
+                $('#inputToughGuardPlus').val(response.data.toughguardplus);
+                $('#inputToughClear').val(response.data.toughclear);
+                $('#updatePriceModal').modal('show');
+
+                hidePreloader();
+            },
+            error: function(xhr, status, error) {
+                alert('Failed to fetch price of current size.');
+            }
+        });
+    });
+
+    $('#submit_price').on("click", function() {
+        var id = $('#update_price_id').val();
+        var toughlite = $('#inputToughLite').val();
+        var toughguard = $('#inputToughGuard').val();
+        var toughguardplus = $('#inputToughGuardPlus').val();
+        var toughclear = $('#inputToughClear').val();
+        showPreloader();
+        var formData = {
+            action: 'update_amerisan_pricing_by_id',
+            id: id,
+            toughlite: toughlite,
+            toughguard: toughguard,
+            toughguardplus: toughguardplus,
+            toughclear: toughclear
+        };
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                hidePreloader();
+                // alert(response.data);
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert('Failed to update price of current size.');
             }
         });
     });
