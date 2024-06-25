@@ -887,6 +887,7 @@ jQuery(document).ready(function ($) {
                     case 'ToughGuard':
                     case 'ToughGuard+':
                     case 'ToughLite':
+                    case 'ToughLam':
                         section1BackgroundColor = defaultBackgroundColor;
                         break;
                     case 'ToughClear':
@@ -2311,5 +2312,21 @@ jQuery(document).ready(function ($) {
             }
         });
     }
+
+
+
+
+    // html2canvas to download the image
+
+    function downloadImage() {
+        html2canvas(document.querySelector("#left_section")).then(function (canvas) {
+            var link = document.createElement("a");
+            link.download = "board.png";
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+
+    
 
 });

@@ -551,11 +551,12 @@
                                 <div class="board-Material form-group">
                                     <label class="fs-6 lexend-font"> Board Material </label>
                                     <select class="form-control px-2 py-1" id="board_material">
-                                        <option selected value="ToughGuard">ToughGuard</option>
-                                        <option value="ToughLite">ToughLite</option>
-                                        <option value="ToughClear">ToughClear</option>
-                                        <option value="ToughGuard+">ToughGuard+</option>
-                                        <option value="ToughSteel">ToughSteel</option>
+                                        <option selected value="ToughLite">TOUGHLIGHT</option>
+                                        <option value="ToughLam">TOUGHLAM</option>
+                                        <option value="ToughGuard">TOUGHGUARD</option>
+                                        <option value="ToughGuard+">TOUGHGUARD+</option>
+                                        <option value="ToughClear">TOUGHCLEAR</option>
+                                        <option value="ToughSteel">TOUGHSTEEL</option>
                                     </select>
                                 </div>
 

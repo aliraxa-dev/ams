@@ -29,6 +29,7 @@ function enqueue_amerison_scripts() {
     wp_enqueue_script('fabric-js', 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js', array(), null, true);
     wp_enqueue_script('cropperjs', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js', array(), null, true);
     wp_enqueue_script('toaster-js', 'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js', array(), null, true);
+    wp_enqueue_script('html2canvas', 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js', array(), null, true);
     wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', array(), null, true);
     wp_add_inline_script('stripe-js', 'var stripe = Stripe("' . get_option('stripe_settings')['publishable_key'] . '");');
 
