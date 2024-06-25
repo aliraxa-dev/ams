@@ -393,12 +393,13 @@ function render_pricing_page() {
         <table class="wp-list-table widefat fixed striped">
             <thead>
                 <tr>
-                    <th>Size</th>
-                    <th>Tough Lite</th>
-                    <th>Tough Guard</th>
-                    <th>Tough Guard+</th>
-                    <th>Tough Clear</th>
-                    <th>Actions</th>
+                    <th>SIZE</th>
+                    <th>TOUGHLAM</th>
+                    <th>TOUGHLITE</th>
+                    <th>TOUGHGUARD</th>
+                    <th>TOUGHGUARD+</th>
+                    <th>TOUGHCLEAR</th>
+                    <th>ACTIONS</th>
                 </tr>
             </thead>
             <tbody>
@@ -407,6 +408,7 @@ function render_pricing_page() {
                     foreach ($prices as $price) {
                         echo '<tr>';
                         echo '<td>' . $price['size'] . '</td>';
+                        echo '<td>$' . $price['toughlam'] . '</td>';
                         echo '<td>$' . $price['toughlite'] . '</td>';
                         echo '<td>$' . $price['toughguard'] . '</td>';
                         echo '<td>$' . $price['toughguardplus'] . '</td>';
@@ -431,31 +433,37 @@ function render_pricing_page() {
                     <div id="update_price_form">
                         <input type="hidden" id="update_price_id" name="update_price_id" value="">
                         <div class="row mb-3">
-                            <label for="inputSize" class="col-sm-2 col-form-label">Size</label>
+                            <label for="inputSize" class="col-sm-2 col-form-label text-uppercase">Size</label>
                             <div class="col-sm-10">
                             <input type="text" class="form-control" id="inputSize" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputToughLite" class="col-sm-2 col-form-label">Tough Lite</label>
+                            <label for="inputToughLam" class="col-sm-2 col-form-label  text-uppercase">ToughLam</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputToughLam" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputToughLite" class="col-sm-2 col-form-label text-uppercase">ToughLite</label>
                             <div class="col-sm-10">
                             <input type="text" class="form-control" id="inputToughLite" required>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputToughGuard" class="col-sm-2 col-form-label">Tough Guard</label>
+                            <label for="inputToughGuard" class="col-sm-2 col-form-label text-uppercase">ToughGuard</label>
                             <div class="col-sm-10">
                             <input type="text" class="form-control" id="inputToughGuard" required>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputToughGuardPlus" class="col-sm-2 col-form-label">Tough Guard+</label>
+                            <label for="inputToughGuardPlus" class="col-sm-2 col-form-label text-uppercase">ToughGuard+</label>
                             <div class="col-sm-10">
                             <input type="text" class="form-control" id="inputToughGuardPlus" required>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputToughClear" class="col-sm-2 col-form-label">Tough Clear</label>
+                            <label for="inputToughClear" class="col-sm-2 col-form-label text-uppercase">ToughClear</label>
                             <div class="col-sm-10">
                             <input type="text" class="form-control" id="inputToughClear" required>
                             </div>
@@ -1051,6 +1059,7 @@ function create_amerisan_pricing_table() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         size VARCHAR(255) NOT NULL,
         toughlite float,
+        toughlam float,
         toughguard float,
         toughguardplus float,
         toughclear float,
@@ -1111,6 +1120,7 @@ function update_amerisan_pricing_by_id_callback() {
     // check_ajax_referer('nonce', 'nonce');
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     $toughlite = isset($_POST['toughlite']) ? floatval($_POST['toughlite']) : 0;
+    $toughlam = isset($_POST['toughlam']) ? floatval($_POST['toughlam']) : 0;
     $toughguard = isset($_POST['toughguard']) ? floatval($_POST['toughguard']) : 0;
     $toughguardplus = isset($_POST['toughguardplus']) ? floatval($_POST['toughguardplus']) : 0;
     $toughclear = isset($_POST['toughclear']) ? floatval($_POST['toughclear']) : 0;
@@ -1120,6 +1130,7 @@ function update_amerisan_pricing_by_id_callback() {
         $table_name,
         array(
             'toughlite' => $toughlite,
+            'toughlam' => $toughlam,
             'toughguard' => $toughguard,
             'toughguardplus' => $toughguardplus,
             'toughclear' => $toughclear,

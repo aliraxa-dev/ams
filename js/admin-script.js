@@ -207,6 +207,7 @@ jQuery(document).ready(function ($) {
                 $('#update_price_id').val(response.data.id);
                 $('#inputSize').val(response.data.size);
                 $('#inputToughLite').val(response.data.toughlite);
+                $('#inputToughLam').val(response.data.toughlam);
                 $('#inputToughGuard').val(response.data.toughguard);
                 $('#inputToughGuardPlus').val(response.data.toughguardplus);
                 $('#inputToughClear').val(response.data.toughclear);
@@ -223,6 +224,7 @@ jQuery(document).ready(function ($) {
     $('#submit_price').on("click", function() {
         var id = $('#update_price_id').val();
         var toughlite = $('#inputToughLite').val();
+        var toughlam = $('#inputToughLam').val();
         var toughguard = $('#inputToughGuard').val();
         var toughguardplus = $('#inputToughGuardPlus').val();
         var toughclear = $('#inputToughClear').val();
@@ -231,6 +233,7 @@ jQuery(document).ready(function ($) {
             action: 'update_amerisan_pricing_by_id',
             id: id,
             toughlite: toughlite,
+            toughlam: toughlam,
             toughguard: toughguard,
             toughguardplus: toughguardplus,
             toughclear: toughclear
