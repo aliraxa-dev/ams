@@ -292,14 +292,15 @@
                         </li>
                     </ul>
                 </div>
-                <button id="drawing_clear" class="fs-6 btn btn-danger border-0 py-0 px-2">Clear All</button>
+                <button id="drawing_clear" class="btn btn-danger border-0 py-1 px-2" style="font-size: 13px">Clear All</button>
             </div>
         </div>
     </div>
 
 
     <!-- add to cart button -->
-    <div class="d-flex justify-content-end align-items-center my-1">
+    <div class="d-flex justify-content-end align-items-center my-1 gap-3">
+        <!-- <button class="btn btn-danger border-0 py-1 px-2" id="download-img">download-img</button> -->
         <button id="add_to_cart" class="btn btn-primary border-0 py-1 px-2" style="display: none">Add to Cart</button>
     </div>
 </div>
@@ -324,19 +325,19 @@
                 <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                     <button
-                    class="accordion-button text-dark accordian-customization p-2"
+                    class="accordion-button text-dark accordian-customization p-2 marker-font"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne"
+                    data-bs-target="#collapseOne1"
                     aria-expanded="true"
-                    aria-controls="collapseOne"
+                    aria-controls="collapseOne1"
                     >
                     Board / Tool Configuration
                     </button>
                 </h2>
                 <div
                     id="collapseOne"
-                    class="accordion-collapse collapse show "
+                    class="accordion-collapse collapse show"
                     aria-labelledby="headingOne"
                     data-bs-parent="#accordionExample"
                 >
@@ -396,14 +397,14 @@
                                 </div>
 
                                 <div class="d-flex gap-3">
-                                    <div class="board-dimensions form-group">
+                                    <div class="input-filed form-group">
                                         <label class="fs-6 lexend-font"> Title Positions </label>
 
                                         <select class="form-control px-2 py-1" id="title_position">
                                             <option value="null">Select Option</option>
                                             <option value="left" selected>Top Left</option>
-                                            <option value="right">Top Right</option>
                                             <option value="center">Center</option>
+                                            <option value="right">Top Right</option>
                                         </select>
                                     </div>
                                     <div class="title_bg_color form-group">
@@ -421,31 +422,9 @@
                                     </div>
                                 </div>
 
-                                <!-- board Dimensions -->
-                                <div class="board-dimensions form-group">
-                                <label class="fs-6 lexend-font"> Board Dimensions </label><i class="fa fa-info-circle fs-5 px-2 pt-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Note" data-bs-content='If there are area restrictions, and you require a size not displayed, please reach out to us for assistance and pricing.'></i>
-
-                                <select class="form-control px-2 py-1" id="board_dimensions" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Note" data-bs-content='If a larger board is required, please reach to us for assistance and pricing.'>
-                                    <!-- <option selected value="24x72">24x72</option>
-                                    <option value="36x72">36x72</option>
-                                    <option value="48x72">48x72</option>
-                                    <option value="custom">custom</option> -->
-                                </select>
-                                </div>
-
-                                <!-- Custom board Dimensions -->
-                                <!-- <div class="custom_board_dimensions flex-column" id="custom_board_dimensions">
-                                <label class="fs-6 lexend-font pt-3 pb-1"> Custom Board Dimensions </label>
-                                <div class="d-flex gap-4">
-                                <input type="text" class="form-control bg-white text-dark custom_values rounded rounded-2 px-2 py-1" id="custom_width" aria-describedby="bortTitleHelp" placeholder="width">
-                                <span class="pt-2 fw-bolder" >X</span>
-                                <input type="text" class="form-control bg-white text-dark custom_values rounded rounded-2 px-2 py-1" id="custom_height" aria-describedby="bortTitleHelp" placeholder="height">
-                                </div>
-                                </div> -->
-
                                 <!-- Background color -->
-                                <div class="background-color form-group mt-3 py-2 border rounded rounded-2">
-                                <label class="fs-6 lexend-font"> Background color / image </label>
+                                <div class="background-color form-group mt-1 py-1 rounded rounded-2">
+                                <label class="fs-6 lexend-font pb-2"> Background color / image </label>
 
                                 <div
                                     class="btn-group w-100"
@@ -513,7 +492,7 @@
                                                 />
                                             </form>
                                             <div class="d-flex justify-content-end">
-                                                <button class="btn btn-danger clear-button-custom lexend-font fs-6 px-2 py-1" id="clear-background-image">Clear</button>
+                                                <button class="btn btn-danger clear-button-custom fs-6 px-2 py-1" id="clear-background-image">Clear</button>
                                             </div>
                                         </div>
                                         <h6 class="pt-2" style="font-size: 12px" id="background_name"></h6>
@@ -522,6 +501,12 @@
                                     </div>
                                     </div>
                                 </div>
+                                </div>
+
+                                <!-- board Dimensions -->
+                                <div class="board-dimensions form-group">
+                                    <label class="fs-6 lexend-font"> Board Dimensions </label><i class="fa fa-info-circle fs-5 px-2 pt-2" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Note" data-bs-content='If there are area restrictions, and you require a size not displayed, please reach out to us for assistance and pricing.'></i>
+                                    <select class="form-control px-2 py-1" id="board_dimensions" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="Note" data-bs-content='If a larger board is required, please reach to us for assistance and pricing.'></select>
                                 </div>
 
                                 <!-- board style -->
@@ -574,7 +559,7 @@
                                             />
                                         </form>
                                         <div class="d-flex justify-content-end">
-                                            <button class="btn btn-danger clear-button-custom lexend-font fs-6 px-2 py-1" id="clear_logo_image">Clear</button>
+                                            <button class="btn btn-danger clear-button-custom fs-6 px-2 py-1" id="clear_logo_image">Clear</button>
                                         </div>
                                     </div>
                                     <h6 class="pt-2 mb-0" style="font-size: 12px" id="logo_name"></h6>
