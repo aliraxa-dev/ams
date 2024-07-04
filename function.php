@@ -15,9 +15,9 @@ function enqueue_amerison_scripts() {
     $timestamp = time();
     wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
     wp_enqueue_script('jquery');
-    wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery'), null, true);
+    wp_enqueue_script('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js', array('jquery'), null, true);
     wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), $timestamp, true);
-    wp_enqueue_style('jquery-ui-css', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
+    wp_enqueue_style('jquery-ui-css', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/themes/base/jquery-ui.min.css');
     wp_enqueue_style('cropper-css', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css');
     wp_enqueue_script('popper-js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js', array(), $timestamp, true);
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
@@ -29,6 +29,7 @@ function enqueue_amerison_scripts() {
     wp_enqueue_script('fabric-js', 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js', array(), null, true);
     wp_enqueue_script('cropperjs', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js', array(), null, true);
     wp_enqueue_script('toaster-js', 'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js', array(), null, true);
+    wp_enqueue_script('html2canvas', 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js', array(), null, true);
     wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', array(), null, true);
     wp_add_inline_script('stripe-js', 'var stripe = Stripe("' . get_option('stripe_settings')['publishable_key'] . '");');
 
@@ -1452,6 +1453,120 @@ function update_configurator_data() {
 }
 add_action('wp_ajax_update_configurator_data', 'update_configurator_data');
 add_action('wp_ajax_nopriv_update_configurator_data', 'update_configurator_data');
+
+
+/**
+ * Retrieves image data from the POST request. and then uplaod it to the media library.
+ * and inserts an attachment into the media library and retrieves the attachment ID.
+ * and in response sends a JSON-encoded response indicating success or failure of the upload process.
+ * with the attachment ID.
+ *
+ */
+
+function upload_image_amerisan() {
+    if (isset($_POST['file'])) {
+        $image_data = $_POST['file'];
+        $image_data = str_replace('data:image/png;base64,', '', $image_data);
+        $image_data = str_replace(' ', '+', $image_data);
+        $image_data = base64_decode($image_data);
+        $upload_dir = wp_upload_dir();
+        $upload_dir = $upload_dir['basedir'];
+        $filename = $_POST['name'] . '.png';
+        $file = $upload_dir . '/' . $filename;
+        // echo $file;
+        file_put_contents($file, $image_data);
+        $attachment = array(
+            'guid' => $file,
+            'post_mime_type' => 'image/png',
+            'post_title' => $filename,
+            'post_content' => '',
+            'post_status' => 'inherit'
+        );
+        $attachment_id = wp_insert_attachment($attachment, $file);
+        $image = wp_get_attachment_image($attachment_id, 'full');
+        $product = create_amerisan_simple_product($_POST['name'], $_POST['price'], $attachment_id);
+
+        // add this product in the cart
+        $cart = WC()->cart;
+        $cart->add_to_cart($product);
+
+        if ($image && $product) {
+            $response = array(
+                'success' => true,
+                'attachment_id' => $attachment_id,
+                'product_id' => $product
+            );
+        } else {
+            $response = array(
+                'success' => false
+            );
+        }
+        echo json_encode($response);
+        wp_die();
+    }
+}
+
+add_action('wp_ajax_upload_image_amerisan', 'upload_image_amerisan');
+add_action('wp_ajax_nopriv_upload_image_amerisan', 'upload_image_amerisan');
+
+
+function create_amerisan_simple_product($name, $price, $attachment_id) {
+    // Check if WooCommerce is active
+    if (!class_exists('WooCommerce')) {
+        return new WP_Error('woocommerce_inactive', 'WooCommerce is not active.');
+    }
+
+    // Validate input
+    if (empty($name) || !is_numeric($price) || !is_numeric($attachment_id)) {
+        return new WP_Error('invalid_input', 'Invalid input provided.');
+    }
+
+    // Sanitize input
+    $name = sanitize_text_field($name);
+    $price = floatval($price);
+    $attachment_id = intval($attachment_id);
+
+    // Create product post array
+    $product = array(
+        'post_title' => $name,
+        'post_content' => '', // You can add content here if needed
+        'post_status' => 'publish',
+        'post_type' => 'product',
+        'post_author' => get_current_user_id(),
+        'post_parent' => 0,
+    );
+
+    // Insert the product post
+    $product_id = wp_insert_post($product);
+
+    // Check if product creation was successful
+    if (is_wp_error($product_id)) {
+        return $product_id;
+    }
+
+    // Set product data
+    update_post_meta($product_id, '_price', $price);
+    update_post_meta($product_id, '_regular_price', $price); // Required for simple product
+    update_post_meta($product_id, '_thumbnail_id', $attachment_id);
+
+    // Set product type
+    wp_set_object_terms($product_id, 'simple', 'product_type');
+
+    // You can add more metadata or custom fields here if needed
+    // For example: SKU, stock status, weight, dimensions, etc.
+
+    // Example: Set SKU (optional)
+    // update_post_meta($product_id, '_sku', 'your-sku');
+
+    // Example: Set stock status (optional)
+    update_post_meta($product_id, '_stock_status', 'instock');
+
+    // Example: Set product tags (optional)
+    wp_set_post_terms($product_id, array('shadow_board'), 'product_tag');
+
+    return $product_id;
+}
+
 
 /**
  * Retrieves configurator data from the database for the current user.

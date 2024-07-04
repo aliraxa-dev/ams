@@ -6,6 +6,10 @@
   font-family: "Lexend", sans-serif !important;
 }
 
+.marker-font {
+  font-family: "Permanent Marker", cursive !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
@@ -130,6 +134,19 @@
   border-radius: 20px;
 }
 
+#create_shadow_box {
+  font-family: "Permanent Marker";
+  font-size: 22px;
+  font-weight: 400;
+  text-transform: none;
+  color: #fff;
+}
+
+#create_shadow_box:hover {
+  color: #fff;
+  text-decoration: none;
+  transform: scale(1.1);
+}
 .color-palette {
   cursor: pointer;
   display: none;
@@ -189,7 +206,7 @@
 /* Preloader End */
 
 #collapseOne {
-  max-height: 58vh;
+  max-height: 65vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -207,6 +224,10 @@
   height: auto;
 }
 
+.draggable-container {
+  z-index: 9999;
+}
+
 #section1 div.draggable-container:hover .close-button {
   display: block !important;
 }
@@ -218,11 +239,13 @@
 #section1 div.draggable-container:hover .hide-important {
   display: none !important;
 }
-
+::-webkit-scrollbar {
+  width: 0px;
+  height: 10px;
+}
 
 .accordian-customization {
   width: 100%;
-  font-family: lexend, sans-serif !important;
 }
 
 .accordian-customization:hover {
@@ -253,7 +276,7 @@ input[type="number"] {
   border-color: #ffffff00 #ffffff00 #ffffff00 !important;
 }
 
-.board-dimensions, .board-title {
+.board-title, .input-filed {
   width: 62%;
 }
 

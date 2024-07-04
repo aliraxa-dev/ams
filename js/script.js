@@ -13,6 +13,8 @@ var boardProperties = {
 }
 
 const colors = ['#aa182c', '#a87bc9', '#ff5100', '#ffd600', '#9ea1a2', '#6d3628', '#005cb9', '#0db14b', '#ee4d9a', '#231f20', '#ffffff'];
+const ToughSteelColor = "linear-gradient(90deg, rgba(108,110,112,1) 0%, rgba(172,174,177,1) 6%, rgba(171,171,172,1) 17%, rgba(217,218,220,1) 50%, rgba(138,140,143,1) 80%, rgba(88,89,91,1) 100%)";
+
 let console_disabled = false;
 let originalColor;
 
@@ -92,34 +94,39 @@ jQuery(document).ready(function ($) {
     }
 
     function adjustToolSize(w, h) {
-        th_inch = h;
-
         var cb_dim = $('#board_dimensions').val();
-        let pcd = $('#custom_board_dimensions').css('display');
-        let h1 = $('#custom_height').val();
-        let w1 = $('#custom_width').val();
-        if (cb_dim === 'custom') {
-            cb_dim = w1 + 'x' + h1;
-        } else if (h1 != '' && w1 != '' && pcd === 'flex') {
-            cb_dim = $('#custom_width').val() + 'x' + $('#custom_height').val();
+        // let pcd = $('#custom_board_dimensions').css('display');
+        // let h1 = $('#custom_height').val();
+        // let w1 = $('#custom_width').val();
+        // if (cb_dim === 'custom') {
+        //     cb_dim = w1 + 'x' + h1;
+        // } else if (h1 != '' && w1 != '' && pcd === 'flex') {
+        //     cb_dim = $('#custom_width').val() + 'x' + $('#custom_height').val();
+        // } else {
+        //     cb_dim = cb_dim;
+        // }
+        if (cb_dim !== '' && cb_dim !== undefined && cb_dim !== null) {
+            // console.log("cb_dim", cb_dim);
+            cb_dim = cb_dim == null ? '' : cb_dim.split('x');
+            bh_inch = cb_dim[1];
+            bw_inch = cb_dim[0];
+
+
         } else {
-            cb_dim = cb_dim;
+            bh_inch = 12;
+            bw_inch = 12;
         }
-        // console.log("cb_dim", cb_dim);
-        cb_dim = cb_dim == null ? '' : cb_dim.split('x');
-        bh_inch = cb_dim[1];
-        bw_inch = cb_dim[0];
-
         bh_px = $('#section1').height();
+        bw_px = $('#section1').width();
 
-        var pixelsForToolHeight = getToolpx(bh_inch, bh_px, th_inch);
-
-        const header_height = $("#title_background_color").height()
-
-
+        var pixelsForToolHeight = getToolpx(bh_inch, bh_px, h);
+        var pixelsForToolWidth = getToolpx(bw_inch, bw_px, w);
+        const header_height = $("#title_background_color").height();
 
 
-        return { width: w, height: (pixelsForToolHeight - header_height) };
+
+
+        return { width: pixelsForToolWidth, height: (pixelsForToolHeight - header_height) };
     }
 
     function adjustChildSize(w, h) {
@@ -191,9 +198,11 @@ jQuery(document).ready(function ($) {
 
             const src = $("#tool_img_" + selected).attr('src');
             const alt = $("#tool_img_" + selected).attr('alt');
+            const height = $("#tool_img_" + selected).data('height');
+            const width = $("#tool_img_" + selected).data('width');
             $("#tool_img_" + selected).data('color', color);
 
-            changeSVGColor(src, color, selected, alt);
+            changeSVGColor(src, color, selected, alt, height, width);
         });
 
     }
@@ -237,6 +246,7 @@ jQuery(document).ready(function ($) {
                     let height = $clone.data('height');
                     let id = $clone.data('id');
                     let image = $clone.data('image');
+                    console.log($clone, image);
 
                     $clone.data('height', height);
                     $clone.data('width', width);
@@ -253,6 +263,7 @@ jQuery(document).ready(function ($) {
                         position: "absolute",
                         width: "auto",
                         height: height + "px",
+                        "max-height": height + "px",
                     });
                     draggableContainer.append($clone);
                     $clone.attr("class", "item draggable");
@@ -269,7 +280,9 @@ jQuery(document).ready(function ($) {
 
                     appendColorPalette(draggableContainer, colors, ui.position.top, ui.position.left, id, randomId);
                     if ($('#board_material').val() === 'ToughSteel') {
-                        changeSVGColor(image, 'black', randomId, 'outline');
+                        changeSVGColor(image, 'black', randomId, 'outline', height, width);
+                    } else {
+                        changeSVGColor(image, 'black', randomId, $clone[0].alt, height, width);
                     }
 
                     closeButton.click(function () {
@@ -356,6 +369,7 @@ jQuery(document).ready(function ($) {
             position: "absolute",
             width: "auto",
             height: height + "px",
+            "max-height": height + "px",
         });
         let randomId = GN();
         $clone.attr("class", "item draggable");
@@ -390,6 +404,14 @@ jQuery(document).ready(function ($) {
                 }
             }
         });
+        const cont = $('.draggable-container');
+        // check if cont content is empty
+        for (let i = 0; i < cont.length; i++) {
+            if (cont.eq(i).children().length === 0) {
+                console.log(cont.eq(i), 'cont');
+                cont.eq(i).remove();
+            }
+        }
     }
 
     // if the page url is /configurator
@@ -487,8 +509,9 @@ jQuery(document).ready(function ($) {
         $('#set_board_title').text(boardProperties.board_title);
         $('#section1').css('background-color', boardProperties.background_color);
 
-        var color = getBoardMaterial(boardProperties.board_material);
-        $('#section1').css('background-color', color);
+        var color = getBoardMaterial();
+        console.log(color);
+        $('#section1').css('background-image', color);
 
         const title_bg_color = $('#title_bg_color').val();
         $('#title_background_color').css('background-color', title_bg_color);
@@ -594,7 +617,8 @@ jQuery(document).ready(function ($) {
         const board_material = $('#board_material').val();
 
         if (board_material === 'ToughSteel') {
-            $('#section1').css('background-color', 'rgb(192, 192, 192)');
+            $('#section1').css('background-image', ToughSteelColor);
+            $('#section1').css('background-color', ToughSteelColor);
             if (!stanelessSteelPrompt) {
                 $('#stanelessSteelPrompt').modal('show');
             }
@@ -711,6 +735,7 @@ jQuery(document).ready(function ($) {
                                     position: "absolute",
                                     width: "auto",
                                     height: item.height + "px",
+                                    "max-height": item.height + "px",
                                 });
 
                                 $('.canvas-container').css({
@@ -727,7 +752,7 @@ jQuery(document).ready(function ($) {
 
                                 newItem.find('.color-input').css('background-color', item.color);
 
-                                changeSVGColor(item.image, item.color, randomId, item.alt);
+                                changeSVGColor(item.image, item.color, randomId, item.alt, item.height, item.width);
 
 
                                 $("#section1").append(newItem);
@@ -743,7 +768,7 @@ jQuery(document).ready(function ($) {
                         if (selectedColor) {
                             getVariationImage(selectedColor);
                         }
-                        getBoardMaterial(data.board_material)
+                        getBoardMaterial();
 
                         const logo_url = data.logo_url;
                         if (logo_url) {
@@ -868,29 +893,33 @@ jQuery(document).ready(function ($) {
 
     }
 
-    function getBoardMaterial(material) {
+    function getBoardMaterial() {
         const board_material = $('#board_material').val();
         const bg_color = $('#background_color').val();
         var section_color = $('#section1').css('background-color');
         var section_background_image = $('#section1').css('background-image');
+        console.log(board_material, bg_color, section_color, section_background_image);
 
         const defaultBackgroundColor = 'rgb(255, 255, 255)';
         let section1BackgroundColor;
 
         if (board_material === 'ToughSteel') {
-            section1BackgroundColor = 'rgb(192, 192, 192)';
-
-            $('#section1').css('background-image', 'none');
+            section1BackgroundColor = ToughSteelColor;
+            $('#section1').css('border', 'none');
+            $('#section1').css('background-image', ToughSteelColor);
+            section1BackgroundColor = ToughSteelColor;
         } else {
             if (section_color === 'rgb(255, 255, 255)' || section_color === '#ffffff') {
                 switch (board_material) {
                     case 'ToughGuard':
                     case 'ToughGuard+':
                     case 'ToughLite':
+                    case 'ToughLam':
                         section1BackgroundColor = defaultBackgroundColor;
+                        $('#section1').css('border', 'none');
                         break;
                     case 'ToughClear':
-                        section1BackgroundColor = 'rgba(0, 0, 0, 0)';
+                        section1BackgroundColor = 'none';
                         $('#section1').css('border', '1px solid #000');
                         break;
                     default:
@@ -1464,13 +1493,20 @@ jQuery(document).ready(function ($) {
     const Image = `<img src="" data-original="" alt="Board Style Wall Mount" id="image1" class="img-fluid d-none" />`;
     $('body').append(Image);
 
-    function changeSVGColor(svgImageUrl, color, selectedId, alt) {
+    function changeSVGColor(svgImageUrl, color, selectedId, alt, newHeight, newWidth) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", svgImageUrl, true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var parser = new DOMParser();
                 var svgDoc = parser.parseFromString(xhr.responseText, "image/svg+xml");
+
+                svgDoc = svgDoc.documentElement;
+                // console.log(svgDoc, 'svgDoc');
+
+                // Modify the SVG by adding a height attribute
+                svgDoc.setAttribute('height', newHeight);
+                svgDoc.setAttribute('width', newWidth);
 
                 var paths = svgDoc.querySelectorAll("path");
                 paths.forEach(function (path) {
@@ -2023,44 +2059,6 @@ jQuery(document).ready(function ($) {
     }
 
     /*
-    * Handle custom tool submission withot payment
-    */
-    // $("#submit_custom_tool").on("click", function() {
-    //     var file = $('#custom_tool_image').prop('files')[0];
-    //     var board_id = window.location.search.split('=')[1];
-
-    //     if (file) {
-    //         var reader = new FileReader();
-
-    //         reader.onload = function(e) {
-    //             var formData = new FormData();
-    //             formData.append('acion', 'process_custom_tool_request');
-    //             formData.append('board_id', board_id);
-    //             formData.append('file', file);
-
-    //             $.ajax({
-    //                 url: amerison_vars.ajaxurl,
-    //                 type: 'POST',
-    //                 data: formData,
-    //                 contentType: false,
-    //                 processData: false,
-    //                 success: function(response) {
-    //                     $('#custom_tool_image').val('');
-    //                     $('#request_a_custom_tool').modal('hide');
-    //                     toastr.success('Custom tool request sent successfully');
-    //                 },
-    //                 error: function(error) {
-    //                     console.error('Error sending custom tool request');
-    //                 }
-    //             });
-    //         }
-    //         reader.readAsDataURL(file);
-    //     }
-    // });
-
-
-
-    /*
     * Handle larger measuring sheet submission
     */
     $("#submit_measuring_tool").on("click", function () {
@@ -2146,45 +2144,6 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-
-    /*
-    * Handle larger measuring sheet submission withot payment
-    */
-    // $("#submit_measuring_tool").on("click", function() {
-    //     showPreloader();
-    //     const name = $('#measuring_tool_name').val();
-    //     const address = $('#measuring_postal_address').val();
-    //     const quantity = $('#measuring_tool_quantity').val();
-    //     const comments = $('#measuring_tool_features').val();
-    //     const totalCost = $('#measuring_tool_company').val();
-    //     var board_id = window.location.search.split('=')[1];
-
-    //     var formData = new FormData();
-    //     formData.append('action', 'process_measuring_tool_request');
-    //     formData.append('board_id', board_id);
-    //     formData.append('name', name);
-    //     formData.append('address', address);
-    //     formData.append('quantity', quantity);
-    //     formData.append('comments', comments);
-    //     formData.append('totalCost', totalCost);
-
-    //     $.ajax({
-    //         url: amerison_vars.ajaxurl,
-    //         type: 'POST',
-    //         data: formData,
-    //         contentType: false,
-    //         processData: false,
-    //         success: function(response) {
-    //             $('#measuring_a_custom_tool').modal('hide');
-    //             hidePreloader();
-    //             toastr.success('Measuring tool request sent successfully');
-    //         },
-    //         error: function(error) {
-    //             console.error('Error sending measuring tool request');
-    //         }
-    //     });
-    // });
-
 
     $('#color-picker').on('click', function () {
         $('#drawing_fill').click();
@@ -2312,6 +2271,140 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    // html2canvas to download the image
+
+function downloadImage() {
+    const element = $('#left_section')[0];
+    html2canvas(element, {
+        useCORS: true,
+        // onclone: function (documentClone) {
+        //     documentClone.getElementById('left_section').style.display = 'block';
+        // }
+    }).then(function (canvas) {
+        // let tools = $('#left_section').find('.draggable-container img');
+        // if (tools.length > 0) {
+        //     tools.each(function (index, tool) {
+        //         let src = $(tool).attr('src');
+        //         let height = $(tool).height();
+        //         // get the data-width attribute
+        //         let width = $(tool).attr('data-width');
+        //         console.log(height, src, "height, src");
+        //         console.log(src);
+        //         fetchAndModifySVG(src, height, width)
+        //             .then(({ svgElement }) => {
+        //                 console.log(svgElement, 'svgElement');
+        //                 // Serialize the modified SVG back into a string
+        //                 const serializer = new XMLSerializer();
+        //                 const modifiedSvgText = serializer.serializeToString(svgElement);
+        //                 console.log(modifiedSvgText, 'modifiedSvgText');
+
+        //                 var blob_1 = new Blob([modifiedSvgText], { type: "image/svg+xml" });
+        //                 var url = URL.createObjectURL(blob_1);
+        //                 console.log(url, 'url');
+        //                 $(tool).attr('src', url);
+        //             })
+        //             .catch(error => {
+        //                 console.error('Error:', error);
+        //             });
+
+        //     })
+        // }
+        const base64Image = canvas.toDataURL("image/png");
+        const imageName = $('#board_title').val();
+        const mimeType = 'image/png';
+
+        uploadBase64Image(base64Image, imageName, mimeType);
+
+    }).catch(function (error) {
+        console.error('html2canvas failed: ', error);
+    });
+}
+
+    document.getElementById("download-img").addEventListener("click", downloadImage);
+
+
+    async function fetchAndModifySVG(blobUrl, newHeight, newWidth) {
+    try {
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const svgText = reader.result;
+                console.log(svgText, 'svgText');
+
+                // Parse the text string into an SVG element
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+                console.log(svgDoc, 'svgDoc');
+                const svgElement = svgDoc.documentElement;
+                console.log(svgElement, 'svgElement');
+
+                // Modify the SVG by adding a height attribute
+                svgElement.setAttribute('height', newHeight);
+                svgElement.setAttribute('width', newWidth);
+
+                resolve({ svgElement });
+            };
+            reader.onerror = function () {
+                reject('Error reading the blob as text');
+            };
+            reader.readAsText(blob);
+        });
+    } catch (error) {
+        console.error('Error fetching or parsing SVG:', error);
+        throw error;
+    }
+}
+
+function base64ToBlob(base64, mime) {
+    const byteString = atob(base64.split(',')[1]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mime });
+}
+
+async function uploadBase64Image(base64Image, imageName, mimeType) {
+    // Convert base64 to Blob
+    // const blob = base64ToBlob(base64Image, mimeType);
+
+    // Get the nonce for authentication
+    // const nonce = document.querySelector('meta[name="wp-rest-nonce"]').getAttribute('content');
+
+    // Create FormData
+    // const formData = new FormData();
+    // formData.append('action', 'upload_image_amerisan');
+    // formData.append('file', blob, imageName);
+
+    let formData = {
+        action: 'upload_image_amerisan',
+        file: base64Image,
+        name: imageName,
+        price: 100,
+    }
+
+    console.log(formData, 'formData');
+
+    try {
+        $.ajax({
+            type: 'POST',
+            url: amerison_vars.ajaxurl,
+            data: formData,
+            success: function (response) {
+                console.log(response, 'response');
+                // Do something with the response
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        })
+    } catch (error) {
+        console.error('Error uploading image:', error);
+    }
+}
     // get the price for the selected size and material from pricing table
     $('#board_dimensions, #board_material').on('change', function () {
         const size = $('#board_dimensions').val();
