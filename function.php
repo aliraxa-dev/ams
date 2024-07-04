@@ -111,6 +111,13 @@ function configurator_page() {
     $stripe_settings_slug = 'stripe-settings';
     $stripe_settings_function = 'render_stripe_setting_page';
     add_submenu_page($menu_slug, $stripe_settings_page, $stripe_settings_title, $stripe_settings_capability, $stripe_settings_slug, $stripe_settings_function);
+
+    $pricing_page = 'Pricing';
+    $pricing_title = 'Pricing';
+    $pricing_capability = 'manage_options';
+    $pricing_slug = 'pricing';
+    $pricing_function = 'render_pricing_page';
+    add_submenu_page($menu_slug, $pricing_page, $pricing_title, $pricing_capability, $pricing_slug, $pricing_function);
 }
 add_action('admin_menu', 'configurator_page');
 
@@ -377,30 +384,103 @@ function stripe_large_measuring_price_callback() {
     echo '<p class="description">Enter the price for large measuring sheet request price (default $40).</p>';
 }
 
+// Pricing page
+function render_pricing_page() {
+    ?>
+    <div id="preloader" class="preloader"></div>
+    <div class="wrap">
+        <h2>Pricing</h2>
+        <!-- Add pricing table here -->
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th>SIZE</th>
+                    <th>TOUGHLAM</th>
+                    <th>TOUGHLITE</th>
+                    <th>TOUGHGUARD</th>
+                    <th>TOUGHGUARD+</th>
+                    <th>TOUGHCLEAR</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <?php
+                    $prices = get_amerisan_pricing();
+                    foreach ($prices as $price) {
+                        echo '<tr>';
+                        echo '<td>' . $price['size'] . '</td>';
+                        echo '<td>$' . $price['toughlam'] . '</td>';
+                        echo '<td>$' . $price['toughlite'] . '</td>';
+                        echo '<td>$' . $price['toughguard'] . '</td>';
+                        echo '<td>$' . $price['toughguardplus'] . '</td>';
+                        echo '<td>$' . $price['toughclear'] . '</td>';
+                        echo '<td><button id="update_price" data-id="' . $price['id'] . '" class="update_price btn btn-primary btn-sm">Update</button></td>';
+                        echo '</tr>';
+                    }
+                    ?>
+            </tbody>
+        </table>
 
-// function initiate_stripe_payment() {
-//     if (!is_user_logged_in()) {
-//         wp_send_json_error('User not logged in.');
-//     }
-
-//     $amount = isset($_POST['amount']) ? sanitize_text_field($_POST['amount']) : '';
-//     $token = $_POST['token']['id'];
-//     $message = '$' . ($amount / 100) . ' is paid by user';
-
-//     $stripe = new \Stripe\StripeClient(get_option('stripe_settings')['secret_key']);
-//     $stripe->charges->create([
-//         'amount' => $amount,
-//         'currency' => 'usd',
-//         'source' => $token,
-//         'description' => $message,
-//     ]);
-
-//     if ($amount > 0 && !empty($token)) {
-//         wp_send_json_success('Payment successful.');
-//     } else {
-//         wp_send_json_error('Payment failed.');
-//     }
-// }
+        <!-- Model Popup -->
+        <div class="modal fade" id="updatePriceModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered mx-auto">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalToggleLabel">Update price for size <span id="update_price_size"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- input fields here for pricing -->
+                    <div id="update_price_form">
+                        <input type="hidden" id="update_price_id" name="update_price_id" value="">
+                        <div class="row mb-3">
+                            <label for="inputSize" class="col-sm-2 col-form-label text-uppercase">Size</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputSize" disabled>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputToughLam" class="col-sm-2 col-form-label  text-uppercase">ToughLam</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputToughLam" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputToughLite" class="col-sm-2 col-form-label text-uppercase">ToughLite</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputToughLite" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputToughGuard" class="col-sm-2 col-form-label text-uppercase">ToughGuard</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputToughGuard" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputToughGuardPlus" class="col-sm-2 col-form-label text-uppercase">ToughGuard+</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputToughGuardPlus" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputToughClear" class="col-sm-2 col-form-label text-uppercase">ToughClear</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputToughClear" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-target="#updatePriceModal" data-bs-toggle="modal" id="submit_price" data-bs-dismiss="modal">Submit</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- Model Popup -->
+    </div>
+    <?php
+}
 
 function initiate_stripe_payment() {
     if (!is_user_logged_in()) {
@@ -980,6 +1060,7 @@ function create_amerisan_pricing_table() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         size VARCHAR(255) NOT NULL,
         toughlite float,
+        toughlam float,
         toughguard float,
         toughguardplus float,
         toughclear float,
@@ -1018,6 +1099,66 @@ function get_amerisan_pricing_size_callback() {
 add_action('wp_ajax_get_amerisan_pricing_size', 'get_amerisan_pricing_size_callback');
 add_action('wp_ajax_nopriv_get_amerisan_pricing_size', 'get_amerisan_pricing_size_callback');
 
+function get_amerisan_pricing_by_id_callback() {
+    // check_ajax_referer('nonce', 'nonce');
+    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amerisan_pricing';
+    $pricing = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $id", ARRAY_A);
+
+    if ($pricing) {
+        wp_send_json_success($pricing);
+    } else {
+        wp_send_json_error('No pricing data found.');
+    }
+}
+
+add_action('wp_ajax_get_amerisan_pricing_by_id', 'get_amerisan_pricing_by_id_callback');
+add_action('wp_ajax_nopriv_get_amerisan_pricing_by_id', 'get_amerisan_pricing_by_id_callback');
+
+
+function update_amerisan_pricing_by_id_callback() {
+    // check_ajax_referer('nonce', 'nonce');
+    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    $toughlite = isset($_POST['toughlite']) ? floatval($_POST['toughlite']) : 0;
+    $toughlam = isset($_POST['toughlam']) ? floatval($_POST['toughlam']) : 0;
+    $toughguard = isset($_POST['toughguard']) ? floatval($_POST['toughguard']) : 0;
+    $toughguardplus = isset($_POST['toughguardplus']) ? floatval($_POST['toughguardplus']) : 0;
+    $toughclear = isset($_POST['toughclear']) ? floatval($_POST['toughclear']) : 0;
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amerisan_pricing';
+    $wpdb->update(
+        $table_name,
+        array(
+            'toughlite' => $toughlite,
+            'toughlam' => $toughlam,
+            'toughguard' => $toughguard,
+            'toughguardplus' => $toughguardplus,
+            'toughclear' => $toughclear,
+            'updated_at' => date('Y-m-d H:i:s')
+        ),
+        array('id' => $id)
+    );
+    wp_send_json_success('Pricing updated successfully.');
+}
+
+add_action('wp_ajax_update_amerisan_pricing_by_id', 'update_amerisan_pricing_by_id_callback');
+add_action('wp_ajax_nopriv_update_amerisan_pricing_by_id', 'update_amerisan_pricing_by_id_callback');
+
+function get_amerisan_selected_pricing_price_callback() {
+    $size = isset($_POST['size']) ? $_POST['size'] : '';
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amerisan_pricing';
+    $pricing = $wpdb->get_row("SELECT * FROM $table_name WHERE size = '$size'", ARRAY_A);
+    if ($pricing) {
+        wp_send_json_success($pricing);
+    } else {
+        wp_send_json_error('No pricing data found.');
+    }
+}
+
+add_action('wp_ajax_get_amerisan_selected_pricing_price', 'get_amerisan_selected_pricing_price_callback');
+add_action('wp_ajax_nopriv_get_amerisan_selected_pricing_price', 'get_amerisan_selected_pricing_price_callback');
 
 // get_amerisan_pricing_size();
 /**

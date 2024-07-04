@@ -1123,7 +1123,7 @@ jQuery(document).ready(function ($) {
 
     $('#board_dimensions, #custom_height').on('change', function () {
         updateBoardDimensions();
-        updateDatabase();
+        // updateDatabase();
         saveSectionState();
     });
 
@@ -1387,7 +1387,7 @@ jQuery(document).ready(function ($) {
             $('#board_dimensions').val(board_width + 'x' + board_height);
             localStorage.setItem("custom_board_dimensions", board_width + 'x' + board_height);
             localStorage.setItem("previous_board_dimensions", board_width + 'x' + board_height);
-            updateDatabase();
+            // updateDatabase();
         } else if (board_width > 120) {
             $('#custom_width').val(120);
             $('#board_dimensions').val(previous_board_dimensions);
@@ -2271,9 +2271,6 @@ jQuery(document).ready(function ($) {
         });
     }
 
-
-
-
     // html2canvas to download the image
 
 function downloadImage() {
@@ -2408,7 +2405,64 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
         console.error('Error uploading image:', error);
     }
 }
+    // get the price for the selected size and material from pricing table
+    $('#board_dimensions, #board_material').on('change', function () {
+        const size = $('#board_dimensions').val();
+        var material = $('#board_material').val().toLowerCase();
+        get_selected_price( size, material);
+    });
 
+    function get_selected_price(size = '', material = '') {
+        const nonce = amerison_vars.nonce;
+        if (material === 'toughguard+') {
+            material = 'toughguardplus';
+        }
+        if (!size) {
+            return;
+        }
+        var price = 0;
+        $.ajax({
+            url: amerison_vars.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'get_amerisan_selected_pricing_price',
+                size: size,
+                material: material,
+                nonce: nonce
+            },
+            dataType: "json",
+            success: function (response) {
+                // console.log(response, 'response');
+                if (response.success) {
+                    price = response.data;
+                    // get the price for the selected size and material from pricing array
+                    price = price[material];
+                    // price in float
+                    price = parseFloat(price);
+                    if (!price || isNaN(price)) {
+                        $('#total_price_container').css('display', 'none');
+                        return;
+                    } else {
+                        localStorage.setItem("custom_board_dimensions", size);
+                        $('#total_price_container').css('display', 'flex');
+                        $('#total_price').text('$' + price);
+                        console.log(price, 'price');
+                    }
+                    updateDatabase();
+                } else {
+                    console.error('Error retrieving data:', response.data.message);
+                }
+            },
+            error: function (error) {
+                console.error('Error in AJAX request:', error);
+            }
+        });
+    }
+
+    var size = localStorage.getItem("previous_board_dimensions");
+    var material = $("#board_material").val().toLowerCase();
+
+    get_selected_price(size, material);
 
 
 });

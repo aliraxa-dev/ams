@@ -297,11 +297,13 @@
         </div>
     </div>
 
-
     <!-- add to cart button -->
     <div class="d-flex justify-content-end align-items-center my-1 gap-3">
-        <!-- <button class="btn btn-danger border-0 py-1 px-2" id="download-img">download-img</button> -->
-        <button id="add_to_cart" class="btn btn-primary border-0 py-1 px-2" style="display: none">Add to Cart</button>
+        <div class="align-items-center bg-danger text-white gap-3 px-3 py-2  border border-2 border-dark rounded rounded-2" id="total_price_container" style="display: none">
+        <span id="total_price_text" class="mb-0 fw-bold lexend-font fs-6 text-white">Total Price: </h4>
+        <span class="fs-6 fw-bold lexend-font" id="total_price"></span>
+        </div>
+        <div id="add_to_cart" class="btn btn-primary border-0 fs-6 px-3 py-2 fw-bold lexend-font" style="display: none">Add to Cart</div>
     </div>
 </div>
 

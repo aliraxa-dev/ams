@@ -190,6 +190,7 @@
   border-top: 3px solid #3498db;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  visibility: visible;
 }
 
 /* Animation for spinner */
