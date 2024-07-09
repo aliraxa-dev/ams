@@ -300,10 +300,10 @@
     <!-- add to cart button -->
     <div class="d-flex justify-content-end align-items-center my-1 gap-3">
         <div class="align-items-center bg-danger text-white gap-3 px-3 py-2  border border-2 border-dark rounded rounded-2" id="total_price_container" style="display: none">
-        <span id="total_price_text" class="mb-0 fw-bold lexend-font fs-6 text-white">Total Price: </h4>
-        <span class="fs-6 fw-bold lexend-font" id="total_price"></span>
+            <span id="total_price_text" class="mb-0 fw-bold lexend-font fs-6 text-white">Board Price: </h4>
+            <span class="fs-6 fw-bold lexend-font" id="total_price"></span>
         </div>
-        <div id="add_to_cart" class="btn btn-primary border-0 fs-6 px-3 py-2 fw-bold lexend-font" style="display: none">Add to Cart</div>
+        <button id="add_to_cart" class="btn btn-primary border-0 fs-6 px-3 py-2 fw-bold" style="display: none">Add to Cart</button>
     </div>
 </div>
 
@@ -311,7 +311,7 @@
 <div class="dot_alert" id="dot_alert"></div>
 <section class="w-auto">
     <div class="row m-0 custom_height">
-        <div class="col-md-8 px-0" id="left_section">
+        <div class="col-md-8 px-0 bg-transparent" id="left_section">
             <canvas style="position: absolute;" id="canvas" width="400" height="400"></canvas>
             <div class="left-box-custom-border section ui-droppable-active ui-droppable-hover" id="section1">
                 <div class="w-100 color-box-customization" style="height: 50px" id="title_background_color">

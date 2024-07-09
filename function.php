@@ -1168,7 +1168,7 @@ add_action('wp_ajax_nopriv_get_amerisan_selected_pricing_price', 'get_amerisan_s
  * It defines the table structure including columns for storing information related to measuring sheet requests,
  * such as user ID, name, address, quantity, comments, total cost, status, and creation timestamp.
  * The function utilizes WordPress's dbDelta function to execute the SQL query and create the table.
- * 
+ *
  * Note: This function should be called during plugin or theme activation.
  *
  * @global wpdb $wpdb WordPress database access abstraction object.
@@ -1225,7 +1225,7 @@ function is_measure_request_table_created() {
  * such as file name, dimensions, status, creation timestamp, associated board ID, and user ID.
  * The function checks if the table exists before attempting to create it to avoid duplication.
  * It utilizes WordPress's dbDelta function to execute the SQL query and create the table.
- * 
+ *
  * Note: This function should be called during plugin or theme activation.
  *
  * @global wpdb $wpdb WordPress database access abstraction object.
@@ -1262,7 +1262,7 @@ register_activation_hook(__FILE__, 'create_request_custom_tool_table');
  * It then sends an email notification to the user acknowledging the receipt of the request.
  * This function is hooked to the 'wp_ajax_process_custom_tool_request' action to handle requests from logged-in users,
  * and to the 'wp_ajax_nopriv_process_custom_tool_request' action to handle requests from non-logged-in users.
- * 
+ *
  * Note: This function assumes the existence of the 'request_custom_tool' table and the 'send_email_to_user' function.
  */
 
@@ -1327,7 +1327,7 @@ add_action('wp_ajax_nopriv_process_custom_tool_request', 'process_custom_tool_re
  * It then sends an email notification to the user acknowledging the receipt of the request.
  * This function is hooked to the 'wp_ajax_process_measuring_tool_request' action to handle requests from logged-in users,
  * and to the 'wp_ajax_nopriv_process_measuring_tool_request' action to handle requests from non-logged-in users.
- * 
+ *
  * Note: This function assumes the existence of the 'measure_request' table and the 'send_email_to_user' function.
  */
 
@@ -1380,7 +1380,7 @@ add_action('wp_ajax_nopriv_process_measuring_tool_request', 'process_measuring_t
  * It then sends the response containing the new ID of the inserted record.
  * This function is hooked to the 'wp_ajax_update_configurator_data' action to handle requests from logged-in users,
  * and to the 'wp_ajax_nopriv_update_configurator_data' action to handle requests from non-logged-in users.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table and the use of sanitize_text_field function.
  */
 
@@ -1484,8 +1484,12 @@ function upload_image_amerisan() {
         );
         $attachment_id = wp_insert_attachment($attachment, $file);
         $image = wp_get_attachment_image($attachment_id, 'full');
-        $product = create_amerisan_simple_product($_POST['name'], $_POST['price'], $attachment_id);
 
+        $style = $_POST['board_style'];
+        $material = $_POST['board_material'];
+        $dimentions = $_POST['board_dimensions'];
+
+        $product = create_amerisan_simple_product($_POST['name'], $_POST['price'], $attachment_id, $style, $material, $dimentions);
         // add this product in the cart
         $cart = WC()->cart;
         $cart->add_to_cart($product);
@@ -1510,7 +1514,7 @@ add_action('wp_ajax_upload_image_amerisan', 'upload_image_amerisan');
 add_action('wp_ajax_nopriv_upload_image_amerisan', 'upload_image_amerisan');
 
 
-function create_amerisan_simple_product($name, $price, $attachment_id) {
+function create_amerisan_simple_product($name, $price, $attachment_id, $style, $material, $dimentions) {
     // Check if WooCommerce is active
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_inactive', 'WooCommerce is not active.');
@@ -1549,20 +1553,13 @@ function create_amerisan_simple_product($name, $price, $attachment_id) {
     update_post_meta($product_id, '_regular_price', $price); // Required for simple product
     update_post_meta($product_id, '_thumbnail_id', $attachment_id);
 
+    $tags = array('Board Style: ' . $style, 'Board Material: ' . $material, 'Board Dimensions: ' . $dimentions);
+    wp_set_post_terms($product_id, $tags, 'product_tag');
     // Set product type
     wp_set_object_terms($product_id, 'simple', 'product_type');
 
-    // You can add more metadata or custom fields here if needed
-    // For example: SKU, stock status, weight, dimensions, etc.
-
-    // Example: Set SKU (optional)
-    // update_post_meta($product_id, '_sku', 'your-sku');
-
     // Example: Set stock status (optional)
     update_post_meta($product_id, '_stock_status', 'instock');
-
-    // Example: Set product tags (optional)
-    wp_set_post_terms($product_id, array('shadow_board'), 'product_tag');
 
     return $product_id;
 }
@@ -1575,7 +1572,7 @@ function create_amerisan_simple_product($name, $price, $attachment_id) {
  * It queries the 'configurator_data' table based on the user ID and returns the results.
  * This function is hooked to the 'wp_ajax_get_configurator_data' action to handle requests from logged-in users,
  * and to the 'wp_ajax_nopriv_get_configurator_data' action to handle requests from non-logged-in users.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
  *
  * @global wpdb $wpdb WordPress database access abstraction object.
@@ -1601,7 +1598,7 @@ add_action('wp_ajax_nopriv_get_configurator_data', 'get_configurator_data');
  * This function retrieves configurator data from the database based on the provided board ID.
  * It constructs an SQL query to select data from the 'configurator_data' table for the specified board ID,
  * executes the query, and sends the JSON response containing the retrieved data.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
  *
  * @global wpdb $wpdb WordPress database access abstraction object.
@@ -1627,7 +1624,7 @@ function get_configurator_data() {
  * This function retrieves configurator data from the database based on the provided board ID.
  * It constructs an SQL query to select data from the 'configurator_data' table for the specified board ID,
  * executes the query, and returns the result.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
  *
  * @global wpdb $wpdb WordPress database access abstraction object.
@@ -1649,7 +1646,7 @@ function get_data_by_id($board_id) {
  * This function retrieves all configurator boards from the database.
  * It constructs an SQL query to select all data from the 'configurator_data' table,
  * executes the query, and returns the results.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
  *
  * @global wpdb $wpdb WordPress database access abstraction object.
@@ -1674,7 +1671,7 @@ function get_all_boards() {
  * It then generates attachment metadata and updates the attachment metadata in the database.
  * Next, it saves the logo data (board ID, attachment ID, and URL) to the database using the save_logo_data_to_database function.
  * Finally, it sends a JSON-encoded response indicating success or failure of the upload process.
- * 
+ *
  * Note: This function assumes the existence of the save_logo_data_to_database function and relies on WordPress's media handling functions.
  */
 
@@ -1720,9 +1717,9 @@ add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
  * If data exists, it updates the existing record with the new attachment ID, logo URL, and timestamp.
  * If data does not exist, it inserts a new record into the database with the board ID, attachment ID, logo URL, and timestamp.
  * It then sends a JSON-encoded response containing the logo URL and attachment ID.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
- * 
+ *
  * @global wpdb $wpdb WordPress database access abstraction object.
  * @param int $board_id The ID of the board.
  * @param int $attachment_id The ID of the logo attachment.
@@ -1773,7 +1770,7 @@ function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
  * It then generates attachment metadata and updates the attachment metadata in the database.
  * Next, it saves the background data (board ID, attachment ID, and URL) to the database using the save_background_data_to_database function.
  * Finally, it sends a JSON-encoded response indicating success or failure of the upload process.
- * 
+ *
  * Note: This function assumes the existence of the save_background_data_to_database function and relies on WordPress's media handling functions.
  */
 
@@ -1819,9 +1816,9 @@ add_action('wp_ajax_nopriv_handle_background_upload', 'handle_background_upload'
  * If data exists, it updates the existing record with the new background URL and timestamp.
  * If data does not exist, it inserts a new record into the database with the board ID, background URL, and timestamp.
  * It then sends a JSON-encoded response containing the background URL and attachment ID.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
- * 
+ *
  * @global wpdb $wpdb WordPress database access abstraction object.
  * @param int $board_id The ID of the board.
  * @param int $attachment_id The ID of the background attachment.
@@ -1868,9 +1865,9 @@ function save_background_data_to_database($board_id, $attachment_id, $background
  * If the value is 'logo_url', it updates the database to set both the attachment ID and logo URL to NULL for the given board ID.
  * If the value is 'background_url', it updates the database to set the background URL to NULL for the given board ID.
  * Additionally, it calls the delete_image_callback function to perform any necessary cleanup of the deleted image.
- * 
+ *
  * Note: This function assumes the existence of the delete_image_callback function and relies on the 'configurator_data' table.
- * 
+ *
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
@@ -1898,9 +1895,9 @@ add_action('wp_ajax_nopriv_clearLinksFromDb', 'clearLinksFromDb');
  * This function deletes a board and its associated data from the database.
  * It retrieves the board ID from the POST data and constructs a SQL query to delete the board from the database table.
  * The function then executes the query to perform the deletion.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
- * 
+ *
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
@@ -1921,9 +1918,9 @@ add_action('wp_ajax_nopriv_deleteBoard', 'deleteBoard');
  * This function resets a board to its default state by updating its data in the database.
  * It retrieves the board ID from the POST data and constructs an array with default values for the board's properties.
  * The function then updates the board's data in the database table using the WordPress database abstraction class.
- * 
+ *
  * Note: This function assumes the existence of the 'configurator_data' table.
- * 
+ *
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 

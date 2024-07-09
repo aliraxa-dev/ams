@@ -65,6 +65,12 @@ function init() {
 
 
 jQuery(document).ready(function ($) {
+    // const dim = localStorage.getItem("previous_board_dimensions");
+    // console.log(dim, 'dim');
+
+    // if (dim) {
+    //     $('#board_dimensions').val(dim);
+    // }
 
     init();
 
@@ -383,8 +389,8 @@ jQuery(document).ready(function ($) {
         });
 
         appendColorPalette(draggableContainer, colors, 0, left, id, randomId);
-        saveSectionState();
         dragElement();
+        saveSectionState();
     });
 
     function dragElement() {
@@ -397,7 +403,6 @@ jQuery(document).ready(function ($) {
             drag: function (event, ui) {
                 $('#section1').droppable('destroy');
                 allowDrop();
-                saveSectionState();
                 boardWithTool();
                 if ($(this).hasClass('resizable')) {
                     ui.position.top = ui.originalPosition.top + (ui.position.top - ui.originalPosition.top) / $(this).data("ui-draggable")._mouseDrag({ target: $('.ui-resizable-handle') }).ratio;
@@ -507,11 +512,10 @@ jQuery(document).ready(function ($) {
         }
 
         $('#set_board_title').text(boardProperties.board_title);
-        $('#section1').css('background-color', boardProperties.background_color);
-
+        // $('#section1').css('background', boardProperties.background_color);
+        const board_material = $('#board_material').val();
         var color = getBoardMaterial();
-        console.log(color);
-        $('#section1').css('background-image', color);
+        $('#section1').css('background', color);
 
         const title_bg_color = $('#title_bg_color').val();
         $('#title_background_color').css('background-color', title_bg_color);
@@ -537,38 +541,48 @@ jQuery(document).ready(function ($) {
             });
         }
 
-        const setFill = localStorage.getItem("shape_filler");
-        const setStroke = localStorage.getItem("shape_stroke");
-        $('#colorPickerToggle').css('border-color', setStroke);
+        // const fillOutline = localStorage.getItem("shape_filler");
+        // console.log(JSON.parse(fillOutline), 'fillOutline');
+        // JSON.parse(fillOutline).forEach(([key, item]) => {
+        //     console.log(item, 'item');
+        //     console.log(key, 'key');
+        //     const setFill = item.fill;
+        //     const setStroke = item.stroke;
+        
+        //     // Update the color picker toggle border color
+        //     $('#colorPickerToggle').css('border-color', setStroke);
+        
+        //     const textFill = localStorage.getItem("text_filler");
+        //     const textStroke = localStorage.getItem("text_stroke");
+        
+        //     if (canvas.getActiveObject()) {
+        //         const activeObject = canvas.getActiveObject();
+        //         const isText = activeObject.type === 'textbox';
+        //         const isPath = activeObject.type === 'path';
+        
+        //         if (!isText) {
+        //             if (!isPath) {
+        //                 activeObject.set('fill', setFill);
+        //                 activeObject.set('stroke', setStroke);
+        //             } else {
+        //                 activeObject.set('fill', 'transparent');
+        //                 activeObject.set('stroke', 'black');
+        //             }
+        //         } else {
+        //             activeObject.set('stroke', textStroke || setStroke);
+        //             activeObject.set('fill', textFill || setFill);
+        //         }
+        //         canvas.renderAll();
+        //     }
+        
+        //     // Update color picker values
+        //     $('#drawing_fill').val(setFill);
+        //     $('#drawing_stroke').val(setStroke);
+        //     $('#fill_color_text').val(textFill || setFill);
+        //     $('#stroke_color_text').val(textStroke || setStroke);
+        // });
 
-        const textFill = localStorage.getItem("text_filler");
-        const textStroke = localStorage.getItem("text_stroke");
-        if (canvas.getActiveObject()) {
-            const text = canvas.getActiveObject().type === 'textbox' ? true : false;
-            const path = canvas.getActiveObject().type === 'path' ? true : false;
-
-            if (!text) {
-                if (!path) {
-                    canvas.getActiveObject().set('fill', setFill);
-                    canvas.getActiveObject().set('stroke', setStroke);
-                } else {
-                    canvas.getActiveObject().set('fill', 'transparent');
-                    canvas.getActiveObject().set('stroke', 'black');
-                }
-                canvas.renderAll();
-            } else if (text) {
-                canvas.getActiveObject().set('stroke', textStroke);
-                canvas.getActiveObject().set('fill', textFill);
-                canvas.renderAll();
-            }
-        }
-
-        $('#drawing_fill').val(setFill);
-        $('#drawing_stroke').val(setStroke);
-        $('#fill_color_text').val(textFill);
-        $('#stroke_color_text').val(textStroke);
-
-        var board_material = $('#board_material').val();
+        // var board_material = $('#board_material').val();
         const background_url = localStorage.getItem("background_upload");
         if (background_url && board_material !== 'ToughSteel') {
             $('#section1').css('background-image', 'url(' + background_url + ')');
@@ -603,7 +617,7 @@ jQuery(document).ready(function ($) {
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl)
     })
-
+    let objectCount = 0;
     let stanelessSteelPrompt = false;
     function changeBG() {
         const title_bg_color = $('#title_bg_color').val();
@@ -617,8 +631,11 @@ jQuery(document).ready(function ($) {
         const board_material = $('#board_material').val();
 
         if (board_material === 'ToughSteel') {
-            $('#section1').css('background-image', ToughSteelColor);
-            $('#section1').css('background-color', ToughSteelColor);
+            // get section 1 style attributes
+            $('#section1').css('background-color', '');
+            $('#section1').css('background', ToughSteelColor);
+            // $('#section1').css('background-color', ToughSteelColor);
+            localStorage.setItem("background_color", ToughSteelColor);
             if (!stanelessSteelPrompt) {
                 $('#stanelessSteelPrompt').modal('show');
             }
@@ -627,7 +644,11 @@ jQuery(document).ready(function ($) {
             $('.custom-color-picker').addClass('hide-important');
         } else {
             const background_color = $('#background_color').val();
-            $('#section1').css('background-color', background_color);
+            if (board_material !== 'ToughClear') {
+                $('#section1').css('background', background_color);
+            } else {
+                $('#section1').css('background', 'transparent');
+            }
             localStorage.setItem("background_color", background_color);
             stanelessSteelPrompt = false;
             // add solid option if it doesn't exist
@@ -646,16 +667,28 @@ jQuery(document).ready(function ($) {
             const text = canvas.getActiveObject().type === 'textbox' ? true : false;
             const path = canvas.getActiveObject().type === 'path' ? true : false;
 
-
-
             if (!text) {
                 const stroke = $('#drawing_stroke').val();
                 const fill = $('#drawing_fill').val();
                 if (!path) {
-                    canvas.getActiveObject().set('fill', fill);
-                    canvas.getActiveObject().set('stroke', stroke);
-                    localStorage.setItem("shape_filler", fill);
-                    localStorage.setItem("shape_stroke", stroke);
+                    console.log("hare");
+                    if (fill != '#000000' && stroke != 'black' && canvas.getActiveObject().type === 'rect') {
+                        canvas.getActiveObject().set('fill', fill);
+                        canvas.getActiveObject().set('stroke', stroke);
+                    } else if (fill != '#000000' && stroke != 'black' && canvas.getActiveObject().type === 'circle') {
+                        canvas.getActiveObject().set('fill', fill);
+                        canvas.getActiveObject().set('stroke', stroke);
+                    } else if (canvas.getActiveObject().fill !== 'black' || canvas.getActiveObject().stroke !== 'black') {
+                        if (canvas.getActiveObject().fill !== fill || canvas.getActiveObject().stroke !== stroke) {
+                            $('#drawing_fill').val(canvas.getActiveObject().fill);
+                            $('#drawing_stroke').val(canvas.getActiveObject().stroke);
+                            canvas.on('selection:updated', function () {
+                                canvas.discardActiveObject();
+                            });
+                        }
+                    }
+
+
                 } else {
                     canvas.getActiveObject().set('fill', 'transparent');
                     canvas.getActiveObject().set('stroke', 'black');
@@ -679,7 +712,7 @@ jQuery(document).ready(function ($) {
 
 
 
-    function getDataFromDb() {
+    async function getDataFromDb() {
         const board_id = window.location.search.split('=')[1];
         if (board_id !== 'new') {
             const ajaxurl = amerison_vars.ajaxurl;
@@ -799,8 +832,12 @@ jQuery(document).ready(function ($) {
                         } else {
                             $('#section1').css('background-image', 'none');
                         }
-
-                        $('#board_dimensions').val(data.board_dimensions);
+                        if (data.board_dimensions !== undefined && data.board_dimensions !== null && data.board_dimensions !== '') {
+                            const pbd = localStorage.getItem("previous_board_dimensions");
+                            $('#board_dimensions').val(pbd);
+                        } else {
+                            $('#board_dimensions').val(data.board_dimensions);
+                        }
 
                         localStorage.setItem("custom_board_dimensions", data.board_dimensions);
 
@@ -821,6 +858,7 @@ jQuery(document).ready(function ($) {
             });
         }
     }
+
 
 
     function getVariationImage(color) {
@@ -898,7 +936,7 @@ jQuery(document).ready(function ($) {
         const bg_color = $('#background_color').val();
         var section_color = $('#section1').css('background-color');
         var section_background_image = $('#section1').css('background-image');
-        console.log(board_material, bg_color, section_color, section_background_image);
+        // console.log(board_material, bg_color, section_color, section_background_image);
 
         const defaultBackgroundColor = 'rgb(255, 255, 255)';
         let section1BackgroundColor;
@@ -906,10 +944,10 @@ jQuery(document).ready(function ($) {
         if (board_material === 'ToughSteel') {
             section1BackgroundColor = ToughSteelColor;
             $('#section1').css('border', 'none');
-            $('#section1').css('background-image', ToughSteelColor);
-            section1BackgroundColor = ToughSteelColor;
+            $('#section1').css('background-color', "");
+            $('#section1').css('background', ToughSteelColor);
         } else {
-            if (section_color === 'rgb(255, 255, 255)' || section_color === '#ffffff') {
+            if (bg_color === 'rgb(255, 255, 255)' || bg_color === '#ffffff') {
                 switch (board_material) {
                     case 'ToughGuard':
                     case 'ToughGuard+':
@@ -919,7 +957,8 @@ jQuery(document).ready(function ($) {
                         $('#section1').css('border', 'none');
                         break;
                     case 'ToughClear':
-                        section1BackgroundColor = 'none';
+                        section1BackgroundColor = 'transparent';
+                        $('#section1').css('background-color', " ");
                         $('#section1').css('border', '1px solid #000');
                         break;
                     default:
@@ -934,6 +973,7 @@ jQuery(document).ready(function ($) {
                 $('#section1').css('background-image', section_background_image);
             }
         }
+        console.log(section1BackgroundColor, "is applied");
         return section1BackgroundColor;
     }
 
@@ -1123,7 +1163,7 @@ jQuery(document).ready(function ($) {
 
     $('#board_dimensions, #custom_height').on('change', function () {
         updateBoardDimensions();
-        // updateDatabase();
+        updateDatabase();
         saveSectionState();
     });
 
@@ -1258,7 +1298,7 @@ jQuery(document).ready(function ($) {
         $('#title_header_color').val('#000000');
         $('#title_position').val('center');
         $('#set_board_title').removeAttr('style');
-        $('#board_dimensions').val('24x72');
+        $('#board_dimensions').val('12x12');
         $('#background_color').val('#ffffff');
         $('#board_style').val("Wall Mount");
         $('#board_material').val("ToughLite");
@@ -1449,7 +1489,7 @@ jQuery(document).ready(function ($) {
     function createNewBoard() {
         $('#section1').removeAttr('style');
         $('#title_position').val('left');
-        $('#board_dimensions').val('24x72');
+        $('#board_dimensions').val('12x12');
         $('#background_color').val('#ffffff');
         $('#board_style').val('Wall Mount');
         $('#board_material').val('ToughGuard');
@@ -1457,7 +1497,7 @@ jQuery(document).ready(function ($) {
         $('#quantity_of_boards').val(0);
         $('#section1').css('background-color', '#ffffff');
         $('#attributes').val("null");
-        const dimensions = adjustChildSize(24, 72);
+        const dimensions = adjustChildSize(12, 12);
         $('#section1').css('width', dimensions.width + 'px');
         $('#section1').css('height', dimensions.height + 'px');
 
@@ -1599,13 +1639,15 @@ jQuery(document).ready(function ($) {
         canvas.renderAll();
         saveState();
     }
-
+    let rectCount = 0
     function addRectangle() {
         if (!isRectAdded) {
             isRectAdded = true;
             canvas.selection = true;
+            canvas.rectCount = rectCount;
             canvas.isDrawingMode = false;
             canvas.add(new fabric.Rect({
+                rectCount: rectCount,
                 left: 100,
                 top: 100,
                 width: 100,
@@ -1616,17 +1658,20 @@ jQuery(document).ready(function ($) {
                 selectable: true,
                 evented: true
             }));
+            rectCount++;
             canvas.renderAll();
             saveState();
         }
     }
-
+    let circleCount = 0
     function addCircle() {
         if (!isCircleAdded) {
             isCircleAdded = true;
             canvas.selection = true;
+            canvas.circleCount = circleCount;
             canvas.isDrawingMode = false;
             canvas.add(new fabric.Circle({
+                circleCount: circleCount,
                 left: 100,
                 top: 100,
                 radius: 50,
@@ -1636,6 +1681,7 @@ jQuery(document).ready(function ($) {
                 selectable: true,
                 evented: true
             }));
+            circleCount++;
             canvas.renderAll();
             saveState();
         }
@@ -1776,6 +1822,13 @@ jQuery(document).ready(function ($) {
     canvas.on('selection:cleared', function (options) {
         isTextAdded = false;
         isRectAdded = false;
+        $('#drawing_fill').val('transparent');
+        $('#drawing_stroke').val('black');
+    });
+
+    canvas.on('selection:changed', function () {
+        // unselect all objects
+        canvas.discardActiveObject();
     });
 
     $('.shape-items').click(function () {
@@ -2176,6 +2229,7 @@ jQuery(document).ready(function ($) {
     }
 
     $('#add_to_cart').on('click', function () {
+        showPreloader();
         var boardData = $('#section1 .draggable-container img');
         var boardDataArray = [];
         boardData.each(function () {
@@ -2200,6 +2254,7 @@ jQuery(document).ready(function ($) {
             data: data,
             success: function (response) {
                 toastr.success('Tools are added to cart successfully');
+                downloadImage();
             },
             error: function (error) {
                 console.error('Error adding board to cart');
@@ -2244,7 +2299,7 @@ jQuery(document).ready(function ($) {
 
 
     // ajax to get the size from pricing table
-    function getAmerisanPricingSize() {
+    async function getAmerisanPricingSize() {
         const nonce = amerison_vars.nonce;
         $.ajax({
             url: amerison_vars.ajaxurl,
@@ -2320,7 +2375,7 @@ function downloadImage() {
     });
 }
 
-    document.getElementById("download-img").addEventListener("click", downloadImage);
+    // document.getElementById("download-img").addEventListener("click", downloadImage);
 
 
     async function fetchAndModifySVG(blobUrl, newHeight, newWidth) {
@@ -2379,14 +2434,25 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
     // formData.append('action', 'upload_image_amerisan');
     // formData.append('file', blob, imageName);
 
+    let total_price = $('#total_price').text();
+    total_price = total_price.replace('$', '');
+
+    total_price = parseFloat(total_price);
+
+    let board_material = $('#board_material').val();
+    let board_style = $('#board_style').val();
+    let board_dimensions = $('#board_dimensions').val();
+
     let formData = {
         action: 'upload_image_amerisan',
         file: base64Image,
         name: imageName,
-        price: 100,
+        price: total_price,
+        board_material: board_material,
+        board_style: board_style,
+        board_dimensions: board_dimensions,
     }
 
-    console.log(formData, 'formData');
 
     try {
         $.ajax({
@@ -2394,8 +2460,8 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
             url: amerison_vars.ajaxurl,
             data: formData,
             success: function (response) {
-                console.log(response, 'response');
-                // Do something with the response
+                // redirect to cart page
+                window.location.href = '/cart';
             },
             error: function (error) {
                 console.error(error);
@@ -2409,10 +2475,11 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
     $('#board_dimensions, #board_material').on('change', function () {
         const size = $('#board_dimensions').val();
         var material = $('#board_material').val().toLowerCase();
+        console.log(size, material, 'size, material');
         get_selected_price( size, material);
     });
 
-    function get_selected_price(size = '', material = '') {
+    function get_selected_price(size, material) {
         const nonce = amerison_vars.nonce;
         if (material === 'toughguard+') {
             material = 'toughguardplus';
@@ -2446,7 +2513,6 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
                         localStorage.setItem("custom_board_dimensions", size);
                         $('#total_price_container').css('display', 'flex');
                         $('#total_price').text('$' + price);
-                        console.log(price, 'price');
                     }
                     updateDatabase();
                 } else {
@@ -2458,11 +2524,6 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
             }
         });
     }
-
-    var size = localStorage.getItem("previous_board_dimensions");
-    var material = $("#board_material").val().toLowerCase();
-
-    get_selected_price(size, material);
 
 
 });
