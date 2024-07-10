@@ -1488,17 +1488,20 @@ function upload_image_amerisan() {
         $style = $_POST['board_style'];
         $material = $_POST['board_material'];
         $dimentions = $_POST['board_dimensions'];
+        $board_quantity = $_POST['board_quantity'];
 
-        $product = create_amerisan_simple_product($_POST['name'], $_POST['price'], $attachment_id, $style, $material, $dimentions);
-        // add this product in the cart
+
+        $product = create_amerisan_simple_product($_POST['name'], $_POST['price'], $attachment_id, $style, $material, $dimentions, $board_quantity);
+
         $cart = WC()->cart;
-        $cart->add_to_cart($product);
+        $cart->add_to_cart($product, $board_quantity);
 
         if ($image && $product) {
             $response = array(
                 'success' => true,
                 'attachment_id' => $attachment_id,
-                'product_id' => $product
+                'product_id' => $product,
+                'quantity' => $board_quantity
             );
         } else {
             $response = array(
@@ -1514,7 +1517,7 @@ add_action('wp_ajax_upload_image_amerisan', 'upload_image_amerisan');
 add_action('wp_ajax_nopriv_upload_image_amerisan', 'upload_image_amerisan');
 
 
-function create_amerisan_simple_product($name, $price, $attachment_id, $style, $material, $dimentions) {
+function create_amerisan_simple_product($name, $price, $attachment_id, $style, $material, $dimentions, $board_quantity) {
     // Check if WooCommerce is active
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_inactive', 'WooCommerce is not active.');
@@ -1548,21 +1551,109 @@ function create_amerisan_simple_product($name, $price, $attachment_id, $style, $
         return $product_id;
     }
 
+    // Set product quantity in cart
+    update_post_meta($product_id, '_stock', $board_quantity);
     // Set product data
     update_post_meta($product_id, '_price', $price);
-    update_post_meta($product_id, '_regular_price', $price); // Required for simple product
+    update_post_meta($product_id, '_regular_price', $price);
     update_post_meta($product_id, '_thumbnail_id', $attachment_id);
 
-    $tags = array('Board Style: ' . $style, 'Board Material: ' . $material, 'Board Dimensions: ' . $dimentions);
-    wp_set_post_terms($product_id, $tags, 'product_tag');
+    wp_set_post_terms($product_id, 'simple_product', 'product_tag');
     // Set product type
     wp_set_object_terms($product_id, 'simple', 'product_type');
 
     // Example: Set stock status (optional)
     update_post_meta($product_id, '_stock_status', 'instock');
 
+    // Add custom fields
+    update_post_meta($product_id, '_board_dimensions', $dimentions);
+    update_post_meta($product_id, '_board_material', $material);
+    update_post_meta($product_id, '_board_style', $style);
+
     return $product_id;
 }
+
+// Add custom fields to cart item data
+function add_custom_fields_to_cart_item($cart_item_data, $product_id) {
+    $custom_fields = [
+        'board_dimensions' => get_post_meta($product_id, '_board_dimensions', true),
+        'board_material' => get_post_meta($product_id, '_board_material', true),
+        'board_style' => get_post_meta($product_id, '_board_style', true),
+    ];
+
+    foreach ($custom_fields as $key => $value) {
+        if (!empty($value)) {
+            $cart_item_data[$key] = $value;
+        }
+    }
+
+    return $cart_item_data;
+}
+add_filter('woocommerce_add_cart_item_data', 'add_custom_fields_to_cart_item', 10, 2);
+
+// Display custom fields on the cart page
+function display_custom_fields_in_cart($item_data, $cart_item) {
+    $custom_fields = [
+        'board_dimensions' => __('Board Dimensions', 'woocommerce'),
+        'board_material' => __('Board Material', 'woocommerce'),
+        'board_style' => __('Board Style', 'woocommerce'),
+    ];
+
+    foreach ($custom_fields as $key => $label) {
+        if (isset($cart_item[$key])) {
+            $item_data[] = array(
+                'key'   => $label,
+                'value' => wc_clean($cart_item[$key]),
+            );
+        }
+    }
+
+    return $item_data;
+}
+add_filter('woocommerce_get_item_data', 'display_custom_fields_in_cart', 10, 2);
+
+// Preserve custom fields in order items
+function add_custom_fields_to_order_items($item, $cart_item_key, $values, $order) {
+    $custom_fields = ['board_dimensions', 'board_material', 'board_style'];
+
+    foreach ($custom_fields as $field) {
+        if (isset($values[$field])) {
+            $item->add_meta_data(__('Board ' . ucwords(str_replace('_', ' ', $field)), 'woocommerce'), $values[$field], true);
+        }
+    }
+}
+add_action('woocommerce_checkout_create_order_line_item', 'add_custom_fields_to_order_items', 10, 4);
+
+// Display custom fields in admin order view
+function display_custom_fields_in_admin_order($item_id, $item, $product) {
+    $custom_fields = ['board_dimensions', 'board_material', 'board_style'];
+
+    foreach ($custom_fields as $field) {
+        if ($meta = wc_get_order_item_meta($item_id, $field, true)) {
+            echo '<p><strong>' . __('Board ' . ucwords(str_replace('_', ' ', $field)), 'woocommerce') . ':</strong> ' . $meta . '</p>';
+        }
+    }
+}
+add_action('woocommerce_admin_order_item_headers', 'display_custom_fields_in_admin_order', 10, 3);
+
+// Include custom fields in order emails
+function include_custom_fields_in_order_email($fields, $sent_to_admin, $order) {
+    foreach ($order->get_items() as $item_id => $item) {
+        $custom_fields = ['board_dimensions', 'board_material', 'board_style'];
+
+        foreach ($custom_fields as $field) {
+            if ($meta = wc_get_order_item_meta($item_id, $field, true)) {
+                $fields[] = [
+                    'label' => __('Board ' . ucwords(str_replace('_', ' ', $field)), 'woocommerce'),
+                    'value' => $meta,
+                ];
+            }
+        }
+    }
+
+    return $fields;
+}
+add_filter('woocommerce_email_order_meta_fields', 'include_custom_fields_in_order_email', 10, 3);
 
 
 /**

@@ -252,7 +252,7 @@ jQuery(document).ready(function ($) {
                     let height = $clone.data('height');
                     let id = $clone.data('id');
                     let image = $clone.data('image');
-                    console.log($clone, image);
+                    // console.log($clone, image);
 
                     $clone.data('height', height);
                     $clone.data('width', width);
@@ -344,7 +344,7 @@ jQuery(document).ready(function ($) {
             },
             start: function () {
                 originalColor = $("#section1 .color-box-customization .set_board_title").css("color");
-                console.log(originalColor, 'originalColor');
+                // console.log(originalColor, 'originalColor');
             },
             stop: function () {
                 $("#section1 .color-box-customization .set_board_title").css("color", originalColor);
@@ -413,7 +413,7 @@ jQuery(document).ready(function ($) {
         // check if cont content is empty
         for (let i = 0; i < cont.length; i++) {
             if (cont.eq(i).children().length === 0) {
-                console.log(cont.eq(i), 'cont');
+                // console.log(cont.eq(i), 'cont');
                 cont.eq(i).remove();
             }
         }
@@ -585,14 +585,14 @@ jQuery(document).ready(function ($) {
         // var board_material = $('#board_material').val();
         const background_url = localStorage.getItem("background_upload");
         if (background_url && board_material !== 'ToughSteel') {
-            $('#section1').css('background-image', 'url(' + background_url + ')');
+            $('#section1').css('background', 'url(' + background_url + ')');
             $('#section1').css('background-size', 'cover');
             $('#section1').css('background-repeat', 'no-repeat');
             const parts = background_url.split('/');
             const imageName = parts[parts.length - 1];
             $('#background_name').text(imageName);
         } else {
-            $('#section1').css('background-image', 'none');
+            $('#section1').css('background', 'none');
         }
 
 
@@ -644,10 +644,17 @@ jQuery(document).ready(function ($) {
             $('.custom-color-picker').addClass('hide-important');
         } else {
             const background_color = $('#background_color').val();
-            if (board_material !== 'ToughClear') {
+            const background_url = localStorage.getItem("background_upload");
+            if (board_material !== 'ToughClear' && (background_url === null || background_url === undefined || background_url === '')) {
                 $('#section1').css('background', background_color);
+            } else if (background_url !== null || background_url !== undefined || background_url !== '') {
+                $('#section1').css('background', 'url(' + background_url + ')');
+                $('#section1').css('background-size', 'cover');
+                $('#section1').css('background-repeat', 'no-repeat');
             } else {
-                $('#section1').css('background', 'transparent');
+                $('#section1').css('background', 'url(' + background_url + ')');
+                $('#section1').css('background-size', 'cover');
+                $('#section1').css('background-repeat', 'no-repeat');
             }
             localStorage.setItem("background_color", background_color);
             stanelessSteelPrompt = false;
@@ -671,7 +678,6 @@ jQuery(document).ready(function ($) {
                 const stroke = $('#drawing_stroke').val();
                 const fill = $('#drawing_fill').val();
                 if (!path) {
-                    console.log("hare");
                     if (fill != '#000000' && stroke != 'black' && canvas.getActiveObject().type === 'rect') {
                         canvas.getActiveObject().set('fill', fill);
                         canvas.getActiveObject().set('stroke', stroke);
@@ -823,14 +829,14 @@ jQuery(document).ready(function ($) {
 
                         const background_url = data.background_url;
                         if (background_url && data.board_material !== 'ToughSteel') {
-                            $('#section1').css('background-image', 'url(' + background_url + ')');
+                            $('#section1').css('background', 'url(' + background_url + ')');
                             $('#section1').css('background-size', 'cover');
                             $('#section1').css('background-repeat', 'no-repeat');
                             const parts = background_url.split('/');
                             const imageName = parts[parts.length - 1];
                             $('#background_name').text(imageName);
                         } else {
-                            $('#section1').css('background-image', 'none');
+                            $('#section1').css('background', 'none');
                         }
                         if (data.board_dimensions !== undefined && data.board_dimensions !== null && data.board_dimensions !== '') {
                             const pbd = localStorage.getItem("previous_board_dimensions");
@@ -935,7 +941,7 @@ jQuery(document).ready(function ($) {
         const board_material = $('#board_material').val();
         const bg_color = $('#background_color').val();
         var section_color = $('#section1').css('background-color');
-        var section_background_image = $('#section1').css('background-image');
+        var section_background_image = localStorage.getItem("background_upload");
         // console.log(board_material, bg_color, section_color, section_background_image);
 
         const defaultBackgroundColor = 'rgb(255, 255, 255)';
@@ -966,14 +972,15 @@ jQuery(document).ready(function ($) {
                         break;
                 }
 
-                $('#section1').css('background-image', section_background_image);
+                $('#section1').css('background', 'url(' + section_background_image + ')');
+                section1BackgroundColor = 'url(' + section_background_image + ')';
             } else {
                 section1BackgroundColor = bg_color;
 
-                $('#section1').css('background-image', section_background_image);
+                $('#section1').css('background', 'url(' + section_background_image + ')');
             }
         }
-        console.log(section1BackgroundColor, "is applied");
+        // console.log(section1BackgroundColor, "is applied");
         return section1BackgroundColor;
     }
 
@@ -1104,9 +1111,7 @@ jQuery(document).ready(function ($) {
                         const board_material = $('#board_material').val();
                         if (board_material !== 'ToughSteel') {
                             localStorage.setItem("background_upload", response.url);
-                            $('#section1').css('background-image', 'url(' + response.url + ')');
-                            $('#section1').css('background-size', 'cover');
-                            $('#section1').css('background-repeat', 'no-repeat');
+                            $('#section1').css('background', 'url(' + response.url + ')');
                             const parts = response.url.split('/');
                             const imageName = parts[parts.length - 1];
                             $('#background_name').text(imageName);
@@ -1236,7 +1241,7 @@ jQuery(document).ready(function ($) {
     $('#clear-background-image').on('click', function () {
         const image_url = localStorage.getItem("background_upload");
         localStorage.removeItem("background_upload");
-        $('#section1').css('background-image', 'none');
+        $('#section1').css('background', 'none');
         $('#background_image_upload').val('');
         $('#background_name').text('');
         clearlinksFromDb('background_url', image_url);
@@ -1304,7 +1309,7 @@ jQuery(document).ready(function ($) {
         $('#board_material').val("ToughLite");
         $('#custom_logo').val({ top: 0, left: 0, width: 0, height: 0 });
         $('#quantity_of_boards').val(0);
-        $('#section1').css('background-image', 'none');
+        $('#section1').css('background', 'none');
         $('#section1_logo').attr('src', '');
         $('#section1').css('background-color', '#ffffff');
         $('#attributes').val("null");
@@ -1329,7 +1334,7 @@ jQuery(document).ready(function ($) {
 
     function resetBoard() {
         const board_id = window.location.search.split('=')[1];
-        console.log(board_id);
+        // console.log(board_id);
         const data = {
             action: 'reset_board',
             board_id: board_id
@@ -1751,14 +1756,19 @@ jQuery(document).ready(function ($) {
         saveState();
     });
 
-    $('#drawing_undo').click(function () {
+    function hideLineStroke() {
         $('#line_stroke').css('display', 'none');
+        $('#line_dropdown span').css('height', '2px', 'px', 'width', '15px');
+    }
+
+    $('#drawing_undo').click(function () {
+        hideLineStroke();
 
         replay(undo, redo, '#drawing_redo', this);
     });
 
     $('#drawing_redo').click(function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
 
         replay(redo, undo, '#drawing_undo', this);
     });
@@ -1782,22 +1792,22 @@ jQuery(document).ready(function ($) {
     });
 
     $("#drawing_rectangle").click(function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         addRectangle();
     });
 
     $("#drawing_circle").click(function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         addCircle();
     });
 
     $("#drawing_text").click(function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         addText();
     });
 
     $('#drawing_eraser').click(function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         var activeObject = canvas.getActiveObject();
         if (activeObject) {
             canvas.remove(activeObject);
@@ -1806,7 +1816,7 @@ jQuery(document).ready(function ($) {
     });
 
     $('#drawing_clear').click(function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         canvas.clear();
         saveState();
     });
@@ -1837,13 +1847,13 @@ jQuery(document).ready(function ($) {
     });
 
     $('.drawing_line').on('click', function () {
-        var width = $(this)[0].dataset.width;
-        canvas.freeDrawingBrush.width = width;
-        $('#line_dropdown span').css('height', width, 'px', 'width', '15px');
+        var height = $(this)[0].dataset.width;
+        canvas.freeDrawingBrush.width = height;
+        $('#line_dropdown span').css('height', height, 'px', 'width', '15px');
     });
 
     $('#text_size').on('change', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         var size = $(this).val();
         if (canvas.getActiveObject()) {
             canvas.getActiveObject().set('fontSize', size);
@@ -1857,13 +1867,13 @@ jQuery(document).ready(function ($) {
     });
 
     $('#drawing_fill').on('change', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
 
         var color = $(this).val();
         if (canvas.getActiveObject()) {
             const text = canvas.getActiveObject().type === 'textbox' ? true : false;
             const path = canvas.getActiveObject().type === 'path' ? true : false;
-            console.log(text, path, 'text, path');
+            // console.log(text, path, 'text, path');
 
             if (!text) {
                 if (path) {
@@ -1878,7 +1888,7 @@ jQuery(document).ready(function ($) {
     });
 
     $('#drawing_stroke').on('change', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
 
         var color = $(this).val();
         if (canvas.getActiveObject()) {
@@ -1897,13 +1907,13 @@ jQuery(document).ready(function ($) {
     });
 
     $('#colorPickerToggle').on('click', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         $('#drawing_stroke').click();
     });
 
 
     $('#fill_color_text').on('change', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
 
         var color = $(this).val();
         if (canvas.getActiveObject()) {
@@ -1917,7 +1927,7 @@ jQuery(document).ready(function ($) {
     });
 
     $('#stroke_color_text').on('change', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
 
         var color = $(this).val();
         if (canvas.getActiveObject()) {
@@ -1933,7 +1943,7 @@ jQuery(document).ready(function ($) {
 
     $('#stroke_color_toggle').on('click', function (e) {
         e.preventDefault();
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
         $('#stroke_color_text').trigger('click');
     });
 
@@ -1955,7 +1965,7 @@ jQuery(document).ready(function ($) {
 
 
     $("#text_font").on('change', function () {
-        $('#line_stroke').css('display', 'none');
+        hideLineStroke();
 
         var font = $(this).val();
         canvas.getActiveObject().set('fontFamily', font);
@@ -2316,6 +2326,13 @@ jQuery(document).ready(function ($) {
                     sizes.forEach(function (size) {
                         $('#board_dimensions').append('<option value="' + size.size + '">' + size.size + '</option>');
                     });
+
+                    const preBoardDim = localStorage.getItem('previous_board_dimensions');
+                    // console.log(preBoardDim);
+                    if (preBoardDim) {
+                        $('#board_dimensions').val(preBoardDim);
+                        $('#board_dimensions').trigger('change');
+                    }
                 } else {
                     console.error('Error retrieving data:', response.data.message);
                 }
@@ -2386,14 +2403,14 @@ function downloadImage() {
             const reader = new FileReader();
             reader.onload = function () {
                 const svgText = reader.result;
-                console.log(svgText, 'svgText');
+                // console.log(svgText, 'svgText');
 
                 // Parse the text string into an SVG element
                 const parser = new DOMParser();
                 const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-                console.log(svgDoc, 'svgDoc');
+                // console.log(svgDoc, 'svgDoc');
                 const svgElement = svgDoc.documentElement;
-                console.log(svgElement, 'svgElement');
+                // console.log(svgElement, 'svgElement');
 
                 // Modify the SVG by adding a height attribute
                 svgElement.setAttribute('height', newHeight);
@@ -2436,8 +2453,10 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
 
     let total_price = $('#total_price').text();
     total_price = total_price.replace('$', '');
-
     total_price = parseFloat(total_price);
+
+    let board_quantity = $('#quantity_of_boards').val();
+    // console.log(board_quantity, 'board_quantity');
 
     let board_material = $('#board_material').val();
     let board_style = $('#board_style').val();
@@ -2451,6 +2470,7 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
         board_material: board_material,
         board_style: board_style,
         board_dimensions: board_dimensions,
+        board_quantity: parseInt(board_quantity)
     }
 
 
@@ -2460,8 +2480,11 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
             url: amerison_vars.ajaxurl,
             data: formData,
             success: function (response) {
-                // redirect to cart page
-                window.location.href = '/cart';
+                if (window.location.href.includes('localhost')) {
+                    window.location.href = '/ams/index.php/cart';
+                } else {
+                    window.location.href = '/cart';
+                }
             },
             error: function (error) {
                 console.error(error);
@@ -2475,7 +2498,7 @@ async function uploadBase64Image(base64Image, imageName, mimeType) {
     $('#board_dimensions, #board_material').on('change', function () {
         const size = $('#board_dimensions').val();
         var material = $('#board_material').val().toLowerCase();
-        console.log(size, material, 'size, material');
+        // console.log(size, material, 'size, material');
         get_selected_price( size, material);
     });
 
