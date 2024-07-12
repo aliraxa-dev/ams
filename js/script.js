@@ -37,7 +37,7 @@
   const _workspace_quantity = $("#quantity_of_boards");
   const _workspace_header_title_color = $("#title_header_color");
   const _workspace_tital_bg_color = $("#title_bg_color");
-  
+
   var _set_workspace_title = $("#set_board_title");
   var _set_title_bg_color = $("#title_background_color");
   var _set_workspace_logo = $("#workspace_area_logo");
@@ -62,7 +62,7 @@
   const _tough_steel_color =
     "linear-gradient(90deg, rgba(108,110,112,1) 0%, rgba(172,174,177,1) 6%, rgba(171,171,172,1) 17%, rgba(217,218,220,1) 50%, rgba(138,140,143,1) 80%, rgba(88,89,91,1) 100%)";
 
-  const _null_function = function () {};
+  const _null_function = function () { };
   console = new Proxy(console, {
     get(target, prop, receiver) {
       if ((prop === "log" && console_disabled)) {
@@ -72,19 +72,19 @@
     },
   });
 
-    // if the page url is /configurator
-    var url = window.location.href;
-    if (url.includes("configurator")) {
-      if (WP_ATTRIBUTES !== undefined && WP_ATTRIBUTES.pa_color !== undefined) {
-        WP_ATTRIBUTES.pa_color.values.forEach((color) => {
-          if (color !== "Custom") {
-            _variation_dropdown.append(
-              '<option value="' + color.toLowerCase() + '">' + color + "</option>"
-            );
-          }
-        });
-      }
+  // if the page url is /configurator
+  var url = window.location.href;
+  if (url.includes("configurator")) {
+    if (WP_ATTRIBUTES !== undefined && WP_ATTRIBUTES.pa_color !== undefined) {
+      WP_ATTRIBUTES.pa_color.values.forEach((color) => {
+        if (color !== "Custom") {
+          _variation_dropdown.append(
+            '<option value="' + color.toLowerCase() + '">' + color + "</option>"
+          );
+        }
+      });
     }
+  }
 
   function _touch_handler(event) {
     var touch = event.changedTouches[0];
@@ -227,7 +227,7 @@
       _dimentions_value = localStorage.getItem("previous_board_dimensions");
     }
 
-    if ( _dimentions_value !== "" || _dimentions_value !== undefined || _dimentions_value !== null) {
+    if (_dimentions_value !== "" || _dimentions_value !== undefined || _dimentions_value !== null) {
       _dimentions_value = _dimentions_value == null ? "" : _dimentions_value.split("x");
       _board_height_inches = _dimentions_value[1];
       _board_width_inches = _dimentions_value[0];
@@ -274,8 +274,8 @@
   function _generate_color_palette(_tools, _colors, _top, _left, _id = 0, _random_string) {
     const _color_palette = $(
       '<div class="custom-color-picker" id=""><div class="color-input cursor-pointer" style="background-color: black" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover focus" title="Click here to change the tool color."><div class="color-options" data-id="' +
-        _random_string +
-        '"></div></div>'
+      _random_string +
+      '"></div></div>'
     );
     _tools.append(_color_palette);
     const stainlessSteel = _workspace_material.val();
@@ -288,8 +288,8 @@
     _colors.forEach((color) => {
       const colorOption = $(
         '<div class="custom-color" style="background-color: ' +
-          color +
-          '"></div>'
+        color +
+        '"></div>'
       );
       _color_options.append(colorOption);
     });
@@ -364,7 +364,7 @@
         var _top_position = ui.position.top;
 
         const _tool_clone = ui.helper.clone();
-        
+
         const _draged_tool_element = $(
           '<div class="draggable-container ui-draggable ui-draggable-handle" style="position: relative; z-index: 9999;"></div>'
         );
@@ -380,8 +380,8 @@
 
           const _append_close_button = $(
             '<span class="close-button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover focus" title="Click here to remove the tool." id="delete_' +
-              _random_string +
-              '">X</span>'
+            _random_string +
+            '">X</span>'
           );
 
           _tool_clone.data("height", _tool_height);
@@ -409,11 +409,11 @@
             position: "absolute",
           });
 
-          _generate_color_palette( _draged_tool_element, _palet_colors_list, _top_position, _left_position, _tool_id, _random_string);
+          _generate_color_palette(_draged_tool_element, _palet_colors_list, _top_position, _left_position, _tool_id, _random_string);
           if (_workspace_material.val() === "ToughSteel") {
             _chnage_color_of_svg(_tool_image, "black", _random_string, "outline", _tool_height, _tool_width);
           } else {
-            _chnage_color_of_svg( _tool_image, "black", _random_string, _tool_clone[0].alt, _tool_height, _tool_width);
+            _chnage_color_of_svg(_tool_image, "black", _random_string, _tool_clone[0].alt, _tool_height, _tool_width);
           }
 
         } else if (_workspace_section === "workspace_area" && _setting_panel_section === "workspace_area") {
@@ -448,7 +448,7 @@
             .css("background-color");
           colorPalette.remove();
 
-          _generate_color_palette( _draged_tool_element, _palet_colors_list, _top_position, _left_position, _tool_id, _random_string);
+          _generate_color_palette(_draged_tool_element, _palet_colors_list, _top_position, _left_position, _tool_id, _random_string);
 
           ui.draggable
             .siblings(".custom-color-picker")
@@ -476,54 +476,54 @@
   }
 
   $("#settings_panel, #user_requested_tools").on("click", ".settings_panel_tools", function () {
-      const _tool_clone = $(this).clone();
-      var _workspace_left_position = _workspace_area.offset().left;
-      var _workspace_top_position = _workspace_area.offset().top;
-      var _random_string = _generate_random_string(8);
-      var _tool_width = _tool_clone.data("width");
-      var _tool_height = _tool_clone.data("height");
-      var _tool_id = _tool_clone.data("id");
-      var _tool_image = _tool_clone.data("image");
+    const _tool_clone = $(this).clone();
+    var _workspace_left_position = _workspace_area.offset().left;
+    var _workspace_top_position = _workspace_area.offset().top;
+    var _random_string = _generate_random_string(8);
+    var _tool_width = _tool_clone.data("width");
+    var _tool_height = _tool_clone.data("height");
+    var _tool_id = _tool_clone.data("id");
+    var _tool_image = _tool_clone.data("image");
 
-      const _draged_tool_element = $(
-        '<div class="draggable-container ui-draggable ui-draggable-handle" style="position: relative; z-index: 9999;"></div>'
-      );
-      const _append_close_button = $(
-        '<span class="close-button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover focus" title="Click here to remove the tool." id="delete_' +
-          _random_string +
-          '">X</span>'
-      );
+    const _draged_tool_element = $(
+      '<div class="draggable-container ui-draggable ui-draggable-handle" style="position: relative; z-index: 9999;"></div>'
+    );
+    const _append_close_button = $(
+      '<span class="close-button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover focus" title="Click here to remove the tool." id="delete_' +
+      _random_string +
+      '">X</span>'
+    );
 
-      _workspace_area.append(_draged_tool_element);
-      _draged_tool_element.append(_tool_clone);
+    _workspace_area.append(_draged_tool_element);
+    _draged_tool_element.append(_tool_clone);
 
-      _tool_clone.data("height", _tool_height);
-      _tool_clone.data("width", _tool_width);
-      _tool_clone.data("id", _tool_id);
-      _tool_clone.data("image", _tool_image);
+    _tool_clone.data("height", _tool_height);
+    _tool_clone.data("width", _tool_width);
+    _tool_clone.data("id", _tool_id);
+    _tool_clone.data("image", _tool_image);
 
-      _tool_clone.css({
-        top: 0 + "px",
-        left: 0 + "px",
-        position: "absolute",
-        width: "auto",
-        height: _tool_height + "px",
-        "max-height": _tool_height + "px",
-      });
-      _tool_clone.attr("class", "item draggable");
-      _tool_clone.attr("id", "tool_img_" + _random_string);
-      _draged_tool_element.append(_append_close_button);
+    _tool_clone.css({
+      top: 0 + "px",
+      left: 0 + "px",
+      position: "absolute",
+      width: "auto",
+      height: _tool_height + "px",
+      "max-height": _tool_height + "px",
+    });
+    _tool_clone.attr("class", "item draggable");
+    _tool_clone.attr("id", "tool_img_" + _random_string);
+    _draged_tool_element.append(_append_close_button);
 
-      _append_close_button.css({
-        top: 0 + "px",
-        left: _workspace_left_position + 4 <= 40 ? _workspace_left_position + 50 + "px" : _workspace_left_position + 4 + "px",
-        position: "absolute",
-      });
+    _append_close_button.css({
+      top: 0 + "px",
+      left: _workspace_left_position + 4 <= 40 ? _workspace_left_position + 50 + "px" : _workspace_left_position + 4 + "px",
+      position: "absolute",
+    });
 
-      _generate_color_palette( _draged_tool_element, _palet_colors_list, 0, _workspace_left_position, _tool_id, _random_string);
-      _drag_workspace_elements();
-      _update_data_in_localstorage();
-    }
+    _generate_color_palette(_draged_tool_element, _palet_colors_list, 0, _workspace_left_position, _tool_id, _random_string);
+    _drag_workspace_elements();
+    _update_data_in_localstorage();
+  }
   );
 
   function _drag_workspace_elements() {
@@ -540,9 +540,9 @@
           ui.position.top =
             ui.originalPosition.top +
             (ui.position.top - ui.originalPosition.top) /
-              $(this)
-                .data("ui-draggable")
-                ._mouseDrag({ target: $(".ui-resizable-handle") }).ratio;
+            $(this)
+              .data("ui-draggable")
+              ._mouseDrag({ target: $(".ui-resizable-handle") }).ratio;
         }
       },
     });
@@ -732,7 +732,7 @@
       // $('#attributes').val($('#attributes option:eq(1)').val());
       $(".custom-color-picker").addClass("hide-important");
     } else {
-        var background_color = _get_workspace_material_background();
+      var background_color = _get_workspace_material_background();
       const background_url = localStorage.getItem("workspace_background_image");
       if (board_material !== "ToughClear" && !background_url) {
         _workspace_area.css("background", background_color);
@@ -813,198 +813,198 @@
 
   async function _fetch_workspace_info_from_database() {
     var url = window.location.href;
-    if (url.includes("configurator")) {
-        const _object = {
-            workspace_id: _workspace_id
-        }
-        const _validation = {
-            workspace_id: { required: true, type: 'string' }
-        }
-        let velidated = _validate_object(_object, _validation);
-        if (_object.workspace_id !== "new" && velidated) {
+    if (url.includes("configurator") && _previous_workspace) {
+      const _object = {
+        workspace_id: _workspace_id
+      }
+      const _validation = {
+        workspace_id: { required: true, type: 'string' }
+      }
+      let velidated = _validate_object(_object, _validation);
+      if (_object.workspace_id !== "new" && velidated) {
         const data = {
-            action: "get_configurator_data",
-            board_id: _object.workspace_id,
+          action: "get_configurator_data",
+          board_id: _object.workspace_id,
         };
         $.ajax({
-            url: _admin_ajax,
-            type: "POST",
-            data: data,
-            success: function (response) {
+          url: _admin_ajax,
+          type: "POST",
+          data: data,
+          success: function (response) {
             const data = response[0];
             if (data != undefined && data != null && data.config_data != null) {
-                const workspace_information = JSON.parse(
+              const workspace_information = JSON.parse(
                 data.config_data.replace(/\\/g, "")
-                );
-                const _selected_variation = data.options;
+              );
+              const _selected_variation = data.options;
 
-                _workspace_title.val(data.board_title);
-                _set_workspace_title.text(data.board_title);
-                _workspace_title_position.val(data.title_position);
-                _workspace_background_color.val(data.background_color);
-                _workspace_style.val(data.board_style);
-                _workspace_material.val(data.board_material);
-                _workspace_quantity.val(data.quantity_of_boards);
+              _workspace_title.val(data.board_title);
+              _set_workspace_title.text(data.board_title);
+              _workspace_title_position.val(data.title_position);
+              _workspace_background_color.val(data.background_color);
+              _workspace_style.val(data.board_style);
+              _workspace_material.val(data.board_material);
+              _workspace_quantity.val(data.quantity_of_boards);
 
-                if (
+              if (
                 data.canvasState !== undefined &&
                 data.canvasState !== null &&
                 data.canvasState !== ""
-                ) {
+              ) {
                 const canvasState = JSON.parse(
-                    data.canvasState.replace(/\\/g, "")
+                  data.canvasState.replace(/\\/g, "")
                 );
                 canvas.loadFromJSON(canvasState, function () {
-                    canvas.renderAll();
+                  canvas.renderAll();
                 });
-                }
+              }
 
-                const board_dimensions = data.board_dimensions.split("x");
-                const board_width = board_dimensions[0];
-                const board_height = board_dimensions[1];
-                var dimensions = _adjust_workspace_area_size(board_width, board_height);
+              const board_dimensions = data.board_dimensions.split("x");
+              const board_width = board_dimensions[0];
+              const board_height = board_dimensions[1];
+              var dimensions = _adjust_workspace_area_size(board_width, board_height);
 
-                _workspace_area.css("width", dimensions.width + "px");
-                _workspace_area.css("height", dimensions.height + "px");
-                for (const item of workspace_information) {
+              _workspace_area.css("width", dimensions.width + "px");
+              _workspace_area.css("height", dimensions.height + "px");
+              for (const item of workspace_information) {
                 if (item.image !== undefined) {
-                    var randomId = _generate_random_string(8);
-                    const newItem = $(
+                  var randomId = _generate_random_string(8);
+                  const newItem = $(
                     '<div class="item draggable draggable-container ui-draggable ui-draggable-handle" style="position: relative; z-index: 9999;"></div>'
-                    );
-                    const newImage = $(
+                  );
+                  const newImage = $(
                     '<img src="' +
-                        item.image +
-                        '" data-image="' +
-                        item.image +
-                        '" alt="' +
-                        item.alt +
-                        '" data-id="' +
-                        item.id +
-                        '" data-h1="' +
-                        item.h1 +
-                        '" data-w1="' +
-                        item.w1 +
-                        '" data-height="' +
-                        item.height +
-                        '" data-width="' +
-                        item.width +
-                        '" id="tool_img_' +
-                        randomId +
-                        '" class="item draggable" />'
-                    );
-                    const closeButton = $(
+                    item.image +
+                    '" data-image="' +
+                    item.image +
+                    '" alt="' +
+                    item.alt +
+                    '" data-id="' +
+                    item.id +
+                    '" data-h1="' +
+                    item.h1 +
+                    '" data-w1="' +
+                    item.w1 +
+                    '" data-height="' +
+                    item.height +
+                    '" data-width="' +
+                    item.width +
+                    '" id="tool_img_' +
+                    randomId +
+                    '" class="item draggable" />'
+                  );
+                  const closeButton = $(
                     '<span class="close-button" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover focus" title="Click here to remove the tool.">X</span>'
-                    );
+                  );
 
-                    newItem.append(newImage, closeButton);
+                  newItem.append(newImage, closeButton);
 
-                    newImage.css({
+                  newImage.css({
                     top: item.top + "px",
                     left: item.left + "px",
                     position: "absolute",
                     width: "auto",
                     height: item.height + "px",
                     "max-height": item.height + "px",
-                    });
+                  });
 
-                    $(".canvas-container").css({
+                  $(".canvas-container").css({
                     position: "absolute",
                     zIndex: 99,
-                    });
+                  });
 
-                    closeButton.css({
+                  closeButton.css({
                     top: item.top + "px",
                     left:
-                        item.left + 4 <= 40
+                      item.left + 4 <= 40
                         ? item.left + 50 + "px"
                         : item.left + 4 + "px",
                     position: "absolute",
-                    });
-                    _generate_color_palette( newItem, _palet_colors_list, item.top, item.left, item.id, randomId);
+                  });
+                  _generate_color_palette(newItem, _palet_colors_list, item.top, item.left, item.id, randomId);
 
-                    newItem
+                  newItem
                     .find(".color-input")
                     .css("background-color", item.color);
 
-                    _chnage_color_of_svg(item.image,item.color,randomId,item.alt,item.height,item.width);
+                  _chnage_color_of_svg(item.image, item.color, randomId, item.alt, item.height, item.width);
 
-                    _workspace_area.append(newItem);
+                  _workspace_area.append(newItem);
 
-                    closeButton.click(function () {
+                  closeButton.click(function () {
                     newItem.remove();
-                    });
+                  });
                 }
-                }
+              }
 
-                $("#attributes").val(_selected_variation);
+              $("#attributes").val(_selected_variation);
 
-                if (_selected_variation) {
-                    getVariationImage(_selected_variation);
-                }
-                _get_workspace_material_background();
+              if (_selected_variation) {
+                getVariationImage(_selected_variation);
+              }
+              _get_workspace_material_background();
 
-                const logo_url = data.logo_url;
-                if (logo_url) {
+              const logo_url = data.logo_url;
+              if (logo_url) {
                 _set_workspace_logo.attr("src", logo_url);
                 const parts = logo_url.split("/");
                 const imageName = parts[parts.length - 1];
                 _set_panel_logo_name.text(imageName);
                 var custom_logo = JSON.parse(data.custom_logo.replace(/\\/g, ""));
                 _workspace_logo_container.css({
-                    display: "flex",
-                    top: custom_logo.top + "px",
-                    left: custom_logo.left + "px",
-                    with: custom_logo.width + "px",
+                  display: "flex",
+                  top: custom_logo.top + "px",
+                  left: custom_logo.left + "px",
+                  with: custom_logo.width + "px",
                 });
                 _set_workspace_logo.css({
-                    width: custom_logo.width + "px",
+                  width: custom_logo.width + "px",
                 });
-                }
+              }
 
-                const background_url = data.background_url;
-                if (background_url && data.board_material !== "ToughSteel") {
+              const background_url = data.background_url;
+              if (background_url && data.board_material !== "ToughSteel") {
                 _workspace_area.css("background", "url(" + background_url + ")");
                 _workspace_area.css("background-size", "cover");
                 _workspace_area.css("background-repeat", "no-repeat");
                 const parts = background_url.split("/");
                 const imageName = parts[parts.length - 1];
                 _set_background_image_name.text(imageName);
-                } else {
+              } else {
                 _workspace_area.css("background", "none");
-                }
-                if (
+              }
+              if (
                 data.board_dimensions !== undefined &&
                 data.board_dimensions !== null &&
                 data.board_dimensions !== ""
-                ) {
+              ) {
                 const pbd = localStorage.getItem("previous_board_dimensions");
                 _workspace_dimentions.val(pbd);
-                } else {
+              } else {
                 _workspace_dimentions.val(data.board_dimensions);
-                }
+              }
 
-                localStorage.setItem(
+              localStorage.setItem(
                 "custom_board_dimensions",
                 data.board_dimensions
-                );
+              );
 
-                const title_bg_color = data.title_bg_color;
-                _workspace_tital_bg_color.val(title_bg_color);
+              const title_bg_color = data.title_bg_color;
+              _workspace_tital_bg_color.val(title_bg_color);
 
-                const title_header_color = data.title_header_color;
-                _workspace_header_title_color.val(title_header_color);
-                _update_data_in_localstorage();
-                _drag_workspace_elements();
-                _update_workspace_title_position();
-                _variation_dropdown.trigger("change");
+              const title_header_color = data.title_header_color;
+              _workspace_header_title_color.val(title_header_color);
+              _update_data_in_localstorage();
+              _drag_workspace_elements();
+              _update_workspace_title_position();
+              _variation_dropdown.trigger("change");
             }
-            },
-            error: function (error) {
+          },
+          error: function (error) {
             console.error("Error retrieving data:");
-            },
+          },
         });
-        }
+      }
     }
   }
 
@@ -1021,26 +1021,26 @@
           if (color === variation.attributes.attribute_pa_color) {
             _settings_panel.append(
               '<div class="flex-column" style="display: flex;" id="nameList_' +
-                variation.id +
-                '"><img src="' +
-                imageSrc +
-                '" alt="' +
-                color +
-                '" data-image="' +
-                imageSrc +
-                '" class="draggable settings_panel_tools" data-id="' +
-                variation.id +
-                '" data-width="' +
-                dimensions.width +
-                '" data-h1="' +
-                height +
-                '" data-w1="' +
-                width +
-                '" data-height="' +
-                dimensions.height +
-                '" style="height: 160px; width: auto;" /><span class="tool-name text-center" style="width: 150px">' +
-                variation.title +
-                "</span></div>"
+              variation.id +
+              '"><img src="' +
+              imageSrc +
+              '" alt="' +
+              color +
+              '" data-image="' +
+              imageSrc +
+              '" class="draggable settings_panel_tools" data-id="' +
+              variation.id +
+              '" data-width="' +
+              dimensions.width +
+              '" data-h1="' +
+              height +
+              '" data-w1="' +
+              width +
+              '" data-height="' +
+              dimensions.height +
+              '" style="height: 160px; width: auto;" /><span class="tool-name text-center" style="width: 150px">' +
+              variation.title +
+              "</span></div>"
             );
           } else if (color === "null") {
             _settings_panel.append(
@@ -1088,26 +1088,26 @@
             anyConditionTrue = true;
             _user_requested_tools.append(
               '<div class="flex-column" style="display: flex;" id="nameList_' +
-                variation.id +
-                '"><img src="' +
-                imageSrc +
-                '" alt="' +
-                type +
-                '" data-image="' +
-                imageSrc +
-                '" class="draggable settings_panel_tools outline-draggable" data-id="' +
-                variation.id +
-                '" data-width="' +
-                dimensions.width +
-                '" data-h1="' +
-                height +
-                '" data-w1="' +
-                width +
-                '" data-height="' +
-                dimensions.height +
-                '" style="height: 160px; width: auto;" /><span class="tool-name text-center" style="width: 150px">' +
-                variation.title +
-                "</span></div>"
+              variation.id +
+              '"><img src="' +
+              imageSrc +
+              '" alt="' +
+              type +
+              '" data-image="' +
+              imageSrc +
+              '" class="draggable settings_panel_tools outline-draggable" data-id="' +
+              variation.id +
+              '" data-width="' +
+              dimensions.width +
+              '" data-h1="' +
+              height +
+              '" data-w1="' +
+              width +
+              '" data-height="' +
+              dimensions.height +
+              '" style="height: 160px; width: auto;" /><span class="tool-name text-center" style="width: 150px">' +
+              variation.title +
+              "</span></div>"
             );
           }
         }
@@ -1265,10 +1265,10 @@
                   ui.position.top =
                     ui.originalPosition.top +
                     (ui.position.top - ui.originalPosition.top) /
-                      $(this)
-                        .data("ui-draggable")
-                        ._mouseDrag({ target: $(".ui-resizable-handle") })
-                        .ratio;
+                    $(this)
+                      .data("ui-draggable")
+                      ._mouseDrag({ target: $(".ui-resizable-handle") })
+                      .ratio;
                 }
               },
             });
@@ -1567,7 +1567,7 @@
       url: _admin_ajax,
       type: "POST",
       data: data,
-      success: function (response) {},
+      success: function (response) { },
       error: function (error) {
         console.error("Error retrieving data:");
       },
@@ -1637,14 +1637,14 @@
       canvas.setHeight(dimensions.height);
       _workspace_dimentions.append(
         '<option value="' +
-          board_width +
-          "x" +
-          board_height +
-          '">' +
-          board_width +
-          "x" +
-          board_height +
-          "</option>"
+        board_width +
+        "x" +
+        board_height +
+        '">' +
+        board_width +
+        "x" +
+        board_height +
+        "</option>"
       );
       _workspace_dimentions.val(board_width + "x" + board_height);
       localStorage.setItem(
@@ -1766,7 +1766,7 @@
   const Image = `<img src="" data-original="" alt="Board Style Wall Mount" id="image1" class="img-fluid d-none" />`;
   $("body").append(Image);
 
-  function _chnage_color_of_svg( svgImageUrl, color, selectedId, alt, newHeight, newWidth) {
+  function _chnage_color_of_svg(svgImageUrl, color, selectedId, alt, newHeight, newWidth) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", svgImageUrl, true);
     xhr.onreadystatechange = function () {
@@ -2152,8 +2152,8 @@
         canvas.getActiveObject() === null
           ? false
           : canvas.getActiveObject().type === "textbox"
-          ? true
-          : false;
+            ? true
+            : false;
       if (text) {
         canvas.getActiveObject().set("fill", color);
         canvas.renderAll();
@@ -2171,8 +2171,8 @@
         canvas.getActiveObject() === null
           ? false
           : canvas.getActiveObject().type === "textbox"
-          ? true
-          : false;
+            ? true
+            : false;
       if (text) {
         canvas.getActiveObject().set("stroke", color);
         canvas.getActiveObject().set("strokeWidth", 0.5);
@@ -2223,9 +2223,9 @@
         ui.position.top =
           ui.originalPosition.top +
           (ui.position.top - ui.originalPosition.top) /
-            $(this)
-              .data("ui-draggable")
-              ._mouseDrag({ target: $(".ui-resizable-handle") }).ratio;
+          $(this)
+            .data("ui-draggable")
+            ._mouseDrag({ target: $(".ui-resizable-handle") }).ratio;
       }
       _update_workspace_data_in_database();
       _update_data_in_localstorage();
@@ -2555,6 +2555,7 @@
       },
       error: function (error) {
         console.error("Error adding board to cart");
+        _hide_loader();
       },
     });
   });
@@ -2652,7 +2653,7 @@
 
 
 
-async function _upload_workspace_info_to_create_product(base64Image, imageName, mimeType) {
+  async function _upload_workspace_info_to_create_product(base64Image, imageName, mimeType) {
 
     var total_price = $("#total_price").text();
     total_price = total_price.replace("$", "");
@@ -2661,9 +2662,9 @@ async function _upload_workspace_info_to_create_product(base64Image, imageName, 
     var board_quantity = _workspace_quantity.val();
     board_quantity = parseInt(board_quantity);
 
-    if (!board_quantity || board_quantity < 1 || isNaN(board_quantity) ) {
-        toastr.error("Please enter a valid quantity");
-        return;
+    if (!board_quantity || board_quantity < 1 || isNaN(board_quantity)) {
+      toastr.error("Please enter a valid quantity");
+      return;
     }
 
     var board_material = _workspace_material.val();
@@ -2671,27 +2672,27 @@ async function _upload_workspace_info_to_create_product(base64Image, imageName, 
     var board_dimensions = _workspace_dimentions.val();
 
     const _object = {
-        image_name: imageName,
-        total_price: total_price,
-        board_material: board_material,
-        board_style: board_style,
-        board_dimensions: board_dimensions,
-        board_quantity: board_quantity
+      image_name: imageName,
+      total_price: total_price,
+      board_material: board_material,
+      board_style: board_style,
+      board_dimensions: board_dimensions,
+      board_quantity: board_quantity
     }
 
 
     const _validation = {
-        image_name: { required: true, type: 'string' },
-        total_price: { required: true, type: 'number' },
-        board_material: { required: true, type: 'string' },
-        board_style: { required: true, type: 'string' },
-        board_dimensions: { required: true, type: 'string' },
-        board_quantity: { required: true, type: 'number', min: 1 },
+      image_name: { required: true, type: 'string' },
+      total_price: { required: true, type: 'number' },
+      board_material: { required: true, type: 'string' },
+      board_style: { required: true, type: 'string' },
+      board_dimensions: { required: true, type: 'string' },
+      board_quantity: { required: true, type: 'number', min: 1 },
     }
     let velidated = _validate_object(_object, _validation);
     if (velidated) {
 
-        var formData = {
+      var formData = {
         action: "upload_image_amerisan",
         file: base64Image,
         name: imageName,
@@ -2700,30 +2701,31 @@ async function _upload_workspace_info_to_create_product(base64Image, imageName, 
         board_style: board_style,
         board_dimensions: board_dimensions,
         board_quantity: board_quantity,
-        };
+      };
 
-        try {
+      try {
         $.ajax({
-            type: "POST",
-            url: _admin_ajax,
-            data: formData,
-            success: function (response) {
-            toastr.success("Workspace iamge and tools successfully added in the cart.");
+          type: "POST",
+          url: _admin_ajax,
+          data: formData,
+          success: function (response) {
+            toastr.success("Workspace image and tools successfully added in the cart.");
+            _hide_loader();
             if (window.location.href.includes("localhost")) {
-                window.location.href = "/ams/index.php/cart";
+              window.location.href = "/ams/index.php/cart";
             } else {
-                window.location.href = "/cart";
+              window.location.href = "/cart";
             }
-            },
-            error: function (error) {
+          },
+          error: function (error) {
             console.error(error);
-            },
+          },
         });
-        } catch (error) {
+      } catch (error) {
         console.error("Error uploading image:", error);
-        }
+      }
     } else {
-        toastr.error("Please fill all the information");
+      toastr.error("Please fill all the information");
     }
   }
   // get the price for the selected size and material from pricing table
