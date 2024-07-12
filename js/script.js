@@ -813,7 +813,10 @@
 
   async function _fetch_workspace_info_from_database() {
     var url = window.location.href;
-    if (url.includes("configurator") && _previous_workspace) {
+    const _workspace_id = url.split("/").pop();
+    const board = _workspace_id.split("=")[0];
+
+    if (url.includes("configurator") && _workspace_id && board == "?board" && _previous_workspace) {
       const _object = {
         workspace_id: _workspace_id
       }
@@ -997,11 +1000,14 @@
               _update_data_in_localstorage();
               _drag_workspace_elements();
               _update_workspace_title_position();
-              _variation_dropdown.trigger("change");
+              if (_previous_workspace) {
+                _variation_dropdown.trigger("change");
+              }
             }
           },
           error: function (error) {
             console.error("Error retrieving data:");
+            _hide_loader();
           },
         });
       }
@@ -1178,11 +1184,6 @@
     console.log(_s1_bg_color, "is applied");
     return _s1_bg_color;
   }
-
-  _workspace_material.on("change", function () {
-    console.log("material changed");
-    _get_workspace_material_background();
-  });
 
   function _update_workspace_data_in_database() {
     const workspace_information = localStorage.getItem("workspace_information");
@@ -1607,9 +1608,6 @@
   });
 
   $(".close-button").on("click", function () {
-    console.log('====================================');
-    console.log(this, 'this');
-    console.log('====================================');
     $(this).parent().remove();
     _update_workspace_data_in_database();
   });
@@ -1778,9 +1776,6 @@
 
         svgDoc.setAttribute("height", newHeight);
         svgDoc.setAttribute("width", newWidth);
-        console.log('====================================');
-        console.log(svgDoc, 'svgDoc');
-        console.log('====================================');
 
         var paths = svgDoc.querySelectorAll("path");
         paths.forEach(function (path) {
@@ -2520,7 +2515,7 @@
   }
 
   $("#add_to_cart").on("click", function () {
-    _show_loader();
+    // _show_loader();
 
     var boardData = $("#workspace_area .draggable-container img");
     var boardDataArray = [];
