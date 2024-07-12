@@ -11,7 +11,8 @@ URL: alirazaofficial.com
 * All the scripts, libraries and custom files
 */
 
-function enqueue_amerison_scripts() {
+function enqueue_amerison_scripts()
+{
     $timestamp = time();
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js', array('jquery'), null, true);
@@ -52,7 +53,8 @@ add_action('wp_enqueue_scripts', 'enqueue_amerison_scripts');
 /*
 * Included labraries on admin side
 */
-function enqueue_admin_bootstrap() {
+function enqueue_admin_bootstrap()
+{
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
     wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js');
 }
@@ -62,7 +64,8 @@ add_action('admin_enqueue_scripts', 'enqueue_admin_bootstrap');
 * Included custom files on admin side
 */
 
-function enqueue_admin_assets() {
+function enqueue_admin_assets()
+{
     $timestamp = time();
     wp_enqueue_style('custom-admin-css', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
     wp_enqueue_script('custom-admin-js', plugin_dir_url(__FILE__) . 'js/admin-script.js', array('jquery'), $timestamp, true);
@@ -82,7 +85,8 @@ add_action('admin_enqueue_scripts', 'enqueue_admin_assets');
 * Custom plugin admin dashboard board list menu and custom request menu
 */
 
-function configurator_page() {
+function configurator_page()
+{
     $page_title = 'Configurator';
     $menu_title = 'Configurator';
     $main_submenu_title = 'Configurator';
@@ -124,61 +128,64 @@ add_action('admin_menu', 'configurator_page');
 /*
 * Admin dashboard board list page content
 */
-function configurator_page_content() {
+function configurator_page_content()
+{
     $configurator = get_all_boards();
     $delete_all = admin_url('admin-ajax.php?action=delete_all');
-    ?>
+?>
     <div class="wrap">
         <h1 class="wp-heading-inline mb-3 fw-bold">List of Boards</h1>
-    <button id="delete_all_boards" class="btn btn-danger" style="margin-left: 20px; float: inline-end; margin-bottom: 20px;">Delete All Boards</button>
-    <table class="wp-list-table widefat fixed striped">
-        <thead>
-            <tr>
-                <th style="width: 60px">ID</th>
-                <th style="width: 200px">Title</th>
-                <th style="width: 100px">Dimensions</th>
-                <th>Board Color</th>
-                <th>Style</th>
-                <th>Material</th>
-                <th>Quantity</th>
-                <th>Logo</th>
-                <th>Background</th>
-                <th>Updated at</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($configurator as $board) : ?>
+        <button id="delete_all_boards" class="btn btn-danger" style="margin-left: 20px; float: inline-end; margin-bottom: 20px;">Delete All Boards</button>
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
                 <tr>
-                    <td><?= $board->id ?></td>
-                    <td><?= $board->board_title ?></td>
-                    <td><?= $board->board_dimensions ?></td>
-                    <td><div style="border: 1px solid black; width: 30px; height: 30px; background-color: <?= $board->background_color ?>;"></div></td>
-                    <td><?= $board->board_style ?></td>
-                    <td><?= $board->board_material ?></td>
-                    <td><?= $board->quantity_of_boards ?></td>
-                    <td>
-                        <?php if (!empty($board->logo_url)): ?>
-                            <img src="<?= $board->logo_url ?>" alt="Logo" style="width: 30px">
-                        <?php else: ?>
-                            No Logo
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if (!empty($board->background_url)): ?>
-                            <img src="<?= $board->background_url ?>" alt="Background" style="width: 30px">
-                        <?php else: ?>
-                            No Background
-                        <?php endif; ?>
-                    </td>
-                    <td><?= $board->timestamp ?></td>
-                    <td><button class="delete-board btn btn-danger py-0" data-id="<?= $board->id ?>">Delete</button></td>
+                    <th style="width: 60px">ID</th>
+                    <th style="width: 200px">Title</th>
+                    <th style="width: 100px">Dimensions</th>
+                    <th>Board Color</th>
+                    <th>Style</th>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                    <th>Logo</th>
+                    <th>Background</th>
+                    <th>Updated at</th>
+                    <th>Actions</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($configurator as $board) : ?>
+                    <tr>
+                        <td><?= $board->id ?></td>
+                        <td><?= $board->board_title ?></td>
+                        <td><?= $board->board_dimensions ?></td>
+                        <td>
+                            <div style="border: 1px solid black; width: 30px; height: 30px; background-color: <?= $board->background_color ?>;"></div>
+                        </td>
+                        <td><?= $board->board_style ?></td>
+                        <td><?= $board->board_material ?></td>
+                        <td><?= $board->quantity_of_boards ?></td>
+                        <td>
+                            <?php if (!empty($board->logo_url)) : ?>
+                                <img src="<?= $board->logo_url ?>" alt="Logo" style="width: 30px">
+                            <?php else : ?>
+                                No Logo
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if (!empty($board->background_url)) : ?>
+                                <img src="<?= $board->background_url ?>" alt="Background" style="width: 30px">
+                            <?php else : ?>
+                                No Background
+                            <?php endif; ?>
+                        </td>
+                        <td><?= $board->timestamp ?></td>
+                        <td><button class="delete-board btn btn-danger py-0" data-id="<?= $board->id ?>">Delete</button></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
-    <?php
+<?php
 }
 
 
@@ -187,8 +194,9 @@ function configurator_page_content() {
 * Admin dashboard custom request page content
 */
 
-function request_custom_tool_page_content() {
-    ?>
+function request_custom_tool_page_content()
+{
+?>
     <div id="preloader" class="preloader"></div>
     <div class="wrap">
         <div id="tabs" style="border-bottom: 3px solid #000000;">
@@ -196,11 +204,11 @@ function request_custom_tool_page_content() {
             <button class="tablink btn tab-color rounded-0 fw-bolder text-dark" data-tab="Tab2">Measuring Sheets</button>
         </div>
         <div id="Tab1" class="tabcontent">
-        <div id="custom-tools" class="tab-content py-3">
-            <?php
-            echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Custom Tool Requests</h4>';
-            echo '<table class="wp-list-table widefat fixed striped">';
-            echo '<thead>
+            <div id="custom-tools" class="tab-content py-3">
+                <?php
+                echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Custom Tool Requests</h4>';
+                echo '<table class="wp-list-table widefat fixed striped">';
+                echo '<thead>
                     <tr>
                         <th style="width: 80px">ID</th>
                         <th style="width: 200px">User Name</th>
@@ -210,66 +218,66 @@ function request_custom_tool_page_content() {
                         <th>Actions</th>
                     </tr>
                 </thead>';
-            echo '<tbody>';
-            $custom_tool_requests = get_custom_tool_requests();
-            foreach ($custom_tool_requests as $request) {
-                echo '<tr>';
-                echo '<td>' . $request['id'] . '</td>';
-                echo '<td>' . ucwords(get_user_name_by_id($request['user_id'])) . '</td>';
-                echo '<td><a href="' . ($request['file']) . '" download>Download</a></td>';
-                echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
-                echo '<td>' . ($request['status']) . '</td>';
-                echo '<td><button class="upload-custom-tool btn btn-primary cursor-pointer" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' data-id="' . $request['id'] . '">'. ($request['status'] === "Pending" ? 'Upload' : 'Uploaded') . '</button></td>';
-                echo '</tr>';
-            }
-            echo '</tbody>';
-            echo '</table>';
-            ?>
-            <div class="modal" id="uploadToolModel" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Upload custom tool</h5>
-                    <button type="button" class="close close-model" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex flex-column gap-2">
-                        <input type="hidden" id="request-id">
-                        <input type="file" class="form-control" id="upload-file">
-                        <div class="form-group">
-                            <label for="tool_width">Width</label>
-                            <input type="number" class="form-control" id="tool_width" placeholder="Enter Width">
-                            <small id="widthHelp" class="form-text text-muted">Please write tool width in inches.</small>
+                echo '<tbody>';
+                $custom_tool_requests = get_custom_tool_requests();
+                foreach ($custom_tool_requests as $request) {
+                    echo '<tr>';
+                    echo '<td>' . $request['id'] . '</td>';
+                    echo '<td>' . ucwords(get_user_name_by_id($request['user_id'])) . '</td>';
+                    echo '<td><a href="' . ($request['file']) . '" download>Download</a></td>';
+                    echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
+                    echo '<td>' . ($request['status']) . '</td>';
+                    echo '<td><button class="upload-custom-tool btn btn-primary cursor-pointer" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' data-id="' . $request['id'] . '">' . ($request['status'] === "Pending" ? 'Upload' : 'Uploaded') . '</button></td>';
+                    echo '</tr>';
+                }
+                echo '</tbody>';
+                echo '</table>';
+                ?>
+                <div class="modal" id="uploadToolModel" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Upload custom tool</h5>
+                                <button type="button" class="close close-model" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex flex-column gap-2">
+                                    <input type="hidden" id="request-id">
+                                    <input type="file" class="form-control" id="upload-file">
+                                    <div class="form-group">
+                                        <label for="tool_width">Width</label>
+                                        <input type="number" class="form-control" id="tool_width" placeholder="Enter Width">
+                                        <small id="widthHelp" class="form-text text-muted">Please write tool width in inches.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tool_height">Height</label>
+                                        <input type="number" class="form-control" id="tool_height" placeholder="Enter Height">
+                                        <small id="heightHelp" class="form-text text-muted">Please write tool height in inches.</small>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="tool_type">Tool Type</label>
+                                        <select class="form-select form-select-sm mw-100" id="tool_type" aria-label=".form-select-sm example">
+                                            <option selected value=null>Select Type</option>
+                                            <option value="solid">Solid</option>
+                                            <option value="outline">Outline</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="upload_file">Upload</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="tool_height">Height</label>
-                            <input type="number" class="form-control" id="tool_height" placeholder="Enter Height">
-                            <small id="heightHelp" class="form-text text-muted">Please write tool height in inches.</small>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="tool_type">Tool Type</label>
-                            <select class="form-select form-select-sm mw-100" id="tool_type" aria-label=".form-select-sm example">
-                                <option selected value=null>Select Type</option>
-                                <option value="solid">Solid</option>
-                                <option value="outline">Outline</option>
-                            </select>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="upload_file">Upload</button>
                     </div>
                 </div>
-                </div>
             </div>
-            </div>
-        </div>
         </div>
         <div id="Tab2" class="tabcontent" style="display: none">
-        <div id="measuring-tools" class="tab-content py-3">
-            <?php
-            echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Measuring Sheet Requests</h4>';
-            echo '<table class="wp-list-table widefat fixed striped">';
-            echo '<thead>
+            <div id="measuring-tools" class="tab-content py-3">
+                <?php
+                echo '<h4 class="wp-heading-inline mb-3 fw-bold alert alert-success w-100">Measuring Sheet Requests</h4>';
+                echo '<table class="wp-list-table widefat fixed striped">';
+                echo '<thead>
                     <tr>
                         <th style="width: 100px">User</th>
                         <th style="width: 200px">Name</th>
@@ -282,34 +290,35 @@ function request_custom_tool_page_content() {
                         <th>Actions</th>
                     </tr>
                 </thead>';
-            echo '<tbody>';
-            $measuring_tool_requests = get_measuring_tool_requests();
-            foreach ($measuring_tool_requests as $request) {
-                echo '<tr>';
-                echo '<td>' . ucwords(get_user_name_by_id($request['user_id'])) . '</td>';
-                echo '<td>' . $request['name'] . '</td>';
-                echo '<td>' . ($request['address'] === null ? 'N/A' : $request['address']) . '</td>';
-                echo '<td>' . $request['quantity'] . '</td>';
-                echo '<td>' . $request['comments'] . '</td>';
-                echo '<td>' . $request['total_cost'] . '</td>';
-                echo '<td>' . ($request['status']) . '</td>';
-                echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
-                echo '<td style="display: flex; gap: 3px"><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">'. ($request['status'] === "Pending" ? 'Update' : 'Updated') . '</button> <button class="stripe-refund btn btn-danger" ' . ($request['payment_intent'] === "Refunded" ? 'disabled' : '') . ' id="stripe_refund_' . $request['id'] . '" data-id="' . $request['id'] . '">' . ($request['payment_intent'] === "Refunded" ? 'Refunded' : 'Refund') . '</button></td>';
-                echo '</td>';
-            }
-            echo '</tbody>';
-            echo '</table>';
-            ?>
-        </div>
+                echo '<tbody>';
+                $measuring_tool_requests = get_measuring_tool_requests();
+                foreach ($measuring_tool_requests as $request) {
+                    echo '<tr>';
+                    echo '<td>' . ucwords(get_user_name_by_id($request['user_id'])) . '</td>';
+                    echo '<td>' . $request['name'] . '</td>';
+                    echo '<td>' . ($request['address'] === null ? 'N/A' : $request['address']) . '</td>';
+                    echo '<td>' . $request['quantity'] . '</td>';
+                    echo '<td>' . $request['comments'] . '</td>';
+                    echo '<td>' . $request['total_cost'] . '</td>';
+                    echo '<td>' . ($request['status']) . '</td>';
+                    echo '<td>' . ($request['created_at'] === null ? 'N/A' : $request['created_at']) . '</td>';
+                    echo '<td style="display: flex; gap: 3px"><button class="send-measuring-sheet btn btn-primary" ' . ($request['status'] === "Pending" ? '' : 'disabled') . ' id="send_measuring_sheet_' . $request['id'] . '" data-id="' . $request['id'] . '">' . ($request['status'] === "Pending" ? 'Update' : 'Updated') . '</button> <button class="stripe-refund btn btn-danger" ' . ($request['payment_intent'] === "Refunded" ? 'disabled' : '') . ' id="stripe_refund_' . $request['id'] . '" data-id="' . $request['id'] . '">' . ($request['payment_intent'] === "Refunded" ? 'Refunded' : 'Refund') . '</button></td>';
+                    echo '</td>';
+                }
+                echo '</tbody>';
+                echo '</table>';
+                ?>
+            </div>
         </div>
     </div>
-    <?php
+<?php
 }
 
 
 // Render settings page
-function render_stripe_setting_page() {
-    ?>
+function render_stripe_setting_page()
+{
+?>
     <div class="wrap">
         <h2>Stripe Settings</h2>
         <form method="post" action="options.php">
@@ -318,11 +327,12 @@ function render_stripe_setting_page() {
             <?php submit_button('Save Settings'); ?>
         </form>
     </div>
-    <?php
+<?php
 }
 
 // Register settings and fields
-function stripe_register_settings() {
+function stripe_register_settings()
+{
     register_setting('stripe_settings_group', 'stripe_settings', 'stripe_validate_settings');
     add_settings_section('stripe_settings_section', '', 'stripe_settings_section_callback', 'my-plugin-settings');
     add_settings_field('stripe_publishable_key', 'Publishable Key', 'stripe_publishable_key_callback', 'my-plugin-settings', 'stripe_settings_section');
@@ -334,7 +344,8 @@ function stripe_register_settings() {
 add_action('admin_init', 'stripe_register_settings');
 
 // Validate settings
-function stripe_validate_settings($input) {
+function stripe_validate_settings($input)
+{
     // Validate and sanitize input data
     $output = array();
     $output['publishable_key'] = sanitize_text_field($input['publishable_key']);
@@ -346,19 +357,22 @@ function stripe_validate_settings($input) {
 }
 
 // Settings section callback
-function stripe_settings_section_callback() {
+function stripe_settings_section_callback()
+{
     echo '<div class="badge bg-success">Enter your Stripe API keys below:</div>';
 }
 
 // Publishable key field callback
-function stripe_publishable_key_callback() {
+function stripe_publishable_key_callback()
+{
     $options = get_option('stripe_settings');
     echo '<input type="text" id="publishable_key" class="w-50" name="stripe_settings[publishable_key]" value="' . esc_attr($options['publishable_key']) . '" />';
     echo '<p class="description">You can find your API keys in your Stripe dashboard.</p>';
 }
 
 // Secret key field callback
-function stripe_secret_key_callback() {
+function stripe_secret_key_callback()
+{
     $options = get_option('stripe_settings');
     echo '<input type="password" id="secret_key" class="w-50" name="stripe_settings[secret_key]" value="' . esc_attr($options['secret_key']) . '" />';
     echo '<p class="description">You can find your API keys in your Stripe dashboard.</p>';
@@ -366,27 +380,31 @@ function stripe_secret_key_callback() {
 }
 
 // Settings section callback
-function stripe_price_settings_section_callback() {
+function stripe_price_settings_section_callback()
+{
     echo '<hr>';
     echo '<div class="badge bg-success">Enter your prices for the custom requests below:</div>';
 }
 // custom tool amount field
-function stripe_custom_tool_price_callback() {
+function stripe_custom_tool_price_callback()
+{
     $options = get_option('stripe_settings');
     echo '<input type="text" id="custom_price" class="w-50" name="stripe_settings[custom_price]" value="' . esc_attr($options['custom_price']) . '" />';
     echo '<p class="description">Enter the price for custom tool request price (default $15).</p>';
 }
 
 // custom tool amount field
-function stripe_large_measuring_price_callback() {
+function stripe_large_measuring_price_callback()
+{
     $options = get_option('stripe_settings');
     echo '<input type="text" id="large_measuring" class="w-50" name="stripe_settings[large_measuring]" value="' . esc_attr($options['large_measuring']) . '" />';
     echo '<p class="description">Enter the price for large measuring sheet request price (default $40).</p>';
 }
 
 // Pricing page
-function render_pricing_page() {
-    ?>
+function render_pricing_page()
+{
+?>
     <div id="preloader" class="preloader"></div>
     <div class="wrap">
         <h2>Pricing</h2>
@@ -404,20 +422,20 @@ function render_pricing_page() {
                 </tr>
             </thead>
             <tbody>
-                    <?php
-                    $prices = get_amerisan_pricing();
-                    foreach ($prices as $price) {
-                        echo '<tr>';
-                        echo '<td>' . $price['size'] . '</td>';
-                        echo '<td>$' . $price['toughlam'] . '</td>';
-                        echo '<td>$' . $price['toughlite'] . '</td>';
-                        echo '<td>$' . $price['toughguard'] . '</td>';
-                        echo '<td>$' . $price['toughguardplus'] . '</td>';
-                        echo '<td>$' . $price['toughclear'] . '</td>';
-                        echo '<td><button id="update_price" data-id="' . $price['id'] . '" class="update_price btn btn-primary btn-sm">Update</button></td>';
-                        echo '</tr>';
-                    }
-                    ?>
+                <?php
+                $prices = get_amerisan_pricing();
+                foreach ($prices as $price) {
+                    echo '<tr>';
+                    echo '<td>' . $price['size'] . '</td>';
+                    echo '<td>$' . $price['toughlam'] . '</td>';
+                    echo '<td>$' . $price['toughlite'] . '</td>';
+                    echo '<td>$' . $price['toughguard'] . '</td>';
+                    echo '<td>$' . $price['toughguardplus'] . '</td>';
+                    echo '<td>$' . $price['toughclear'] . '</td>';
+                    echo '<td><button id="update_price" data-id="' . $price['id'] . '" class="update_price btn btn-primary btn-sm">Update</button></td>';
+                    echo '</tr>';
+                }
+                ?>
             </tbody>
         </table>
 
@@ -425,55 +443,55 @@ function render_pricing_page() {
         <div class="modal fade" id="updatePriceModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered mx-auto">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalToggleLabel">Update price for size <span id="update_price_size"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- input fields here for pricing -->
-                    <div id="update_price_form">
-                        <input type="hidden" id="update_price_id" name="update_price_id" value="">
-                        <div class="row mb-3">
-                            <label for="inputSize" class="col-sm-2 col-form-label text-uppercase">Size</label>
-                            <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputSize" disabled>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalToggleLabel">Update price for size <span id="update_price_size"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- input fields here for pricing -->
+                        <div id="update_price_form">
+                            <input type="hidden" id="update_price_id" name="update_price_id" value="">
+                            <div class="row mb-3">
+                                <label for="inputSize" class="col-sm-2 col-form-label text-uppercase">Size</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputSize" disabled>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="inputToughLam" class="col-sm-2 col-form-label  text-uppercase">ToughLam</label>
-                            <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputToughLam" required>
+                            <div class="row mb-3">
+                                <label for="inputToughLam" class="col-sm-2 col-form-label  text-uppercase">ToughLam</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputToughLam" required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="inputToughLite" class="col-sm-2 col-form-label text-uppercase">ToughLite</label>
-                            <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputToughLite" required>
+                            <div class="row mb-3">
+                                <label for="inputToughLite" class="col-sm-2 col-form-label text-uppercase">ToughLite</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputToughLite" required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="inputToughGuard" class="col-sm-2 col-form-label text-uppercase">ToughGuard</label>
-                            <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputToughGuard" required>
+                            <div class="row mb-3">
+                                <label for="inputToughGuard" class="col-sm-2 col-form-label text-uppercase">ToughGuard</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputToughGuard" required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="inputToughGuardPlus" class="col-sm-2 col-form-label text-uppercase">ToughGuard+</label>
-                            <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputToughGuardPlus" required>
+                            <div class="row mb-3">
+                                <label for="inputToughGuardPlus" class="col-sm-2 col-form-label text-uppercase">ToughGuard+</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputToughGuardPlus" required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="inputToughClear" class="col-sm-2 col-form-label text-uppercase">ToughClear</label>
-                            <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputToughClear" required>
+                            <div class="row mb-3">
+                                <label for="inputToughClear" class="col-sm-2 col-form-label text-uppercase">ToughClear</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputToughClear" required>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-target="#updatePriceModal" data-bs-toggle="modal" id="submit_price" data-bs-dismiss="modal">Submit</button>
-                </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-bs-target="#updatePriceModal" data-bs-toggle="modal" id="submit_price" data-bs-dismiss="modal">Submit</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -482,7 +500,8 @@ function render_pricing_page() {
     <?php
 }
 
-function initiate_stripe_payment() {
+function initiate_stripe_payment()
+{
     if (!is_user_logged_in()) {
         wp_send_json_error('User not logged in.');
     }
@@ -520,20 +539,23 @@ function initiate_stripe_payment() {
 add_action('wp_ajax_initiate_stripe_payment', 'initiate_stripe_payment');
 add_action('wp_ajax_nopriv_initiate_stripe_payment', 'initiate_stripe_payment');
 
-function get_payment_intent_id($id) {
+function get_payment_intent_id($id)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
     $payment_intent = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $id", ARRAY_A);
     return $payment_intent['payment_intent'];
 }
 
-function update_user_refund_status($id) {
+function update_user_refund_status($id)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
     $wpdb->update($table_name, array('payment_intent' => 'Refunded'), array('id' => $id));
 }
 
-function initiate_stripe_refund() {
+function initiate_stripe_refund()
+{
     // Check if the user is eligible for a refund (e.g., if they made a payment of $40)
     $id = isset($_POST['id']) ? sanitize_text_field($_POST['id']) : '';
     $payment_amount = isset($_POST['payment_amount']) ? sanitize_text_field($_POST['payment_amount']) : '';
@@ -557,8 +579,8 @@ function initiate_stripe_refund() {
                 $user_id = $id->user_id;
                 $subject = 'Refund Initiated';
                 $message = "
-                    <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
-                    <p>Refund of $". get_option('stripe_settings')['large_measuring'] . " is initiated successfully.\n</p>
+                    <h3>Dear " . get_user_name_by_id($user_id) . ",</h3>
+                    <p>Refund of $" . get_option('stripe_settings')['large_measuring'] . " is initiated successfully.\n</p>
                     <p>Thank you.</p>
                     <p>Regards,</p>
                     <p>Amerisan</p>
@@ -601,7 +623,8 @@ add_action('wp_ajax_nopriv_initiate_stripe_refund', 'initiate_stripe_refund');
  * @return string The name of the user corresponding to the provided user ID.
  */
 
-function get_user_name_by_id($user_id) {
+function get_user_name_by_id($user_id)
+{
     $user_info = get_userdata($user_id);
     return $user_info ? $user_info->display_name : '';
 }
@@ -617,7 +640,8 @@ function get_user_name_by_id($user_id) {
  *                    or null if no requests are found.
  */
 
- function get_custom_tool_requests() {
+function get_custom_tool_requests()
+{
     global $wpdb;
     $custom_tool_requests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}request_custom_tool ORDER BY created_at DESC", ARRAY_A);
     return $custom_tool_requests;
@@ -635,7 +659,8 @@ function get_user_name_by_id($user_id) {
  *                    or null if no requests are found.
  */
 
-function get_measuring_tool_requests() {
+function get_measuring_tool_requests()
+{
     global $wpdb;
     $measuring_tool_requests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}measure_request ORDER BY created_at DESC", ARRAY_A);
     return $measuring_tool_requests;
@@ -653,14 +678,15 @@ function get_measuring_tool_requests() {
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function send_measuring_sheet_email() {
+function send_measuring_sheet_email()
+{
     if (isset($_POST['request_id'])) {
         $request_id = $_POST['request_id'];
         $id = get_sheet_by_id('id', $request_id);
         $user_id = $id->user_id;
         $subject = 'Measuring Sheet Request';
         $message = "
-            <h3>Dear " . get_user_name_by_id($user_id). ",</h3>
+            <h3>Dear " . get_user_name_by_id($user_id) . ",</h3>
             <p>Your measuring sheet has been delivered. You will receive it soon.\n</p>
             <p>Thank you.</p>
             <p>Regards,</p>
@@ -695,20 +721,29 @@ add_action('wp_ajax_nopriv_send_measuring_sheet_email', 'send_measuring_sheet_em
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function submit_custom_tool_design() {
+function submit_custom_tool_design()
+{
     $request_id = isset($_POST['request_id']) ? $_POST['request_id'] : '';
     $user_id = get_custom_sheet_by_id('id', $request_id)->user_id;
 
-    if (empty($request_id)) { wp_send_json_error('Invalid board ID.'); }
-    if (!is_user_logged_in()) { wp_send_json_error('User not logged in.'); }
-    if (!isset($_FILES['file']) || !is_uploaded_file($_FILES['file']['tmp_name'])) { wp_send_json_error('No file uploaded.'); }
+    if (empty($request_id)) {
+        wp_send_json_error('Invalid board ID.');
+    }
+    if (!is_user_logged_in()) {
+        wp_send_json_error('User not logged in.');
+    }
+    if (!isset($_FILES['file']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
+        wp_send_json_error('No file uploaded.');
+    }
 
     $upload_dir = wp_upload_dir();
     $file_name = time() . $_FILES['file']['name'];
     $file_tmp = $_FILES['file']['tmp_name'];
     $file_path = $upload_dir['path'] . '/' . $file_name;
     $file_link = $upload_dir['url'] . '/' . $file_name;
-    if (!move_uploaded_file($file_tmp, $file_path)) { wp_send_json_error('Failed to move uploaded file.'); }
+    if (!move_uploaded_file($file_tmp, $file_path)) {
+        wp_send_json_error('Failed to move uploaded file.');
+    }
 
     $attachment = array(
         'guid'           => $upload_dir['url'] . '/' . $file_name,
@@ -749,10 +784,10 @@ function submit_custom_tool_design() {
         $product_id = $product->save();
 
         $attribute = new WC_Product_Attribute();
-        $attribute->set_id( wc_attribute_taxonomy_id_by_name( 'pa_color' ) );
-        $attribute->set_name( 'pa_color' );
+        $attribute->set_id(wc_attribute_taxonomy_id_by_name('pa_color'));
+        $attribute->set_name('pa_color');
         $pa_color_term = get_term_by('name', $woo_product_meta['format'], 'pa_color');
-        if(!$pa_color_term){
+        if (!$pa_color_term) {
             wp_insert_term(
                 $woo_product_meta['custom'],
                 'pa_color'
@@ -761,15 +796,15 @@ function submit_custom_tool_design() {
         } else {
             echo 'Existing pa_color term detected: ' . $pa_color_term->name;
         }
-        $attribute->set_options( array( $attribute_custom->term_id ) );
-        $attribute->set_position( 0 );
-        $attribute->set_visible( true );
-        $attribute->set_variation( true );
-        $attribute->is_taxonomy( true );
+        $attribute->set_options(array($attribute_custom->term_id));
+        $attribute->set_position(0);
+        $attribute->set_visible(true);
+        $attribute->set_variation(true);
+        $attribute->is_taxonomy(true);
         $attributes[] = $attribute;
-        $product->set_attributes( $attributes );
+        $product->set_attributes($attributes);
         $variation = new WC_Product_Variation();
-        $variation->set_parent_id( $product_id );
+        $variation->set_parent_id($product_id);
         $variation->save();
         $variation->set_attributes(
             array(
@@ -777,7 +812,7 @@ function submit_custom_tool_design() {
             )
         );
         $variation->save();
-        $variation->set_image_id( $attachment_id );
+        $variation->set_image_id($attachment_id);
         $variation->set_regular_price(0);
         $variation->set_weight($user_id);
         $variation->set_length(0);
@@ -819,7 +854,8 @@ add_action('wp_ajax_nopriv_submit_custom_tool_design', 'submit_custom_tool_desig
  * @param string $message The content of the email.
  */
 
-function send_email_to_user($user_id, $subject, $message) {
+function send_email_to_user($user_id, $subject, $message)
+{
     $user_info = get_userdata($user_id);
     $to = $user_info->user_email;
     $subject = $subject;
@@ -841,7 +877,8 @@ function send_email_to_user($user_id, $subject, $message) {
  * @return object|null The user object if found, or null if not found.
  */
 
-function get_user_by_id($field, $value) {
+function get_user_by_id($field, $value)
+{
     global $wpdb;
     $user = $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM $wpdb->users WHERE $field = %d",
@@ -863,7 +900,8 @@ function get_user_by_id($field, $value) {
  * @return object|null The measuring sheet object if found, or null if not found.
  */
 
-function get_sheet_by_id($field, $value) {
+function get_sheet_by_id($field, $value)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
     $sheet = $wpdb->get_row($wpdb->prepare(
@@ -886,7 +924,8 @@ function get_sheet_by_id($field, $value) {
  * @return object|null The custom tool request sheet object if found, or null if not found.
  */
 
-function get_custom_sheet_by_id($field, $value) {
+function get_custom_sheet_by_id($field, $value)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'request_custom_tool';
     $sheet = $wpdb->get_row($wpdb->prepare(
@@ -905,7 +944,8 @@ function get_custom_sheet_by_id($field, $value) {
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function delete_all() {
+function delete_all()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $sql = "DELETE FROM $table_name";
@@ -1052,7 +1092,8 @@ register_activation_hook(__FILE__, 'create_configurator_table');
 
 
 // create table for pricing with the columns id, size, toughlite, toughguard, toughguard+, toughclear, created_at, updated_at
-function create_amerisan_pricing_table() {
+function create_amerisan_pricing_table()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'amerisan_pricing';
     $charset_collate = $wpdb->get_charset_collate();
@@ -1074,14 +1115,16 @@ register_activation_hook(__FILE__, 'create_amerisan_pricing_table');
 
 
 // get all the pricing data from the database
-function get_amerisan_pricing() {
+function get_amerisan_pricing()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'amerisan_pricing';
     $pricing = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
     return $pricing;
 }
 
-function get_amerisan_pricing_size_callback() {
+function get_amerisan_pricing_size_callback()
+{
     // check_ajax_referer('nonce', 'nonce');
 
     global $wpdb;
@@ -1099,7 +1142,8 @@ function get_amerisan_pricing_size_callback() {
 add_action('wp_ajax_get_amerisan_pricing_size', 'get_amerisan_pricing_size_callback');
 add_action('wp_ajax_nopriv_get_amerisan_pricing_size', 'get_amerisan_pricing_size_callback');
 
-function get_amerisan_pricing_by_id_callback() {
+function get_amerisan_pricing_by_id_callback()
+{
     // check_ajax_referer('nonce', 'nonce');
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     global $wpdb;
@@ -1117,7 +1161,8 @@ add_action('wp_ajax_get_amerisan_pricing_by_id', 'get_amerisan_pricing_by_id_cal
 add_action('wp_ajax_nopriv_get_amerisan_pricing_by_id', 'get_amerisan_pricing_by_id_callback');
 
 
-function update_amerisan_pricing_by_id_callback() {
+function update_amerisan_pricing_by_id_callback()
+{
     // check_ajax_referer('nonce', 'nonce');
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     $toughlite = isset($_POST['toughlite']) ? floatval($_POST['toughlite']) : 0;
@@ -1145,7 +1190,8 @@ function update_amerisan_pricing_by_id_callback() {
 add_action('wp_ajax_update_amerisan_pricing_by_id', 'update_amerisan_pricing_by_id_callback');
 add_action('wp_ajax_nopriv_update_amerisan_pricing_by_id', 'update_amerisan_pricing_by_id_callback');
 
-function get_amerisan_selected_pricing_price_callback() {
+function get_amerisan_selected_pricing_price_callback()
+{
     $size = isset($_POST['size']) ? $_POST['size'] : '';
     global $wpdb;
     $table_name = $wpdb->prefix . 'amerisan_pricing';
@@ -1174,7 +1220,8 @@ add_action('wp_ajax_nopriv_get_amerisan_selected_pricing_price', 'get_amerisan_s
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function create_measure_request_table() {
+function create_measure_request_table()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
@@ -1189,10 +1236,10 @@ function create_measure_request_table() {
         payment_intent VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta( $sql );
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
 }
-register_activation_hook( __FILE__, 'create_measure_request_table' );
+register_activation_hook(__FILE__, 'create_measure_request_table');
 
 /**
  * Checks if the 'measure_request' table exists in the WordPress database.
@@ -1205,12 +1252,13 @@ register_activation_hook( __FILE__, 'create_measure_request_table' );
  * @return bool True if the table exists, false otherwise.
  */
 
-function is_measure_request_table_created() {
+function is_measure_request_table_created()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'measure_request';
     $sql = "SHOW TABLES LIKE '$table_name'";
-    $result = $wpdb->get_var( $sql );
-    if ( $result == $table_name ) {
+    $result = $wpdb->get_var($sql);
+    if ($result == $table_name) {
         return true;
     } else {
         return false;
@@ -1231,7 +1279,8 @@ function is_measure_request_table_created() {
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function create_request_custom_tool_table() {
+function create_request_custom_tool_table()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'request_custom_tool';
     if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
@@ -1266,7 +1315,8 @@ register_activation_hook(__FILE__, 'create_request_custom_tool_table');
  * Note: This function assumes the existence of the 'request_custom_tool' table and the 'send_email_to_user' function.
  */
 
-function process_custom_tool_request() {
+function process_custom_tool_request()
+{
     if (!is_user_logged_in()) {
         wp_send_json_error('User not logged in.');
     }
@@ -1331,7 +1381,8 @@ add_action('wp_ajax_nopriv_process_custom_tool_request', 'process_custom_tool_re
  * Note: This function assumes the existence of the 'measure_request' table and the 'send_email_to_user' function.
  */
 
-function process_measuring_tool_request() {
+function process_measuring_tool_request()
+{
     if (!is_user_logged_in()) {
         wp_send_json_error('User not logged in.');
     }
@@ -1384,8 +1435,9 @@ add_action('wp_ajax_nopriv_process_measuring_tool_request', 'process_measuring_t
  * Note: This function assumes the existence of the 'configurator_data' table and the use of sanitize_text_field function.
  */
 
-function update_configurator_data() {
-   if (isset($_POST['workspace_information'])) {
+function update_configurator_data()
+{
+    if (isset($_POST['workspace_information'])) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'configurator_data';
         $user_id = get_current_user_id();
@@ -1393,12 +1445,13 @@ function update_configurator_data() {
         $color = sanitize_text_field($_POST['color']);
         $data = $_POST['data'];
         $id = $_POST['id'];
+        echo $id;
         $canvasState = $_POST['canvasState'];
         $existing_data = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $table_name WHERE id = %d",
             $id
         ));
-        if ($existing_data) {
+        if ($existing_data && $id !== "new") {
             $wpdb->update(
                 $table_name,
                 array(
@@ -1418,7 +1471,7 @@ function update_configurator_data() {
                     'timestamp' => current_time('mysql')
                 ),
                 array('id' => $id),
-                array('%s', '%s', '%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
+                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'),
                 array('%d')
             );
         } else {
@@ -1463,7 +1516,8 @@ add_action('wp_ajax_nopriv_update_configurator_data', 'update_configurator_data'
  *
  */
 
-function upload_image_amerisan() {
+function upload_image_amerisan()
+{
     if (isset($_POST['file'])) {
         $image_data = $_POST['file'];
         $image_data = str_replace('data:image/png;base64,', '', $image_data);
@@ -1517,7 +1571,8 @@ add_action('wp_ajax_upload_image_amerisan', 'upload_image_amerisan');
 add_action('wp_ajax_nopriv_upload_image_amerisan', 'upload_image_amerisan');
 
 
-function create_amerisan_simple_product($name, $price, $attachment_id, $style, $material, $dimentions, $board_quantity) {
+function create_amerisan_simple_product($name, $price, $attachment_id, $style, $material, $dimentions, $board_quantity)
+{
     // Check if WooCommerce is active
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_inactive', 'WooCommerce is not active.');
@@ -1574,7 +1629,8 @@ function create_amerisan_simple_product($name, $price, $attachment_id, $style, $
 }
 
 // Add custom fields to cart item data
-function add_custom_fields_to_cart_item($cart_item_data, $product_id) {
+function add_custom_fields_to_cart_item($cart_item_data, $product_id)
+{
     $custom_fields = [
         'board_dimensions' => get_post_meta($product_id, '_board_dimensions', true),
         'board_material' => get_post_meta($product_id, '_board_material', true),
@@ -1592,7 +1648,8 @@ function add_custom_fields_to_cart_item($cart_item_data, $product_id) {
 add_filter('woocommerce_add_cart_item_data', 'add_custom_fields_to_cart_item', 10, 2);
 
 // Display custom fields on the cart page
-function display_custom_fields_in_cart($item_data, $cart_item) {
+function display_custom_fields_in_cart($item_data, $cart_item)
+{
     $custom_fields = [
         'board_dimensions' => __('Board Dimensions', 'woocommerce'),
         'board_material' => __('Board Material', 'woocommerce'),
@@ -1613,7 +1670,8 @@ function display_custom_fields_in_cart($item_data, $cart_item) {
 add_filter('woocommerce_get_item_data', 'display_custom_fields_in_cart', 10, 2);
 
 // Preserve custom fields in order items
-function add_custom_fields_to_order_items($item, $cart_item_key, $values, $order) {
+function add_custom_fields_to_order_items($item, $cart_item_key, $values, $order)
+{
     $custom_fields = ['board_dimensions', 'board_material', 'board_style'];
 
     foreach ($custom_fields as $field) {
@@ -1625,7 +1683,8 @@ function add_custom_fields_to_order_items($item, $cart_item_key, $values, $order
 add_action('woocommerce_checkout_create_order_line_item', 'add_custom_fields_to_order_items', 10, 4);
 
 // Display custom fields in admin order view
-function display_custom_fields_in_admin_order($item_id, $item, $product) {
+function display_custom_fields_in_admin_order($item_id, $item, $product)
+{
     $custom_fields = ['board_dimensions', 'board_material', 'board_style'];
 
     foreach ($custom_fields as $field) {
@@ -1637,7 +1696,8 @@ function display_custom_fields_in_admin_order($item_id, $item, $product) {
 add_action('woocommerce_admin_order_item_headers', 'display_custom_fields_in_admin_order', 10, 3);
 
 // Include custom fields in order emails
-function include_custom_fields_in_order_email($fields, $sent_to_admin, $order) {
+function include_custom_fields_in_order_email($fields, $sent_to_admin, $order)
+{
     foreach ($order->get_items() as $item_id => $item) {
         $custom_fields = ['board_dimensions', 'board_material', 'board_style'];
 
@@ -1670,7 +1730,8 @@ add_filter('woocommerce_email_order_meta_fields', 'include_custom_fields_in_orde
  * @return array Configurator data for the current user.
  */
 
-function get_configurator_data_from_db() {
+function get_configurator_data_from_db()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $user_id = get_current_user_id();
@@ -1695,7 +1756,8 @@ add_action('wp_ajax_nopriv_get_configurator_data', 'get_configurator_data');
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function get_configurator_data() {
+function get_configurator_data()
+{
     global $wpdb;
     $board_id = isset($_POST['board_id']) ? intval($_POST['board_id']) : 0;
     $table_name = $wpdb->prefix . 'configurator_data';
@@ -1723,7 +1785,8 @@ function get_configurator_data() {
  * @return object|null The board data if found, or null if not found.
  */
 
-function get_data_by_id($board_id) {
+function get_data_by_id($board_id)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $sql = "SELECT * FROM $table_name WHERE id = $board_id";
@@ -1744,7 +1807,8 @@ function get_data_by_id($board_id) {
  * @return array An array containing all configurator boards.
  */
 
-function get_all_boards() {
+function get_all_boards()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $sql = "SELECT * FROM $table_name";
@@ -1766,7 +1830,8 @@ function get_all_boards() {
  * Note: This function assumes the existence of the save_logo_data_to_database function and relies on WordPress's media handling functions.
  */
 
-function handle_logo_upload() {
+function handle_logo_upload()
+{
     if (isset($_FILES['logo_images'], $_POST['board_id'])) {
         $uploaded_logo = $_FILES['logo_images'];
         $board_id = intval($_POST['board_id']);
@@ -1817,7 +1882,8 @@ add_action('wp_ajax_nopriv_handle_logo_upload', 'handle_logo_upload');
  * @param string $logo_url The URL of the logo image.
  */
 
-function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
+function save_logo_data_to_database($board_id, $attachment_id, $logo_url)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $existing_data = $wpdb->get_row($wpdb->prepare(
@@ -1865,7 +1931,8 @@ function save_logo_data_to_database($board_id, $attachment_id, $logo_url) {
  * Note: This function assumes the existence of the save_background_data_to_database function and relies on WordPress's media handling functions.
  */
 
-function handle_background_upload() {
+function handle_background_upload()
+{
     if (isset($_FILES['background_image_upload'], $_POST['board_id'])) {
         $uploaded_background = $_FILES['background_image_upload'];
         $board_id = intval($_POST['board_id']);
@@ -1916,7 +1983,8 @@ add_action('wp_ajax_nopriv_handle_background_upload', 'handle_background_upload'
  * @param string $background_url The URL of the background image.
  */
 
-function save_background_data_to_database($board_id, $attachment_id, $background_url) {
+function save_background_data_to_database($board_id, $attachment_id, $background_url)
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $existing_data = $wpdb->get_row($wpdb->prepare(
@@ -1962,7 +2030,8 @@ function save_background_data_to_database($board_id, $attachment_id, $background
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function clearLinksFromDb() {
+function clearLinksFromDb()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $value = $_POST['value'];
@@ -1992,7 +2061,8 @@ add_action('wp_ajax_nopriv_clearLinksFromDb', 'clearLinksFromDb');
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function deleteBoard() {
+function deleteBoard()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $board_id = $_POST['board_id'];
@@ -2015,7 +2085,8 @@ add_action('wp_ajax_nopriv_deleteBoard', 'deleteBoard');
  * @global wpdb $wpdb WordPress database access abstraction object.
  */
 
-function reset_board() {
+function reset_board()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'configurator_data';
     $board_id = $_POST['board_id'];
@@ -2041,7 +2112,7 @@ function reset_board() {
         $table_name,
         $data,
         ['id' => $board_id],
-        ['%s', '%s', '%s','%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'],
+        ['%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'],
         ['%d']
     );
     wp_die();
@@ -2060,7 +2131,8 @@ add_action('wp_ajax_nopriv_reset_board', 'reset_board');
  * @param string $image_url The URL of the image to be deleted.
  */
 
-function delete_image_callback($image_url) {
+function delete_image_callback($image_url)
+{
     if ($image_url) {
         $attachment_id = attachment_url_to_postid($image_url);
         if ($attachment_id) {
@@ -2087,7 +2159,8 @@ function delete_image_callback($image_url) {
  * the 'add_to_cart' method of the WooCommerce cart object.
  */
 
-function addBoardDataToCart() {
+function addBoardDataToCart()
+{
     $products = $_POST['products'];
     $user_id = get_current_user_id();
     $cart = WC()->cart;
@@ -2103,11 +2176,12 @@ add_action('wp_ajax_nopriv_addBoardDataToCart', 'addBoardDataToCart');
 
 // Add color column after product name in cart table header
 add_filter('woocommerce_get_item_data', 'display_color_in_cart_header', 10, 2);
-function display_color_in_cart_header($item_data, $cart_item) {
+function display_color_in_cart_header($item_data, $cart_item)
+{
     $product = WC()->cart->get_cart();
     $color = $product[$cart_item['key']]['tool-color'];
 
-    $value = '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;background-color: '. $color .';"></div>';
+    $value = '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;background-color: ' . $color . ';"></div>';
 
     if (!empty($color)) {
         $item_data[] = array(
@@ -2121,11 +2195,12 @@ function display_color_in_cart_header($item_data, $cart_item) {
 
 // also save the color in the order item meta
 add_action('woocommerce_checkout_create_order_line_item', 'save_color_to_order_item_meta', 10, 4);
-function save_color_to_order_item_meta($item, $cart_item_key, $values, $order) {
+function save_color_to_order_item_meta($item, $cart_item_key, $values, $order)
+{
     $color = $values['tool-color'];
     // print_r($values);
     if (!empty($color)) {
-        $item->update_meta_data('Tool Color', '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;margin-left: 90px;background: '.$color.'"></div>');
+        $item->update_meta_data('Tool Color', '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;margin-left: 90px;background: ' . $color . '"></div>');
     }
 }
 
@@ -2144,32 +2219,33 @@ function save_color_to_order_item_meta($item, $cart_item_key, $values, $order) {
  * If the user is not logged in, it includes the 'main.php' template file.
  */
 
-function amerison_shortcode() {
+function amerison_shortcode()
+{
     if (is_user_logged_in()) {
         $products = get_products();
         $configurator = get_configurator_data_from_db();
         $attributes = get_product_attributes();
         ob_start();
         $url = $_SERVER['REQUEST_URI'];
-        if( isset($_GET['board']) ) {
+        if (isset($_GET['board'])) {
             $board_id = $_GET['board'];
             $board = get_data_by_id($board_id);
             include plugin_dir_path(__FILE__) . 'configurator.php';
-        } else if( strpos($url, '/custom-request') !== false  ) {
+        } else if (strpos($url, '/custom-request') !== false) {
             $board_id = $_GET['board'];
             $board = get_data_by_id($board_id);
             include plugin_dir_path(__FILE__) . 'custom-tool.php';
         } else {
             include plugin_dir_path(__FILE__) . 'board-list.php';
         }
-        ?>
+    ?>
         <script>
             var WP_PRODUCTS = <?= json_encode($products) ?>;
             var WP_ATTRIBUTES = <?= json_encode($attributes) ?>;
             var WP_CONFIGURATOR = <?= json_encode($configurator) ?>;
             var CONFIGURATOR_ENG = {};
         </script>
-        <?php
+<?php
         return ob_get_clean();
     } else {
         include plugin_dir_path(__FILE__) . 'main.php';
