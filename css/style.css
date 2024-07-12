@@ -20,7 +20,7 @@
 
 .modal-dialog {
   max-width: 50% !important;
-  margin: 0;
+  margin: 0 auto !important;
   padding: 0;
 }
 
@@ -39,25 +39,25 @@
   overflow: hidden;
 }
 
-#section1 {
+#workspace_area {
   height: 50vh;
   border: 2px solid #f3efe7;
   touch-action: none;
   position: absolute;
 }
 
-#section2 {
+#settings_panel {
   height: 250px;
 }
 
-#section2, #custom_section {
+#settings_panel, #user_requested_tools {
   border: 2px solid #f3efe7;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-#custom_section {
+#user_requested_tools {
   align-items: center;
   text-wrap: pretty;
 }
@@ -211,7 +211,7 @@
   overflow-x: hidden;
 }
 
-#left_section {
+#main_workspace_area {
   max-width: 66.6%;
   max-height: 70vh;
   height: 70vh;
@@ -219,7 +219,7 @@
   position: relative;
 }
 
-#section1 {
+#workspace_area {
   width: auto;
   height: auto;
 }
@@ -228,15 +228,15 @@
   z-index: 9999;
 }
 
-#section1 div.draggable-container:hover .close-button {
+#workspace_area div.draggable-container:hover .close-button {
   display: block !important;
 }
 
-#section1 div.draggable-container:hover .custom-color-picker {
+#workspace_area div.draggable-container:hover .custom-color-picker {
   display: block !important;
 }
 
-#section1 div.draggable-container:hover .hide-important {
+#workspace_area div.draggable-container:hover .hide-important {
   display: none !important;
 }
 ::-webkit-scrollbar {
@@ -298,7 +298,7 @@ input[type="number"] {
 
 /* media at mobile screen */
 @media (max-width: 786px) {
-  #left_section {
+  #main_workspace_area {
     max-width: 100% !important;
     max-height: 100vh;
     height: 100vh;

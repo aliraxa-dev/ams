@@ -325,14 +325,14 @@
 <div class="dot_alert" id="dot_alert"></div>
 <section class="w-auto">
     <div class="row m-0 custom_height">
-        <div class="col-md-8 px-0 bg-transparent" id="left_section">
+        <div class="col-md-8 px-0 bg-transparent" id="main_workspace_area">
             <canvas style="position: absolute;" id="canvas" width="400" height="400"></canvas>
-            <div class="left-box-custom-border section ui-droppable-active ui-droppable-hover" id="section1">
+            <div class="left-box-custom-border section ui-droppable-active ui-droppable-hover" id="workspace_area">
                 <div class="w-100 color-box-customization" style="height: 50px" id="title_background_color">
                     <div class="h5 set_board_title" id="set_board_title"></div>
                 </div>
                 <div id="image-container" class="" style="display: none;">
-                    <img src="" alt="" id="section1_logo" data-logo="" class="">
+                    <img src="" alt="" id="workspace_area_logo" data-logo="" class="">
                 </div>
             </div>
         </div>
@@ -605,12 +605,12 @@
 
                                     <div class="loader" id="loader" style="display: none;">Loading...</div>
                                     <label class="fs-6 lexend-font mt-2 badge bg-secondary w-100 rounded-0 border border-2 border-dark" for="sel1">Tools list</label>
-                                    <div class="section gap-2 overflow-auto border border-2 border-dark border-top-0" id="section2" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="Click or drag a tool to the shadow board. You can update the color of the tool in the Shadow Board."></div>
+                                    <div class="section gap-2 overflow-auto border border-2 border-dark border-top-0" id="settings_panel" data-bs-toggle="popover" data-bs-placement="left" data-bs-trigger="hover focus" title="Tool Color" data-bs-content="Click or drag a tool to the shadow board. You can update the color of the tool in the Shadow Board."></div>
 
                                     <div id="request_custom_tool" class="btn btn-primary cursor-pointer fs-6 float-end py-1 my-2">Request a custom tool</div>
 
                                     <label class="fs-6 lexend-font badge bg-secondary w-100 rounded-0 border border-2 border-dark" for="sel1">Custom tools list</label>
-                                    <div class="section gap-2 overflow-auto border border-2 border-dark border-top-0" id="custom_section"></div>
+                                    <div class="section gap-2 overflow-auto border border-2 border-dark border-top-0" id="user_requested_tools"></div>
                                 </div>
                             </div>
                         </div>

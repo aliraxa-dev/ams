@@ -4,7 +4,7 @@ jQuery(document).ready(function ($) {
     $('#delete_all_boards').on('click', function() {
         if (confirm('Are you sure you want to delete all boards?')) {
             $.ajax({
-                url: ajaxurl,
+                url: ajax_request,
                 type: 'POST',
                 data: {
                     action: 'delete_all'
@@ -25,7 +25,7 @@ jQuery(document).ready(function ($) {
         console.log(board_id);
         if (confirm('Are you sure you want to delete this board?')) {
             $.ajax({
-                url: ajaxurl,
+                url: ajax_request,
                 type: 'POST',
                 data: {
                     action: 'deleteBoard',
@@ -110,7 +110,7 @@ jQuery(document).ready(function ($) {
 
                 // Function to create WooCommerce product
                 $.ajax({
-                    url: ajaxurl,
+                    url: ajax_request,
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -148,7 +148,7 @@ jQuery(document).ready(function ($) {
         formData.append('request_id', requestId);
 
         $.ajax({
-            url: ajaxurl,
+            url: ajax_request,
             type: 'POST',
             data: formData,
             contentType: false,
@@ -175,7 +175,7 @@ jQuery(document).ready(function ($) {
         };
 
         $.ajax({
-            url: ajaxurl,
+            url: ajax_request,
             type: 'POST',
             data: formData,
             success: function(response) {
@@ -198,7 +198,7 @@ jQuery(document).ready(function ($) {
             id: id
         };
         $.ajax({
-            url: ajaxurl,
+            url: ajax_request,
             type: 'POST',
             data: formData,
             success: function(response) {
@@ -239,7 +239,7 @@ jQuery(document).ready(function ($) {
             toughclear: toughclear
         };
         $.ajax({
-            url: ajaxurl,
+            url: ajax_request,
             type: 'POST',
             data: formData,
             success: function(response) {

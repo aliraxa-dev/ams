@@ -13,10 +13,8 @@ URL: alirazaofficial.com
 
 function enqueue_amerison_scripts() {
     $timestamp = time();
-    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js', array('jquery'), null, true);
-    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), $timestamp, true);
     wp_enqueue_style('jquery-ui-css', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/themes/base/jquery-ui.min.css');
     wp_enqueue_style('cropper-css', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css');
     wp_enqueue_script('popper-js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js', array(), $timestamp, true);
@@ -31,13 +29,15 @@ function enqueue_amerison_scripts() {
     wp_enqueue_script('toaster-js', 'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js', array(), null, true);
     wp_enqueue_script('html2canvas', 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js', array(), null, true);
     wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', array(), null, true);
+    wp_enqueue_style('amerison_style', plugin_dir_url(__FILE__) . 'css/style.css', array(), $timestamp);
+    wp_enqueue_script('amerison_script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery', 'jquery-ui'), $timestamp, true);
     wp_add_inline_script('stripe-js', 'var stripe = Stripe("' . get_option('stripe_settings')['publishable_key'] . '");');
 
     wp_localize_script(
         'amerison_script',
-        'amerison_vars',
+        'amerisan_client',
         array(
-            'ajaxurl' => admin_url('admin-ajax.php'),
+            'ajax_request' => admin_url('admin-ajax.php'),
             'user_id' => get_current_user_id(),
             'stripe' => get_option('stripe_settings')['publishable_key'],
             'custom_price' => get_option('stripe_settings')['custom_price'],
@@ -71,7 +71,7 @@ function enqueue_admin_assets() {
         'custom-admin-js',
         'admin',
         array(
-            'ajaxurl' => admin_url('admin-ajax.php'),
+            'ajax_request' => admin_url('admin-ajax.php'),
             'large_measuring' => get_option('stripe_settings')['large_measuring'],
         )
     );
@@ -1385,11 +1385,11 @@ add_action('wp_ajax_nopriv_process_measuring_tool_request', 'process_measuring_t
  */
 
 function update_configurator_data() {
-   if (isset($_POST['section1Items'])) {
+   if (isset($_POST['workspace_information'])) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'configurator_data';
         $user_id = get_current_user_id();
-        $config_data = sanitize_text_field($_POST['section1Items']);
+        $config_data = sanitize_text_field($_POST['workspace_information']);
         $color = sanitize_text_field($_POST['color']);
         $data = $_POST['data'];
         $id = $_POST['id'];
@@ -1402,16 +1402,16 @@ function update_configurator_data() {
             $wpdb->update(
                 $table_name,
                 array(
-                    'board_title' => $data['board_title'],
-                    'title_position' => $data['title_position'],
-                    'title_bg_color' => $data['title_bg_color'],
-                    'title_header_color' => $data['title_header_color'],
-                    'board_dimensions' => $data['board_dimensions'],
-                    'background_color' => $data['background_color'],
-                    'board_style' => $data['board_style'],
-                    'board_material' => $data['board_material'],
-                    'custom_logo' => $data['custom_logo'],
-                    'quantity_of_boards' => $data['quantity_of_boards'],
+                    'board_title' => $data['workspace_title'],
+                    'title_position' => $data['workspace_title_position'],
+                    'title_bg_color' => $data['workspace_title_bg_color'],
+                    'title_header_color' => $data['workspace_title_header_color'],
+                    'board_dimensions' => $data['workspace_dimensions'],
+                    'background_color' => $data['workspace_background_color'],
+                    'board_style' => $data['workspace_style'],
+                    'board_material' => $data['workspace_material'],
+                    'custom_logo' => $data['workspace_logo'],
+                    'quantity_of_boards' => $data['workspace_quantity'],
                     'config_data' => $config_data,
                     'options' => $color,
                     'canvasState' => $canvasState,
