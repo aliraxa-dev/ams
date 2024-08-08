@@ -1445,7 +1445,6 @@ function update_configurator_data()
         $color = sanitize_text_field($_POST['color']);
         $data = $_POST['data'];
         $id = $_POST['id'];
-        echo $id;
         $canvasState = $_POST['canvasState'];
         $existing_data = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $table_name WHERE id = %d",
@@ -1479,16 +1478,16 @@ function update_configurator_data()
                 $table_name,
                 array(
                     'user_id' => $user_id,
-                    'board_title' => $data['board_title'],
-                    'title_position' => $data['title_position'],
-                    'title_bg_color' => $data['title_bg_color'],
-                    'title_header_color' => $data['title_header_color'],
-                    'board_dimensions' => $data['board_dimensions'],
-                    'background_color' => $data['background_color'],
-                    'board_style' => $data['board_style'],
-                    'board_material' => $data['board_material'],
-                    'custom_logo' => $data['custom_logo'],
-                    'quantity_of_boards' => $data['quantity_of_boards'],
+                    'board_title' => $data['workspace_title'],
+                    'title_position' => $data['workspace_title_position'],
+                    'title_bg_color' => $data['workspace_title_bg_color'],
+                    'title_header_color' => $data['workspace_title_header_color'],
+                    'board_dimensions' => $data['workspace_dimensions'],
+                    'background_color' => $data['workspace_background_color'],
+                    'board_style' => $data['workspace_style'],
+                    'board_material' => $data['workspace_material'],
+                    'custom_logo' => $data['workspace_logo'],
+                    'quantity_of_boards' => $data['workspace_quantity'],
                     'config_data' => $config_data,
                     'options' => $color,
                     'canvasState' => $canvasState,

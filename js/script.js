@@ -20,7 +20,6 @@
   var _board_height_inches = 12;
   var _board_width_inches = 12;
   let _previous_workspace = window.location.search !== "?board=new";
-  let _workspace_id = window.location.search.split("=")[1];
 
   const _variation_dropdown = $("#attributes");
   const _settings_panel = $("#settings_panel");
@@ -240,7 +239,8 @@
 
     var pixelsForToolHeight = _get_tools_in_pixel(_board_height_inches, _board_height_pixels, _tool_height);
     var pixelsForToolWidth = _get_tools_in_pixel(_board_width_inches, _board_width_pixels, _tool_width);
-    const header_height = _set_title_bg_color.height();
+    // const header_height = _set_title_bg_color.height();
+    const header_height = 0;
 
     // console.log('====================================');
     // console.log(pixelsForToolWidth, 'pixelsForToolWidth');
@@ -267,8 +267,8 @@
       _width = _height * _aspect_ratio;
     }
     canvas.setWidth(_width);
-    canvas.setHeight(_height - 10);
-    return { width: _width, height: _height - 10 };
+    canvas.setHeight(_height);
+    return { width: _width, height: _height };
   }
 
   function _generate_color_palette(_tools, _colors, _top, _left, _id = 0, _random_string) {
@@ -416,6 +416,13 @@
             _chnage_color_of_svg(_tool_image, "black", _random_string, _tool_clone[0].alt, _tool_height, _tool_width);
           }
 
+          $(".close-button").on("click", function () {
+            $(this).closest(".draggable-container").remove();
+            _update_workspace_data_in_database();
+            _update_data_in_localstorage();
+          });
+
+
         } else if (_workspace_section === "workspace_area" && _setting_panel_section === "workspace_area") {
           const _get_existing_container = ui.draggable.closest(".draggable-container");
           _draged_tool_element.append(ui.draggable);
@@ -449,6 +456,12 @@
           colorPalette.remove();
 
           _generate_color_palette(_draged_tool_element, _palet_colors_list, _top_position, _left_position, _tool_id, _random_string);
+
+          _get_close_button.on("click", function () {
+            _draged_tool_element.remove();
+            _update_data_in_localstorage();
+            _update_workspace_data_in_database();
+          });
 
           ui.draggable
             .siblings(".custom-color-picker")
@@ -693,7 +706,7 @@
   }
 
   setInterval(function () {
-    if (_previous_workspace) {
+    if (window.location.search !== "?board=new") {
       _workspace_background_properties_chnage();
       _update_board_dimentions();
     }
@@ -813,10 +826,11 @@
 
   async function _fetch_workspace_info_from_database() {
     var url = window.location.href;
-    const _workspace_id = url.split("/").pop();
-    const board = _workspace_id.split("=")[0];
+    var _workspace_id = window.location.search.split("=")[1];
+    const _workspace_url = url.split("/").pop();
+    const board = _workspace_url.split("=")[0];
 
-    if (url.includes("configurator") && _workspace_id && board == "?board" && _previous_workspace) {
+    if (url.includes("configurator") && _workspace_url && board == "?board" && _previous_workspace) {
       const _object = {
         workspace_id: _workspace_id
       }
@@ -1181,7 +1195,6 @@
         _workspace_area.css("background", _s1_bg_color);
       }
     }
-    console.log(_s1_bg_color, "is applied");
     return _s1_bg_color;
   }
 
@@ -1198,7 +1211,7 @@
     _setting_penal_properties.workspace_material = _workspace_material.val();
     _setting_penal_properties.workspace_logo = localStorage.getItem("custom_logo");
     _setting_penal_properties.workspace_quantity = _workspace_quantity.val();
-    const id = _workspace_id;
+    const id = window.location.search.split("=")[1];
     const data = {
       action: "update_configurator_data",
       workspace_information: workspace_information,
@@ -1242,7 +1255,7 @@
         var formData = new FormData();
         formData.append("action", "handle_logo_upload");
         formData.append("logo_images", file);
-        formData.append("board_id", _workspace_id);
+        formData.append("board_id", window.location.search.split("=")[1]);
 
         $.ajax({
           type: "POST",
@@ -1303,7 +1316,7 @@
         var formData = new FormData();
         formData.append("action", "handle_background_upload");
         formData.append("background_image_upload", file);
-        formData.append("board_id", _workspace_id);
+        formData.append("board_id", window.location.search.split("=")[1]);
 
         $.ajax({
           type: "POST",
@@ -1313,7 +1326,7 @@
           contentType: false,
           success: function (response) {
             const board_material = _workspace_material.val();
-            if (board_material !== "ToughSteel") {
+            if (board_material !== "ToughSteel" && response.url) {
               localStorage.setItem("workspace_background_image", response.url);
               _workspace_area.css("background", "url(" + response.url + ")");
               const parts = response.url.split("/");
@@ -1533,7 +1546,7 @@
   }
 
   function _reset_workspace_information() {
-    const board_id = _workspace_id;
+    const board_id = window.location.search.split("=")[1];
     // console.log(board_id);
     const data = {
       action: "reset_board",
@@ -1557,7 +1570,7 @@
   }
 
   function _delete_images_from_wp_media(value, imageUrl) {
-    const board_id = _workspace_id;
+    const board_id = window.location.search.split("=")[1];
     const data = {
       action: "clearLinksFromDb",
       value: value,
@@ -1607,7 +1620,8 @@
     $("#dimentionConfirmationModal").modal("hide");
   });
 
-  $(".close-button").on("click", function () {
+  $(".close-button").click(function () {
+    console.log("clicked");
     $(this).parent().remove();
     _update_workspace_data_in_database();
   });
@@ -2278,7 +2292,7 @@
    */
   $("#submit_custom_tool").on("click", function () {
     var file = $("#custom_tool_image").prop("files")[0];
-    var board_id = _workspace_id;
+    var board_id = window.location.search.split("=")[1];
 
     if (file && board_id) {
       var cardElement = _stripe_elements.getElement("card");
@@ -2369,7 +2383,7 @@
     const quantity = $("#measuring_tool_quantity").val();
     const comments = $("#measuring_tool_features").val();
     const totalCost = $("#measuring_tool_company").val();
-    var board_id = _workspace_id;
+    var board_id = window.location.search.split("=")[1];
 
     // name, address, quantity, comments, totalCost validation
     if (
@@ -2776,6 +2790,17 @@
       },
     });
   }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var cartItems = document.querySelectorAll('.woocommerce-cart-form .product-thumbnail a');
+    cartItems.forEach(function (item) {
+      var img = item.querySelector('img');
+      if (img) {
+        item.parentNode.replaceChild(img, item);
+      }
+    });
+  });
+
 
   // Call functions on page load
   _initilaze_touch_handlers();

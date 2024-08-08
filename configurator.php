@@ -146,7 +146,7 @@
                     <!-- A Stripe Element will be inserted here. -->
                 </div>
             </div>
-            
+
 
             <!-- Used to display form errors. -->
             <div id="card-errors" class="badge bg-danger" role="alert"></div>
@@ -217,7 +217,9 @@
 </div>
 
 <div id="preloader" class="preloader"></div>
-
+<div class="alert alert-info">
+Will be incur the cost of hooks and holders
+</div>
 <div class="d-flex justify-content-between">
     <div class="d-flex justify-content-center align-items-center drawing-tools bg-white px-2 border border-2 rounded rounded-2" style="">
         <div class="d-flex justify-content-center my-1 align-items-center">

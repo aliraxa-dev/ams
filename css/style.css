@@ -3,7 +3,7 @@
 }
 
 .lexend-font {
-  font-family: "Lexend", sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
 }
 
 .marker-font {
@@ -429,4 +429,10 @@ input {
   border: 2px solid rgb(197, 189, 189);
   padding: 8px;
   border-radius: 5px;
+}
+
+.btn-danger, .bg-danger {
+  color: #fff !important;
+  background-color: #ff3b00 !important;
+  border-color: #ff3b00 !important;
 }
