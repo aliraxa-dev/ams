@@ -217,8 +217,8 @@
 </div>
 
 <div id="preloader" class="preloader"></div>
-<div class="alert alert-info">
-Will be incur the cost of hooks and holders
+<div class="alert alert-info fs-5 fw-bold p-2">
+All tools will incur additional cost of hooks and holders.
 </div>
 <div class="d-flex justify-content-between">
     <div class="d-flex justify-content-center align-items-center drawing-tools bg-white px-2 border border-2 rounded rounded-2" style="">
@@ -283,7 +283,7 @@ Will be incur the cost of hooks and holders
                     <button id="drawing_line" class="bg-white border-0 py-0 px-2 dropdown-toggle hide-after" data-bs-toggle="dropdown">
                         <i class="text-black fa fa-text-height"></i>
                     </button>
-                    <ul class="dropdown-menu p-1">
+                    <ul class="dropdown-menu p-1" style="z-index: 999999">
                         <li class="border border-dark rounded rounded-2 m-2 p-2">
                             <div class="d-flex flex-column gap-2 justify-content-start">
                                 <div class="position-relative d-flex gap-2">

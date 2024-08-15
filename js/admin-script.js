@@ -1,18 +1,18 @@
 
 jQuery(document).ready(function ($) {
 
-    $('#delete_all_boards').on('click', function() {
+    $('#delete_all_boards').on('click', function () {
         if (confirm('Are you sure you want to delete all boards?')) {
             $.ajax({
-                url: ajax_request,
+                url: admin.ajax_request,
                 type: 'POST',
                 data: {
                     action: 'delete_all'
                 },
-                success: function(response) {
+                success: function (response) {
                     location.reload();
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     alert('Failed to delete boards.');
                 }
             });
@@ -20,21 +20,21 @@ jQuery(document).ready(function ($) {
     });
 
 
-    $('.delete-board').on('click', function() {
+    $('.delete-board').on('click', function () {
         var board_id = $(this).data('id');
         console.log(board_id);
         if (confirm('Are you sure you want to delete this board?')) {
             $.ajax({
-                url: ajax_request,
+                url: admin.ajax_request,
                 type: 'POST',
                 data: {
                     action: 'deleteBoard',
                     board_id: board_id
                 },
-                success: function(response) {
+                success: function (response) {
                     location.reload();
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     alert('Failed to delete board.');
                 }
             });
@@ -44,7 +44,7 @@ jQuery(document).ready(function ($) {
     $('.tabcontent').not(':first').hide();
 
     // Click event handler for tab links
-    $('.tablink').click(function() {
+    $('.tablink').click(function () {
         var tabId = $(this).data('tab');
         $('.tabcontent').hide();
         $('#' + tabId).show();
@@ -71,13 +71,13 @@ jQuery(document).ready(function ($) {
         $('.tablink[data-tab="' + activeTab + '"]').addClass('text-white');
     }
 
-    $('.close-model').on('click', function() {
+    $('.close-model').on('click', function () {
         $('#uploadToolModel').css({
             "display": "none",
         })
     });
 
-    $('.upload-custom-tool').on('click', function() {
+    $('.upload-custom-tool').on('click', function () {
         var requestId = $(this).data('id');
         console.log(requestId);
         $('#request-id').val(requestId);
@@ -88,7 +88,7 @@ jQuery(document).ready(function ($) {
 
 
 
-    $('#upload_file').click(function() {
+    $('#upload_file').click(function () {
         // showPreloader();
         var fileInput = $('#upload-file')[0].files[0];
         var widthInput = $('#tool_width').val();
@@ -99,7 +99,7 @@ jQuery(document).ready(function ($) {
         // Validate file type
         if (fileInput && fileInput.type === 'image/svg+xml' && widthInput && heightInput && requestId && toolType !== "null") {
             var reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 var formData = new FormData();
                 formData.append('file', fileInput);
                 formData.append('width', widthInput);
@@ -110,12 +110,12 @@ jQuery(document).ready(function ($) {
 
                 // Function to create WooCommerce product
                 $.ajax({
-                    url: ajax_request,
+                    url: admin.ajax_request,
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success: function(response) {
+                    success: function (response) {
                         alert('Custom Product created successfully.');
                         $('#upload-file').val('');
                         $('#tool_width').val('');
@@ -128,7 +128,7 @@ jQuery(document).ready(function ($) {
                         // hidePreloader();
                         location.reload();
                     },
-                    error: function(error) {
+                    error: function (error) {
                         alert(error.responseText);
                     }
                 });
@@ -139,7 +139,7 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $('.send-measuring-sheet').on("click", function() {
+    $('.send-measuring-sheet').on("click", function () {
         var requestId = $(this).data('id');
         // showPreloader();
 
@@ -148,23 +148,23 @@ jQuery(document).ready(function ($) {
         formData.append('request_id', requestId);
 
         $.ajax({
-            url: ajax_request,
+            url: admin.ajax_request,
             type: 'POST',
             data: formData,
             contentType: false,
             processData: false,
-            success: function(response) {
+            success: function (response) {
                 // hidePreloader();
                 alert('Measuring sheet delivered successfully!');
                 location.reload();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 alert('Failed to send measuring sheet.');
             }
         });
     });
 
-    $('.stripe-refund').on("click", function() {
+    $('.stripe-refund').on("click", function () {
         var id = $(this).data('id');
         var payment_amount = (admin.large_measuring * 100) ?? 0;
 
@@ -175,21 +175,21 @@ jQuery(document).ready(function ($) {
         };
 
         $.ajax({
-            url: ajax_request,
+            url: admin.ajax_request,
             type: 'POST',
             data: formData,
-            success: function(response) {
+            success: function (response) {
                 alert(response.data);
                 location.reload();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 alert('Failed to initiate refund.');
             }
         });
     });
 
     // show popup on click
-    $('.update_price').on("click", function() {
+    $('.update_price').on("click", function () {
         showPreloader();
         var id = $(this).data('id');
         console.log(id);
@@ -198,10 +198,10 @@ jQuery(document).ready(function ($) {
             id: id
         };
         $.ajax({
-            url: ajax_request,
+            url: admin.ajax_request,
             type: 'POST',
             data: formData,
-            success: function(response) {
+            success: function (response) {
                 console.log(response);
                 // populate data
                 $('#update_price_id').val(response.data.id);
@@ -215,13 +215,13 @@ jQuery(document).ready(function ($) {
 
                 hidePreloader();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 alert('Failed to fetch price of current size.');
             }
         });
     });
 
-    $('#submit_price').on("click", function() {
+    $('#submit_price').on("click", function () {
         var id = $('#update_price_id').val();
         var toughlite = $('#inputToughLite').val();
         var toughlam = $('#inputToughLam').val();
@@ -239,15 +239,15 @@ jQuery(document).ready(function ($) {
             toughclear: toughclear
         };
         $.ajax({
-            url: ajax_request,
+            url: admin.ajax_request,
             type: 'POST',
             data: formData,
-            success: function(response) {
+            success: function (response) {
                 hidePreloader();
                 // alert(response.data);
                 location.reload();
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 alert('Failed to update price of current size.');
             }
         });

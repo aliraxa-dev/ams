@@ -312,7 +312,7 @@
     _color_palette.find(".custom-color").click(function () {
       var _selected_color = $(this).css("background-color");
       var _selected_option_id = $(this).parents(".color-options").data("id");
-      console.log(_selected_option_id, 'selected option id');
+      // console.log(_selected_option_id, 'selected option id');
       $(this).closest(".color-input").css("background-color", _selected_color);
       $(this).closest(".color-options").hide();
       $(this).closest(".custom-color-picker").find(".color-options").toggle();
@@ -534,10 +534,14 @@
     });
 
     _generate_color_palette(_draged_tool_element, _palet_colors_list, 0, _workspace_left_position, _tool_id, _random_string);
+    if (_workspace_material.val() === "ToughSteel") {
+      _chnage_color_of_svg(_tool_image, "black", _random_string, "outline", _tool_height, _tool_width);
+    } else {
+      _chnage_color_of_svg(_tool_image, "black", _random_string, _tool_clone[0].alt, _tool_height, _tool_width);
+    }
     _drag_workspace_elements();
     _update_data_in_localstorage();
-  }
-  );
+  });
 
   function _drag_workspace_elements() {
     $("#workspace_area .item").draggable({
@@ -1014,6 +1018,7 @@
               _update_data_in_localstorage();
               _drag_workspace_elements();
               _update_workspace_title_position();
+              _remove_tools_for_stainless_steel();
               if (_previous_workspace) {
                 _variation_dropdown.trigger("change");
               }
@@ -1058,7 +1063,7 @@
               width +
               '" data-height="' +
               dimensions.height +
-              '" style="height: 160px; width: auto;" /><span class="tool-name text-center" style="width: 150px">' +
+              '" style="height: 160px; width: 150px;" /><span class="tool-name text-center" style="width: 150px">' +
               variation.title +
               "</span></div>"
             );
@@ -1164,6 +1169,7 @@
       _s1_bg_color = _tough_steel_color;
       _workspace_area.css("border", "none");
       _workspace_area.css("background", _tough_steel_color);
+
     } else {
       if (
         _bg_color_val === "rgb(255, 255, 255)" || _bg_color_val === "#ffffff") {
@@ -1197,6 +1203,29 @@
     }
     return _s1_bg_color;
   }
+
+  _workspace_material.on("change", _remove_tools_for_stainless_steel);
+
+  function _remove_tools_for_stainless_steel() {
+    const tools = _workspace_area.find(".draggable-container");
+    const _board_material_val = _workspace_material.val();
+    if (_board_material_val === "ToughSteel") {
+      for (const tool of tools) {
+        let img = $(tool).find("img");
+        let imgLink = $(img).attr("data-image");
+        let randmId = $(img).attr("id");
+        randmId = randmId.split("_")[2];
+        let imgheight = $(img).height();
+        let imgwidth = $(img).width();
+        let alt = $(img).attr("alt");
+        if (alt === "solid") {
+          $(tool).remove();
+        }
+        _chnage_color_of_svg(imgLink, 'black', randmId, 'outline', imgheight, imgwidth);
+      }
+    }
+  }
+
 
   function _update_workspace_data_in_database() {
     const workspace_information = localStorage.getItem("workspace_information");
