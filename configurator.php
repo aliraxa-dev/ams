@@ -218,7 +218,7 @@
 
 <div id="preloader" class="preloader"></div>
 <div class="alert alert-info fs-5 fw-bold p-2">
-All tools will incur additional cost of hooks and holders.
+All tools will incur additional cost for hooks and holders.
 </div>
 <div class="d-flex justify-content-between">
     <div class="d-flex justify-content-center align-items-center drawing-tools bg-white px-2 border border-2 rounded rounded-2" style="">
@@ -554,12 +554,12 @@ All tools will incur additional cost of hooks and holders.
                                 <div class="board-Material form-group">
                                     <label class="fs-6 lexend-font"> Board Material </label>
                                     <select class="form-control px-2 py-1" id="board_material">
-                                        <option selected value="ToughLite">TOUGHLIGHT</option>
-                                        <option value="ToughLam">TOUGHLAM</option>
-                                        <option value="ToughGuard">TOUGHGUARD</option>
-                                        <option value="ToughGuard+">TOUGHGUARD+</option>
-                                        <option value="ToughClear">TOUGHCLEAR</option>
-                                        <option value="ToughSteel">TOUGHSTEEL</option>
+                                        <option selected value="ToughLite">StorLite</option>
+                                        <option value="ToughLam">StorLam</option>
+                                        <option value="ToughGuard">StorShield</option>
+                                        <option value="ToughGuard+">StorShield+</option>
+                                        <option value="ToughClear">StorClear</option>
+                                        <option value="ToughSteel">StorLaz</option>
                                     </select>
                                 </div>
 

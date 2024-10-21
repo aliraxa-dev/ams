@@ -10,7 +10,7 @@
 		</div>
         <div class="border border-4 border-dark ps-4 pt-2 rounded rounded-3 board-list">
             <?php if (empty($configurator)) : ?>
-                <p class="text-center">No Board is created Yet</p>
+                <p class="text-center"></p>
             <?php else : ?>
                 <ol class="h3 mx-4">
                     <?php foreach ($configurator as $config) : ?>

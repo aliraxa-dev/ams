@@ -413,11 +413,11 @@ function render_pricing_page()
             <thead>
                 <tr>
                     <th>SIZE</th>
-                    <th>TOUGHLAM</th>
-                    <th>TOUGHLITE</th>
-                    <th>TOUGHGUARD</th>
-                    <th>TOUGHGUARD+</th>
-                    <th>TOUGHCLEAR</th>
+                    <th>StorLam</th>
+                    <th>StorLite</th>
+                    <th>StorShield</th>
+                    <th>StorShield+</th>
+                    <th>StorClear</th>
                     <th>ACTIONS</th>
                 </tr>
             </thead>
@@ -2180,7 +2180,7 @@ function display_color_in_cart_header($item_data, $cart_item)
     $product = WC()->cart->get_cart();
     $color = $product[$cart_item['key']]['tool-color'];
 
-    $value = '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;background-color: ' . $color . ';"></div>';
+    $value = '<div style="width: 20px;height: 20px;position: relative;left: 80px;top: 0px;border-radius: 50%;background-color: ' . $color . ';"></div>';
 
     if (!empty($color)) {
         $item_data[] = array(
@@ -2199,8 +2199,39 @@ function save_color_to_order_item_meta($item, $cart_item_key, $values, $order)
     $color = $values['tool-color'];
     // print_r($values);
     if (!empty($color)) {
-        $item->update_meta_data('Tool Color', '<div style="width: 20px;height: 20px;position: relative;left: 140px;top: 10px;margin-left: 90px;background: ' . $color . '"></div>');
+        $item->update_meta_data('Tool Color', '<div style="width: 20px;height: 20px;position: relative;left: 80px;top: 0px;border-radius: 50%;background-color: ' . $color . ';"></div>');
     }
+
+    $variation_id = $item->get_variation_id();
+
+    if ( $variation_id ) {
+        $tools_price = get_post_meta( $variation_id, 'tools_price', true );
+        $hooks = get_post_meta( $variation_id, 'hooks', true );
+        $hooks_price = get_post_meta( $variation_id, 'hooks_price', true );
+        $holders = get_post_meta( $variation_id, 'holders', true );
+        $holders_price = get_post_meta( $variation_id, 'holders_price', true );
+
+        if ( $tools_price ) {
+            $item->add_meta_data( 'Tools Price', "$" . $tools_price, true );
+        }
+
+        if ( $hooks ) {
+            $item->add_meta_data( 'Hooks', $hooks, true );
+        }
+
+        if ( $hooks_price ) {
+            $item->add_meta_data( 'Hooks Price', "$" . $hooks_price, true );
+        }
+
+        if ( $holders ) {
+            $item->add_meta_data( 'Holder', $holders, true );
+        }
+
+        if ( $holders_price ) {
+            $item->add_meta_data( 'Holder Price', "$" . $holders_price, true );
+        }
+    }
+
 }
 
 

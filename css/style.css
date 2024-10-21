@@ -34,7 +34,6 @@
   overflow: auto;
 }
 
-
 .section {
   overflow: hidden;
 }
@@ -50,7 +49,8 @@
   height: 250px;
 }
 
-#settings_panel, #user_requested_tools {
+#settings_panel,
+#user_requested_tools {
   border: 2px solid #f3efe7;
   display: flex;
   flex-wrap: wrap;
@@ -98,7 +98,8 @@
   z-index: 999;
 }
 
-.request_custom_close, .close {
+.request_custom_close,
+.close {
   color: #000000;
 }
 
@@ -276,7 +277,8 @@ input[type="number"] {
   border-color: #ffffff00 #ffffff00 #ffffff00 !important;
 }
 
-.board-title, .input-filed {
+.board-title,
+.input-filed {
   width: 62%;
 }
 
@@ -396,7 +398,15 @@ input[type="number"] {
   display: none;
 }
 
-input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
   color: #000000 !important;
   box-shadow: none !important;
   border-color: #3498db !important;
@@ -425,14 +435,24 @@ input {
   text-wrap: wrap !important;
 }
 
-#card-element, #card-element-measuring {
+#card-element,
+#card-element-measuring {
   border: 2px solid rgb(197, 189, 189);
   padding: 8px;
   border-radius: 5px;
 }
 
-.btn-danger, .bg-danger {
+.btn-danger,
+.bg-danger {
   color: #fff !important;
   background-color: #ff3b00 !important;
   border-color: #ff3b00 !important;
+}
+
+.wc-item-meta {
+  font-size: 16px !important;
+}
+
+.wc-item-meta li {
+  display: flex !important;
 }
