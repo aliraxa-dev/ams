@@ -1045,15 +1045,9 @@
 
           if (color === variation.attributes.attribute_pa_color) {
             _settings_panel.append(
-              '<div class="flex-column" style="display: flex;" id="nameList_' +
+              '<div class="flex-column" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" title="' + variation.short_description + '" data-bs-content="' + variation.title + '" style="display: flex;" id="nameList_' +
               variation.id +
-              '"><img src="' +
-              imageSrc +
-              '" alt="' +
-              color +
-              '" data-image="' +
-              imageSrc +
-              '" class="draggable settings_panel_tools" data-id="' +
+              '"><img src="' + imageSrc + '" alt="' + color + '" data-image="' + imageSrc + '" class="draggable settings_panel_tools" data-id="' +
               variation.id +
               '" data-width="' +
               dimensions.width +
@@ -1821,39 +1815,56 @@
         svgDoc.setAttribute("width", newWidth);
 
         var paths = svgDoc.querySelectorAll("path");
+        var polygons = svgDoc.querySelectorAll("polygon");
         paths.forEach(function (path) {
           if (alt === "solid") {
             if (color === "rgba(0, 0, 0, 0)") {
               path.style.fill = "#000000";
+            } else if (path.classList.contains("st0")) {
+              path.style.fill = color;
+            }
+
+            if (path.classList.contains("st1") && color === "rgb(255, 255, 255)") {
+              path.style.fill = "#000000";
+            } else if (path.classList.contains("st1") && color !== "rgb(255, 255, 255)") {
+              path.style.fill = "#ffffff";
+            }
+          } else if (alt === "outline") {
+            if (path.classList.contains("st1") || path.classList.contains("st2")) {
+              path.style.fill = color;
+            } else if (path.classList.contains("st0")) {
+              path.style.fill = "transparent";
             } else {
               path.style.fill = color;
             }
-          } else if (alt === "outline") {
-            if (color === "rgba(0, 0, 0, 0)") {
-              if (path.classList.contains("cls-2")) {
-                path.style.fill = "#000000";
-              } else if (
-                path.classList.contains("cls-3") ||
-                path.classList.contains("cls-1")
-              ) {
-                path.style.fill = "transparent";
-              } else {
-                path.style.fill = "#000000";
-              }
-            } else {
-              if (path.classList.contains("cls-2")) {
-                path.style.fill = color;
-              } else if (
-                path.classList.contains("cls-3") ||
-                path.classList.contains("cls-1")
-              ) {
-                path.style.fill = "transparent";
-              } else {
-                path.style.fill = color;
-              }
-            }
           } else {
             path.style.fill = "#000000";
+          }
+        });
+
+        polygons.forEach(function (polygon) {
+          if (alt === "solid") {
+            if (color === "rgba(0, 0, 0, 0)") {
+              polygon.style.fill = "#000000";
+            } else if (polygon.classList.contains("st1")) {
+              polygon.style.fill = "#ffffff";
+            }
+
+            if (polygon.classList.contains("st1") && color === "rgb(255, 255, 255)") {
+              polygon.style.fill = "#000000";
+            } else if (polygon.classList.contains("st1") && color !== "rgb(255, 255, 255)") {
+              polygon.style.fill = "#ffffff";
+            }
+          } else if (alt === "outline") {
+            if (polygon.classList.contains("st1") || polygon.classList.contains("st2")) {
+              polygon.style.fill = color;
+            } else if (polygon.classList.contains("st0")) {
+              polygon.style.fill = "transparent";
+            } else {
+              polygon.style.fill = color;
+            }
+          } else {
+            polygon.style.fill = "#000000";
           }
         });
 

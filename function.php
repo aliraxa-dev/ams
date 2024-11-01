@@ -996,6 +996,7 @@ function get_products()
                     'height' => $variation['dimensions']['height'],
                     'user_id' => $variation['weight'],
                     'toolType' => $variation['variation_description'],
+                    'short_description' => $product_data->get_short_description(),
                 );
             }
         }
